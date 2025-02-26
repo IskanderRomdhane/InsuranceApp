@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 const RootNavbar = () => {
     return(
         <header className="bg-white shadow-sm py-4">
@@ -9,9 +10,11 @@ const RootNavbar = () => {
                     <a href="#" className="text-gray-600 hover:text-green-600">About Us</a>
                     <a href="#" className="text-gray-600 hover:text-green-600">Contact</a>
                 </nav>
+                <Link to="/login">
                 <button className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition">
-                    Get Quote
+                    Login
                 </button>
+                </Link>
             </div>
         </header>
     )
