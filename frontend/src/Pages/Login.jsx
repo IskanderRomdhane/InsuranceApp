@@ -18,8 +18,8 @@ const Login = () => {
                     localStorage.setItem('authToken', keycloak.token);
 
                     // Check the roles in the token
-                    const roles = keycloak.tokenParsed?.realm_access?.roles || [];
-
+                    const roles = keycloak.tokenParsed?.resource_access?.Insurance?.roles || [];
+                    console.log(roles);
                     // Redirect based on the role
                     if (roles.includes('client_admin')) {
                         window.location.href = '/admin';

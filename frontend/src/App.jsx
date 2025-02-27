@@ -14,6 +14,7 @@ function App() {
               <Route path="/" element={<Root />} />
               <Route path='/login' element={<Login />} />
               <Route path='/unauthorized' element={<Unauthorized />} />
+              <Route path='/aboutus' element={<aboutus />} />
           </Routes>
       </Router>
           </ReactKeycloakProvider>
