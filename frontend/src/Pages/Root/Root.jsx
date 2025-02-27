@@ -3,7 +3,7 @@ import {reasons, offers, products} from './insuranceProducts.js';
 import RootNavbar from "../../Components/RootNavbar.jsx";
 import offersImage from "../../assets/Root/Bundle_women_moving_scene_Optimized_XL_L.webp"
 import aboutUsImage from "../../assets/Root/AboutUs.webp"
-
+import { Link } from 'react-router-dom';
 const InsuranceApp = () => {
     const [selectedProduct, setSelectedProduct] = useState('home');
     const [selectedOffer, setSelectedOffer] = useState('bundle');
@@ -46,9 +46,11 @@ const InsuranceApp = () => {
                         <p className="text-xl mb-8 max-w-3xl mx-auto">
                             Comprehensive insurance solutions tailored to your needs with industry-leading coverage and support.
                         </p>
+                        <Link to = "/login">
                         <button className="bg-white text-green-700 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition">
                             Get Started Today
                         </button>
+                        </Link>
                     </div>
                 </section>
 
@@ -271,9 +273,11 @@ const InsuranceApp = () => {
                                 <p className="text-gray-600 mb-4">
                                     With a team of over 500 dedicated insurance professionals and a 98% customer satisfaction rating, we continue to innovate and adapt to meet the changing needs of our clients.
                                 </p>
+                                <Link to="/aboutus">
                                 <button className="bg-green-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-700 transition mt-4">
                                     Learn More About Us
                                 </button>
+                                </Link>
                             </div>
                         </div>
                     </div>

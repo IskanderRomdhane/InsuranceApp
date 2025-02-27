@@ -5,6 +5,7 @@ import {ReactKeycloakProvider} from "@react-keycloak/web";
 import keycloak from './config/keycloak';
 import Login from './Pages/Login.jsx'
 import Unauthorized from './Pages/Unauthorized.jsx'
+import AboutUs from "./Pages/AboutUs.jsx";
 function App() {
 
   return (
@@ -14,7 +15,7 @@ function App() {
               <Route path="/" element={<Root />} />
               <Route path='/login' element={<Login />} />
               <Route path='/unauthorized' element={<Unauthorized />} />
-              <Route path='/aboutus' element={<aboutus />} />
+              <Route path='/aboutus' element={<AboutUs />} />
           </Routes>
       </Router>
           </ReactKeycloakProvider>
