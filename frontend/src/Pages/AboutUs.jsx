@@ -1,5 +1,6 @@
 import React from 'react';
 import mainImage from '/src/assets/AboutUs/mainImage.webp';
+import {Link} from "react-router-dom";
 
 const AboutUs = () => {
     return (
@@ -165,9 +166,11 @@ const AboutUs = () => {
                 <div className="max-w-3xl mx-auto text-center">
                     <h2 className="text-3xl font-bold mb-6 text-green-600">Get in Touch</h2>
                     <p className="text-lg mb-8 text-gray-700">Have questions about Wiqaya? Our team is here to help.</p>
+                    <Link to='/contactus'>
                     <button className="bg-green-500 text-white px-8 py-4 rounded-full font-medium hover:bg-green-600 transition shadow-sm">
                         Contact Us
                     </button>
+                    </Link>
                 </div>
             </section>
         </div>
