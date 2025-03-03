@@ -306,8 +306,12 @@ const InsuranceApp = () => {
                         <div>
                             <h4 className="font-semibold mb-4">Company</h4>
                             <ul className="space-y-2 text-gray-400">
+                                <Link to={'/aboutus'} >
                                 <li><a href="#" className="hover:text-white">About Us</a></li>
-                                <li><a href="#" className="hover:text-white">Careers</a></li>
+                                </Link>
+                                <Link to={'/contactus'} >
+                                <li><a href="#" className="hover:text-white">Contact Us</a></li>
+                                </Link>
                                 <li><a href="#" className="hover:text-white">Blog</a></li>
                                 <li><a href="#" className="hover:text-white">Press</a></li>
                             </ul>
