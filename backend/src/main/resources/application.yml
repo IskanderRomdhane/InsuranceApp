@@ -1,0 +1,34 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/insurance
+    username: admin
+    password: admin
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8080/realms/InsuranceApp
+          jwk-set-uri: http://localhost:8080/realms/InsuranceApp/protocol/openid-connect/certs
+
+server:
+  port: 8081
+
+jwt:
+  auth:
+    converter:
+      resource-id: Insurance
+      principle-attribute: preferred_username
+
+keycloak:
+  client-secret: JlSC6vKQVNkw0K0H70ZHFnlOqFYCV8Lg
+  server:
+    url: http://localhost:8080/
+  realm: InsuranceApp
+  resource: Insurance
+  admin:
+    username: admin
+    password: admin
