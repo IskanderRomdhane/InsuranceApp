@@ -24,7 +24,6 @@ jwt:
       principle-attribute: preferred_username
 
 keycloak:
-  client-secret: JlSC6vKQVNkw0K0H70ZHFnlOqFYCV8Lg
   server:
     url: http://localhost:8080/
   realm: InsuranceApp
