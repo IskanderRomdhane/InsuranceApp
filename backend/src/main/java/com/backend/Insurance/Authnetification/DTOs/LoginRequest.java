@@ -1,8 +1,11 @@
 package com.backend.Insurance.Authnetification.DTOs;
 
-import lombok.Data;
+import lombok.*;
 
-@Data
+@Getter
+@Setter
+@AllArgsConstructor
+@RequiredArgsConstructor
 public class LoginRequest {
     private String username;
     private String password;

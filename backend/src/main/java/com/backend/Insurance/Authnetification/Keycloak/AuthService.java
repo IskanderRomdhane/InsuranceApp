@@ -1,10 +1,17 @@
 package com.backend.Insurance.Authnetification.Keycloak;
 
+import com.backend.Insurance.Authnetification.DTOs.Credentials;
 import com.backend.Insurance.Authnetification.DTOs.LoginRequest;
+import com.backend.Insurance.Authnetification.DTOs.RegisterRequest;
 import com.backend.Insurance.Authnetification.Security.JwtParser;
+import com.backend.Insurance.Authnetification.Config.KeycloakConfig;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import org.keycloak.admin.client.Keycloak;
+import org.keycloak.admin.client.resource.UsersResource;
+import org.keycloak.representations.idm.CredentialRepresentation;
+import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
@@ -12,8 +19,11 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
+import javax.ws.rs.core.Response;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+
 
 
 @Service
@@ -54,5 +64,25 @@ public class AuthService {
             throw new RuntimeException("Failed to parse access token", e);
         }
     }
+    public ResponseEntity<String> register(RegisterRequest userDTO){
+        CredentialRepresentation credential = Credentials
+                .createPasswordCredentials(userDTO.getPassword());
+        UserRepresentation user = new UserRepresentation();
+        user.setUsername(userDTO.getUsername());
+        user.setFirstName(userDTO.getName());
+        user.setLastName(userDTO.getLastname());
+        user.setEmail(userDTO.getEmail());
+        user.setCredentials(Collections.singletonList(credential));
+        user.setEnabled(true);
+        user.setEmailVerified(true);
+        try {
+            UsersResource instance = KeycloakConfig.getInstance().realm(realm).users();
+            Response response = instance.create(user);
+            return ResponseEntity.ok("User Created Successfully with response : " + response.getStatus());
+        }catch (Exception e){
+            throw new RuntimeException("Failed to create user");
+        }
+    }
+
 
 }
