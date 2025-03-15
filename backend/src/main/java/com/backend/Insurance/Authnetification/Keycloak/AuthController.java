@@ -2,6 +2,7 @@ package com.backend.Insurance.Authnetification.Keycloak;
 
 import com.backend.Insurance.Authnetification.DTOs.LoginRequest;
 import com.backend.Insurance.Authnetification.DTOs.RegisterRequest;
+import com.nimbusds.jose.shaded.gson.JsonObject;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,11 +19,11 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<ResponseEntity<Map<String, String>>> login(@RequestBody LoginRequest loginDto) {
-        return ResponseEntity.ok(authService.login(loginDto));
+    public ResponseEntity<String> login(@RequestBody LoginRequest loginDto) {
+        return authService.login(loginDto);
     }
-    @PostMapping("/register")
-    public ResponseEntity<String> register(@RequestBody RegisterRequest User){
-        return authService.register(User);
+    @PostMapping("/refresh")
+    public ResponseEntity<String> refresh(@RequestBody Map<String , String> refreshToken) {
+        return authService.refresh(refreshToken);
     }
 }
