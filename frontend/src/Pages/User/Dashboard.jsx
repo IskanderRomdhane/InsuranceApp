@@ -1,16 +1,15 @@
 import { useEffect, useState } from 'react';
+import { jwtDecode } from "jwt-decode";
 
 const Dashboard = () => {
     const [user, setUser] = useState(null);
 
     useEffect(() => {
-        const storedData = localStorage.getItem('authToken');
-
+        const storedData = localStorage.getItem('access_token');
         if (storedData) {
             try {
-                const parsedData = JSON.parse(storedData); // Convert string back to object
-                setUser(parsedData);
-                console.log(user);
+                const decoded = jwtDecode(storedData);
+                setUser(decoded.given_name)
             } catch (error) {
                 console.error('Error parsing auth token:', error);
             }
@@ -23,7 +22,7 @@ const Dashboard = () => {
 
     return (
         <div>
-            <h1>HELLO MR {user.name || 'User'}</h1>
+            <h1>HELLO MR {user || 'User'}</h1>
         </div>
     );
 };

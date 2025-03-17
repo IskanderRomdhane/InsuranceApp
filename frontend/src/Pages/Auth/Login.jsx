@@ -55,29 +55,34 @@ const LoginPage = () => {
                 },
                 body: JSON.stringify(formData)
             });
-
+        
             if (!response.ok) {
                 throw new Error('Invalid credentials');
             }
-
+        
             const data = await response.json();
-            localStorage.setItem('authToken', JSON.stringify(data));
-            const test = localStorage.getItem('authToken');
-            console.log('test :', test);
+            console.log('Response data:', data);
+        
+            const accessToken = data.access_token;
+            const refreshToken = data.refresh_token;
+        
+            localStorage.setItem('access_token', accessToken);
+            localStorage.setItem('refresh_token', refreshToken);
+
+        
             setLoginStatus({
                 message: 'Login successful! Redirecting...',
                 success: true
             });
 
-            // Simulate redirect after successful login
             setTimeout(() => {
                 window.location.href = '/dashboard';
             }, 1500);
-
+        
         } catch (error) {
-            console.error('Login error:', error);
+            console.error('Error:', error);
             setLoginStatus({
-                message: error.message || 'Login failed. Please try again.',
+                message: 'Login failed. Please try again.',
                 success: false
             });
         } finally {
@@ -192,19 +197,7 @@ const LoginPage = () => {
                                 <div className="w-full border-t border-gray-300"></div>
                             </div>
                             <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-white text-gray-500">
-                  New to Wiqaya?
-                </span>
                             </div>
-                        </div>
-
-                        <div className="mt-6">
-                            <a
-                                href="/Register"
-                                className="w-full flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50"
-                            >
-                                Create an account
-                            </a>
                         </div>
                     </div>
                 </div>
