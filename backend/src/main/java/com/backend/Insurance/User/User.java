@@ -2,6 +2,8 @@ package com.backend.Insurance.User;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 @Entity
 @Getter
@@ -12,7 +14,7 @@ import lombok.*;
 @Table(name = "users")
 public class User {
     @Id
-    @GeneratedValue()
+    @GeneratedValue
     private Long id;
     @Column(unique = true)
     private String CIN;
@@ -21,19 +23,21 @@ public class User {
     private String email;
     private String firstname;
     private String lastname;
+    private String role;
 
     @Override
     public String toString() {
-        return
-                "username='" + username + '\'' +
-                        ", firstname='" + firstname + '\'' +
-                        ", lastname='" + lastname + '\'' +
-                        ", email='" + email + '\''
-                ;
+        return "username='" + username + '\'' +
+                ", firstname='" + firstname + '\'' +
+                ", lastname='" + lastname + '\'' +
+                ", email='" + email + '\'';
     }
 
     public String getFullName() {
         return firstname + " " + lastname;
     }
 
+    public GrantedAuthority getGrantedAuthority() {
+        return new SimpleGrantedAuthority(role);
+    }
 }

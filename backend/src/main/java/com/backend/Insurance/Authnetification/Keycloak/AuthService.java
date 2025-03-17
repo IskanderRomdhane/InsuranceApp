@@ -15,10 +15,8 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
-import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
-import java.util.Map;
-
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -43,7 +41,7 @@ public class AuthService {
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
         MultiValueMap<String, String> requestBody = new LinkedMultiValueMap<>();
-        requestBody.add("grant_type", "refresh_token");
+        requestBody.add("grant_type", "password");
         requestBody.add("client_id", clientId);
         requestBody.add("username", loginDto.getUsername());
         requestBody.add("password", loginDto.getPassword());
@@ -98,10 +96,8 @@ public class AuthService {
             user.setCredentials(userRep.getCredentials());
             user.setEnabled(true);
             user.setEmailVerified(true);
-
             UsersResource instance = KeycloakConfig.getInstance().realm(realm).users();
             Response response = instance.create(user);
-
             if (response.getStatus() == 201) {
                 return response.getStatus();
             } else {

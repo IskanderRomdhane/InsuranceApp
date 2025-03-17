@@ -32,10 +32,13 @@ public class UserService {
                     .firstname(user.getFirstName())
                     .lastname(user.getLastName())
                     .username(user.getUsername())
+                    .role("client_user") //Users will have by default client_user Role
                     .build();
+
             try {
                 Integer statusCode = authService.register(user);
                 if (statusCode == 201) {
+                    // if user is added to keycloak then added to DB
                     userRepository.save(foundUser);
                 } else {
                     return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Failed to register user in Keycloak");
