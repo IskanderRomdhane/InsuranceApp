@@ -27,7 +27,7 @@ public class Reclamation {
     private TypeReclamation typeReclamation;
     @Enumerated(EnumType.STRING)
     private Status status;
-
+    private String description;
     private LocalDateTime date;
     @OneToMany
     private List<Message> message;

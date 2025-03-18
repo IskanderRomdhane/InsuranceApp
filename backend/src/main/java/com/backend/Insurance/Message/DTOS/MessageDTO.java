@@ -4,6 +4,5 @@ import lombok.Data;
 
 @Data
 public class MessageDTO {
-    private String object;
-    private String description;
+    private String content;
 }

@@ -20,8 +20,7 @@ public class Message {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
-    private String object;
-    private String description;
+    private String content;
 
     private LocalDateTime dateDenvoi;
 

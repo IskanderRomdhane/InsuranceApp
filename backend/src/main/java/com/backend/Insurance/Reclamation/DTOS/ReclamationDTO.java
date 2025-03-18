@@ -5,4 +5,5 @@ import lombok.Data;
 @Data
 public class ReclamationDTO {
     private String typeReclamation;
+    private String description;
 }
