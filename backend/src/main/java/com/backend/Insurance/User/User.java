@@ -1,9 +1,12 @@
 package com.backend.Insurance.User;
 
+import com.backend.Insurance.Reclamation.Reclamation;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+
+import java.util.List;
 
 @Entity
 @Getter
@@ -24,6 +27,8 @@ public class User {
     private String firstname;
     private String lastname;
     private String role;
+    @OneToMany
+    private List<Reclamation> reclamation;
 
     @Override
     public String toString() {
