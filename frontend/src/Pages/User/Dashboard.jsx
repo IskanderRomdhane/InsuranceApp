@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { jwtDecode } from "jwt-decode";
-
+import SideBar from '../../Components/SideBar';
 const Dashboard = () => {
     const [user, setUser] = useState(null);
 
@@ -22,7 +22,7 @@ const Dashboard = () => {
 
     return (
         <div>
-            <h1>HELLO MR {user || 'User'}</h1>
+            <h1>HELLO MR {user || 'User'}</h1>    
         </div>
     );
 };
