@@ -1,5 +1,6 @@
 package com.backend.Insurance.Reclamation.ReclamationService;
 
+import com.backend.Insurance.Emails.EmailSenderService;
 import com.backend.Insurance.Message.DTOS.MessageDTO;
 import com.backend.Insurance.Message.Message;
 import com.backend.Insurance.Message.MessageRepository;
@@ -27,6 +28,7 @@ public class ReclamationService {
     private final ReclamationRepository reclamationRepository;
     private final UserRepository userRepository;
     private final MessageRepository messageRepository;
+    private final EmailSenderService emailSenderService;
     public ResponseEntity<String> CreerReclamation(Long userId, ReclamationDTO reclamationDTO) {
         Optional<User> userOptional = userRepository.findById(userId);
         if (userOptional.isPresent()) {
@@ -55,6 +57,9 @@ public class ReclamationService {
 
             reclamationRepository.save(reclamation);
             userRepository.save(foundUser);
+            emailSenderService.sendEmail(foundUser.getEmail() , "Reclamation", "Reclamation with ID :"+ reclamation.getId() +
+                    " created at the date :" + LocalDateTime.now() +
+                    " with reclamation status  :" + reclamation.getStatus());
             return ResponseEntity.ok("User Reclamation saved Successfully");
         }else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User Not Found");
