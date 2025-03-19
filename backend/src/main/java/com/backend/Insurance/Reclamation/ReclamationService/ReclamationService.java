@@ -10,6 +10,7 @@ import com.backend.Insurance.Reclamation.Reclamation;
 import com.backend.Insurance.Reclamation.ReclamationRepository;
 import com.backend.Insurance.User.User;
 import com.backend.Insurance.User.UserRepository;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -92,10 +93,25 @@ public class ReclamationService {
         Optional<Reclamation> reclamationOptional = reclamationRepository.findById(reclamationID);
         if(reclamationOptional.isPresent()){
             Reclamation reclamation = reclamationOptional.get();
-
+            reclamation.setStatus(Status.valueOf(status.toUpperCase()));
+            reclamationRepository.save(reclamation);
             return ResponseEntity.ok("Status changed Successfully");
         }else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Reclamation Not Found");
         }
+    }
+
+    public ResponseEntity<List<Reclamation>> RetrieveReclamations() {
+        return ResponseEntity.ok(reclamationRepository.findAll());
+    }
+
+    public ResponseEntity<List<Reclamation>> GetUserRelamations(Long userId) {
+        Optional<User> userOptional = userRepository.findById(userId);
+        if(userOptional.isPresent()){
+            return ResponseEntity.ok(reclamationRepository.findByUserId(userId));
+        }else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+
     }
 }

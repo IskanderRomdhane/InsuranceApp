@@ -1,6 +1,7 @@
 package com.backend.Insurance.Message;
 
 import com.backend.Insurance.Reclamation.Reclamation;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -28,5 +29,6 @@ public class Message {
     private String expediteurEmail;
 
     @ManyToOne
+    @JsonBackReference
     private Reclamation associatedReclamation;
 }

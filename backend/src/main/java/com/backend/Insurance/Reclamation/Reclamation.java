@@ -4,6 +4,8 @@ import com.backend.Insurance.Message.Message;
 import com.backend.Insurance.Reclamation.ENUMS.Status;
 import com.backend.Insurance.Reclamation.ENUMS.TypeReclamation;
 import com.backend.Insurance.User.User;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -29,9 +31,11 @@ public class Reclamation {
     private Status status;
     private String description;
     private LocalDateTime date;
-    @OneToMany
+    @OneToMany(mappedBy = "associatedReclamation")
+    @JsonManagedReference
     private List<Message> message;
 
     @ManyToOne
+    @JsonBackReference // Child side, avoid serialization
     private User user;
 }

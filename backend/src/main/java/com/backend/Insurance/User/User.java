@@ -1,6 +1,7 @@
 package com.backend.Insurance.User;
 
 import com.backend.Insurance.Reclamation.Reclamation;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
@@ -27,7 +28,8 @@ public class User {
     private String firstname;
     private String lastname;
     private String role;
-    @OneToMany
+    @OneToMany(mappedBy = "user")
+    @JsonManagedReference
     private List<Reclamation> reclamation;
 
     @Override
