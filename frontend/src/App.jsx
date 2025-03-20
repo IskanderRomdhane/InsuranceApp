@@ -8,10 +8,11 @@ import AboutUs from "./Pages/AboutUs.jsx";
 import ContactUs from "./Pages/ContactUs/ContactUs.jsx"
 import Dashboard from './Pages/User/Dashboard.jsx'
 import Register from "./Pages/Auth/Register.jsx";
-import Reclamations from './Pages/User/Reclamations/Reclamations.jsx';
+import DeposerReclamations from './Pages/User/Reclamations/DeposerReclamations.jsx';
 import SideBar from './Components/SideBar.jsx'; // Adjust the import path as needed
 import Sinistres from './Pages/User/Sinistres/Sinistres.jsx';
 import Agences from './Pages/User/Agences/Agences.jsx';
+import ConsulterReclamation from './Pages/User/Reclamations/ConsulterReclamation.jsx';
 
 // Layout component that includes the sidebar
 const DashboardLayout = ({ children }) => {
@@ -67,10 +68,18 @@ function App() {
           } 
         />
         <Route 
-          path='/reclamations' 
+          path='/reclamations/deposer' 
           element={
             <DashboardLayout>
-              <Reclamations />
+              <DeposerReclamations />
+            </DashboardLayout>
+          } 
+        />
+        <Route 
+          path='/reclamations/consulter' 
+          element={
+            <DashboardLayout>
+              <ConsulterReclamation />
             </DashboardLayout>
           } 
         />
