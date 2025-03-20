@@ -100,6 +100,8 @@ public class ReclamationService {
             Reclamation reclamation = reclamationOptional.get();
             reclamation.setStatus(Status.valueOf(status.toUpperCase()));
             reclamationRepository.save(reclamation);
+            emailSenderService.sendEmail(reclamation.getUser().getEmail() , "Reclamation", "Reclamation with ID :"+ reclamation.getId() +
+                    " Status has been update to "+ status + "please check your inbox for more details");
             return ResponseEntity.ok("Status changed Successfully");
         }else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Reclamation Not Found");
