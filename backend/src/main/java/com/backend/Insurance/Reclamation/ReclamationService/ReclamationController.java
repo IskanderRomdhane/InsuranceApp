@@ -16,12 +16,11 @@ import java.util.List;
 public class ReclamationController {
     private final ReclamationService reclamationService;
 
-    @PostMapping("/CreerReclamation/{userId}")
+    @PostMapping("/CreerReclamation")
     public ResponseEntity<String> CreerReclamation(
-            @PathVariable Long userId ,
             @RequestBody ReclamationDTO reclamationDTO
             ){
-        return reclamationService.CreerReclamation(userId , reclamationDTO);
+        return reclamationService.CreerReclamation(reclamationDTO);
     }
     @PostMapping("/repondreReclamation/{ReclamationID}")
     public ResponseEntity<String> RepondreReclamation(
@@ -43,12 +42,18 @@ public class ReclamationController {
     public ResponseEntity<List<Reclamation>> RetrieveReclamations (){
         return reclamationService.RetrieveReclamations();
     }
-    @GetMapping("/getrelamations/{userId}")
+    @GetMapping("/getrelamations/{userEmail}")
     //@PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<Reclamation>> GetUserRelamations (
-            @PathVariable Long userId
+            @PathVariable String userEmail
     ){
-        return reclamationService.GetUserRelamations(userId);
+        return reclamationService.GetUserRelamations(userEmail);
+    }
+    @GetMapping("/getreclamation/{reclamationId}")
+    public ResponseEntity<Reclamation> GetRelamation (
+            @PathVariable Long reclamationId
+    ){
+        return reclamationService.GetRelamation(reclamationId);
     }
 
 }

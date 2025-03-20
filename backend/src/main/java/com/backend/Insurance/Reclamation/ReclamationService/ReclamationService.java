@@ -29,8 +29,8 @@ public class ReclamationService {
     private final UserRepository userRepository;
     private final MessageRepository messageRepository;
     private final EmailSenderService emailSenderService;
-    public ResponseEntity<String> CreerReclamation(Long userId, ReclamationDTO reclamationDTO) {
-        Optional<User> userOptional = userRepository.findById(userId);
+    public ResponseEntity<String> CreerReclamation(ReclamationDTO reclamationDTO) {
+        Optional<User> userOptional = userRepository.findByEmail(reclamationDTO.getUserEmail());
         if (userOptional.isPresent()) {
             User foundUser = userOptional.get();
 
@@ -112,13 +112,23 @@ public class ReclamationService {
         return ResponseEntity.ok(reclamationRepository.findAll());
     }
 
-    public ResponseEntity<List<Reclamation>> GetUserRelamations(Long userId) {
-        Optional<User> userOptional = userRepository.findById(userId);
+    public ResponseEntity<List<Reclamation>> GetUserRelamations(String userEmail) {
+        Optional<User> userOptional = userRepository.findByEmail(userEmail);
         if(userOptional.isPresent()){
-            return ResponseEntity.ok(reclamationRepository.findByUserId(userId));
+            User foundUser = userOptional.get();
+            return ResponseEntity.ok(reclamationRepository.findByUserId(foundUser.getId()));
         }else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
 
+    }
+
+    public ResponseEntity<Reclamation> GetRelamation(Long reclamationId) {
+        Optional<Reclamation> reclamationOptional = reclamationRepository.findById(reclamationId);
+        if (reclamationOptional.isPresent()){
+            return ResponseEntity.ok(reclamationOptional.get());
+        }else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
     }
 }
