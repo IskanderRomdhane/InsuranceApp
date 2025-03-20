@@ -1,11 +1,91 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { NavLink } from 'react-router-dom';
-import { ChevronLeft, ChevronRight, LayoutDashboard, FileWarning, Umbrella, MapPin, HelpCircle, User } from 'lucide-react';
-import icon from '../assets/SiderBar/icon.jpg'
+import { 
+  ChevronLeft, 
+  ChevronRight, 
+  ChevronDown,
+  LayoutDashboard, 
+  FileWarning, 
+  Umbrella, 
+  MapPin, 
+  HelpCircle, 
+  User,
+  Plus,
+  List
+} from 'lucide-react';
+import icon from '../assets/SiderBar/icon.jpg';
+
 const SideBar = ({ isOpen, setIsOpen }) => {
   const toggleSidebar = () => {
     setIsOpen(!isOpen);
   };
+
+  // State to track which dropdown menus are open
+  const [openMenus, setOpenMenus] = useState({});
+
+  // Toggle dropdown menu open/closed
+  const toggleMenu = (menuId, e) => {
+    e.preventDefault();
+    setOpenMenus(prevState => ({
+      ...prevState,
+      [menuId]: !prevState[menuId]
+    }));
+  };
+
+  // Define the menu structure with dropdowns
+  const menuItems = [
+    {
+      id: 'dashboard',
+      title: 'Dashboard',
+      icon: <LayoutDashboard className="w-5 h-5 text-green-600 transition duration-75 group-hover:text-green-800" />,
+      link: '/dashboard',
+      hasDropdown: false
+    },
+    {
+      id: 'reclamations',
+      title: 'Mes Reclamations',
+      icon: <FileWarning className="w-5 h-5 text-green-600 transition duration-75 group-hover:text-green-800" />,
+      hasDropdown: true,
+      submenu: [
+        { title: 'Déposer réclamation', link: '/reclamations/deposer', icon: <Plus className="w-4 h-4" /> },
+        { title: 'Consulter réclamations', link: '/reclamations/consulter', icon: <List className="w-4 h-4" /> }
+      ]
+    },
+    {
+      id: 'sinistres',
+      title: 'Mes sinistres',
+      icon: <Umbrella className="w-5 h-5 text-green-600 transition duration-75 group-hover:text-green-800" />,
+      hasDropdown: true,
+      submenu: [
+        { title: 'Créer sinistre', link: '/sinistres/creer', icon: <Plus className="w-4 h-4" /> },
+        { title: 'Consulter sinistres', link: '/sinistres/consulter', icon: <List className="w-4 h-4" /> }
+      ]
+    },
+    {
+      id: 'agences',
+      title: 'Agences',
+      icon: <MapPin className="w-5 h-5 text-green-600 transition duration-75 group-hover:text-green-800" />,
+      link: '/agences',
+      hasDropdown: false
+    }
+  ];
+  
+  const supportItems = [
+    {
+      id: 'faqs',
+      title: 'FAQs',
+      icon: <HelpCircle className="w-5 h-5 text-green-600 transition duration-75 group-hover:text-green-800" />,
+      link: '#',
+      hasDropdown: false
+    },
+    {
+      id: 'profile',
+      title: 'Profile',
+      icon: <User className="w-5 h-5 text-green-600 transition duration-75 group-hover:text-green-800" />,
+      link: '#',
+      hasDropdown: false
+    }
+  ];
 
   return (
     <>
@@ -52,54 +132,65 @@ const SideBar = ({ isOpen, setIsOpen }) => {
           </div>
           
           <ul className="space-y-2 font-medium">
-            <li>
-              <NavLink 
-                to="/reclamations" 
-                className={({ isActive }) => `
-                  flex items-center p-2 rounded-lg hover:bg-green-100 group
-                  ${isActive ? 'bg-green-200 text-green-900' : 'text-green-800'}
-                `}
-              >
-                <FileWarning className="w-5 h-5 text-green-600 transition duration-75 group-hover:text-green-800" />
-                {isOpen && <span className="ms-3">Mes Reclamations</span>}
-              </NavLink>
-            </li>
-            <li>
-              <NavLink 
-                to="/dashboard" 
-                className={({ isActive }) => `
-                  flex items-center p-2 rounded-lg hover:bg-green-100 group
-                  ${isActive ? 'bg-green-200 text-green-900' : 'text-green-800'}
-                `}
-              >
-                <LayoutDashboard className="w-5 h-5 text-green-600 transition duration-75 group-hover:text-green-800" />
-                {isOpen && <span className="ms-3">Dashboard</span>}
-              </NavLink>
-            </li>
-            <li>
-              <NavLink 
-                to="/sinistres" 
-                className={({ isActive }) => `
-                  flex items-center p-2 rounded-lg hover:bg-green-100 group
-                  ${isActive ? 'bg-green-200 text-green-900' : 'text-green-800'}
-                `}
-              >
-                <Umbrella className="w-5 h-5 text-green-600 transition duration-75 group-hover:text-green-800" />
-                {isOpen && <span className="ms-3">Mes sinistres</span>}
-              </NavLink>
-            </li>
-            <li>
-              <NavLink 
-                to="/agences" 
-                className={({ isActive }) => `
-                  flex items-center p-2 rounded-lg hover:bg-green-100 group
-                  ${isActive ? 'bg-green-200 text-green-900' : 'text-green-800'}
-                `}
-              >
-                <MapPin className="w-5 h-5 text-green-600 transition duration-75 group-hover:text-green-800" />
-                {isOpen && <span className="ms-3">Agences</span>}
-              </NavLink>
-            </li>
+            {menuItems.map((item) => (
+              <li key={item.id}>
+                {item.hasDropdown ? (
+                  <div>
+                    <a 
+                      href="#"
+                      onClick={(e) => toggleMenu(item.id, e)}
+                      className={`
+                        flex items-center justify-between p-2 rounded-lg hover:bg-green-100 group
+                        ${openMenus[item.id] ? 'bg-green-200 text-green-900' : 'text-green-800'}
+                      `}
+                    >
+                      <div className="flex items-center">
+                        {item.icon}
+                        {isOpen && <span className="ms-3">{item.title}</span>}
+                      </div>
+                      {isOpen && (
+                        <ChevronDown 
+                          className={`w-4 h-4 transition-transform duration-200 ${openMenus[item.id] ? 'rotate-180' : ''}`} 
+                        />
+                      )}
+                    </a>
+                    
+                    {/* Submenu */}
+                    {isOpen && openMenus[item.id] && (
+                      <ul className="mt-1 space-y-1 ps-4">
+                        {item.submenu.map((subItem, idx) => (
+                          <li key={idx}>
+                            <NavLink 
+                              to={subItem.link}
+                              className={({ isActive }) => `
+                                flex items-center p-2 text-sm rounded-lg hover:bg-green-100 group
+                                ${isActive ? 'bg-green-200 text-green-900' : 'text-green-800'}
+                              `}
+                            >
+                              <span className="w-4 h-4 text-green-600 transition duration-75 group-hover:text-green-800 mr-2">
+                                {subItem.icon}
+                              </span>
+                              <span>{subItem.title}</span>
+                            </NavLink>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                ) : (
+                  <NavLink 
+                    to={item.link} 
+                    className={({ isActive }) => `
+                      flex items-center p-2 rounded-lg hover:bg-green-100 group
+                      ${isActive ? 'bg-green-200 text-green-900' : 'text-green-800'}
+                    `}
+                  >
+                    {item.icon}
+                    {isOpen && <span className="ms-3">{item.title}</span>}
+                  </NavLink>
+                )}
+              </li>
+            ))}
           </ul>
         </div>
         
@@ -107,30 +198,20 @@ const SideBar = ({ isOpen, setIsOpen }) => {
         <div className="px-3 py-4 bg-green-100 border-t border-green-200">
           {isOpen && <div className="mb-2 text-sm font-medium text-green-800 px-2">Support & Account</div>}
           <ul className="space-y-2 font-medium">
-            <li>
-              <NavLink 
-                to="#" 
-                className={({ isActive }) => `
-                  flex items-center p-2 rounded-lg hover:bg-green-200 group
-                  ${isActive ? 'bg-green-300 text-green-900' : 'text-green-800'}
-                `}
-              >
-                <HelpCircle className="w-5 h-5 text-green-600 transition duration-75 group-hover:text-green-800" />
-                {isOpen && <span className="ms-3">FAQs</span>}
-              </NavLink>
-            </li>
-            <li>
-              <NavLink 
-                to="#" 
-                className={({ isActive }) => `
-                  flex items-center p-2 rounded-lg hover:bg-green-200 group
-                  ${isActive ? 'bg-green-300 text-green-900' : 'text-green-800'}
-                `}
-              >
-                <User className="w-5 h-5 text-green-600 transition duration-75 group-hover:text-green-800" />
-                {isOpen && <span className="ms-3">Profile</span>}
-              </NavLink>
-            </li>
+            {supportItems.map((item) => (
+              <li key={item.id}>
+                <NavLink 
+                  to={item.link} 
+                  className={({ isActive }) => `
+                    flex items-center p-2 rounded-lg hover:bg-green-200 group
+                    ${isActive ? 'bg-green-300 text-green-900' : 'text-green-800'}
+                  `}
+                >
+                  {item.icon}
+                  {isOpen && <span className="ms-3">{item.title}</span>}
+                </NavLink>
+              </li>
+            ))}
           </ul>
         </div>
       </aside>
