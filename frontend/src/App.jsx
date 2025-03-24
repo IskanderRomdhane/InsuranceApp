@@ -1,26 +1,30 @@
 import './App.css'
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Root from "./Pages/Root/Root.jsx"
 import Login from './Pages/Auth/Login.jsx'
 import Unauthorized from './Pages/Unauthorized.jsx'
 import AboutUs from "./Pages/AboutUs.jsx";
 import ContactUs from "./Pages/ContactUs/ContactUs.jsx"
 import Dashboard from './Pages/User/Dashboard.jsx'
-import Register from "./Pages/Auth/Register.jsx";
 import DeposerReclamations from './Pages/User/Reclamations/DeposerReclamations.jsx';
-import SideBar from './Components/SideBar.jsx'; // Adjust the import path as needed
+import SideBar from './Components/SideBar.jsx';
 import Sinistres from './Pages/User/Sinistres/Sinistres.jsx';
 import Agences from './Pages/User/Agences/Agences.jsx';
 import ConsulterReclamation from './Pages/User/Reclamations/ConsulterReclamation.jsx';
-
-// Layout component that includes the sidebar
+import AdminDashboard from './Pages/Admin/AdminDashboard.jsx';
+import AdminSideBar from './Components/AdminSideBar.jsx';
+import { useAuth } from './Hooks/AuthContext.jsx';
+import UsersReclamations from './Pages/Admin/Reclamations/UsersReclamations.jsx';
 const DashboardLayout = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
-
+  const role = localStorage.getItem("client_admin");
+  console.log(role);
+  const SidebarComponent = role === "client_admin" ? SideBar : AdminSideBar;
+  console.log(role === "client_admin" ? "SideBar" : "AdminSideBar");
   return (
     <div className="flex">
-      <SideBar isOpen={sidebarOpen} setIsOpen={setSidebarOpen} />
+      <SidebarComponent isOpen={sidebarOpen} setIsOpen={setSidebarOpen} />
       <div 
         className={`flex-1 transition-all duration-300 ${
           sidebarOpen ? 'ml-64' : 'ml-16'
@@ -42,7 +46,6 @@ function App() {
         <Route path='/unauthorized' element={<Unauthorized />} />
         <Route path='/aboutus' element={<AboutUs />} />
         <Route path='/contactus' element={<ContactUs />} />
-        <Route path='/register' element={<Register />} />
         <Route 
           path='/dashboard' 
           element={
@@ -83,6 +86,22 @@ function App() {
             </DashboardLayout>
           } 
         />
+        <Route
+          path='/admin'
+          element={
+            <DashboardLayout>
+              <AdminDashboard />
+            </DashboardLayout>
+          }
+        />
+        <Route 
+          path='admin/reclamations'
+          element={
+            <DashboardLayout>
+              <UsersReclamations />
+            </DashboardLayout>
+          }
+          />
       </Routes>
     </Router>
   )

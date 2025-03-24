@@ -14,7 +14,6 @@ const ClaimsDashboard = () => {
   const [selectedClaim, setSelectedClaim] = useState(null);
   const [showModal, setShowModal] = useState(false);
   
-  // Get user email from token when component mounts
   useEffect(() => {
     try {
       const token = localStorage.getItem("access_token");
@@ -41,11 +40,10 @@ const ClaimsDashboard = () => {
   }, []);
   
   const fetchClaims = async () => {
-    if (!email) return; // Don't fetch if email is not available
+    if (!email) return;
     
     setLoading(true);
     try {
-      // URL encode the email to handle special characters
       const encodedEmail = encodeURIComponent(email);
       const response = await fetch(`http://localhost:8081/api/reclamation/getrelamations/${encodedEmail}`);
       
@@ -64,7 +62,6 @@ const ClaimsDashboard = () => {
     }
   };
   
-  // Fetch claims when email changes
   useEffect(() => {
     if (email) {
       fetchClaims();
@@ -108,23 +105,20 @@ const ClaimsDashboard = () => {
   
 
   
-  // Use mock data only when there are no real claims and we're not loading or in error state
-  const displayClaims = (!loading && !error && claims.length === 0) ? mockClaims : filteredClaims;
+  const displayClaims =  filteredClaims;
   
-  // Handler for opening the details modal
   const handleViewDetails = (claim) => {
     setSelectedClaim(claim);
     setShowModal(true);
   };
   
-  // Handler for closing the modal when clicking outside
   const handleCloseModal = () => {
     setShowModal(false);
     setSelectedClaim(null);
   };
   
   return (
-    <div className="min-h-screen bg-gradient-to-b from-green-50 to-white">
+    <div className="min-h-screen bg-gradient-to-b from-white to-green-50">
       <div className="max-w-6xl mx-auto px-4 py-8">
         {/* Header */}
         <div className="mb-8">

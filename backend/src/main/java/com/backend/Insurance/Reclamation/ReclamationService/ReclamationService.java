@@ -5,6 +5,7 @@ import com.backend.Insurance.Message.DTOS.MessageDTO;
 import com.backend.Insurance.Message.Message;
 import com.backend.Insurance.Message.MessageRepository;
 import com.backend.Insurance.Reclamation.DTOS.ReclamationDTO;
+import com.backend.Insurance.Reclamation.DTOS.ReclamationResponseDTO;
 import com.backend.Insurance.Reclamation.ENUMS.Status;
 import com.backend.Insurance.Reclamation.ENUMS.TypeReclamation;
 import com.backend.Insurance.Reclamation.Reclamation;
@@ -94,22 +95,39 @@ public class ReclamationService {
         }
     }
 
-    public ResponseEntity<String> ChangerStatus(Long reclamationID, String status) {
+    public ResponseEntity<String> ChangerStatus(Long reclamationID, ReclamationDTO reclamationDTO) {
         Optional<Reclamation> reclamationOptional = reclamationRepository.findById(reclamationID);
         if(reclamationOptional.isPresent()){
             Reclamation reclamation = reclamationOptional.get();
-            reclamation.setStatus(Status.valueOf(status.toUpperCase()));
+            reclamation.setStatus(Status.valueOf(reclamationDTO.getStatus().toUpperCase()));
             reclamationRepository.save(reclamation);
-            emailSenderService.sendEmail(reclamation.getUser().getEmail() , "Reclamation", "Reclamation with ID :"+ reclamation.getId() +
-                    " Status has been update to "+ status + "please check your inbox for more details");
+            emailSenderService.sendEmail(reclamation.getUser().getEmail() , "Reclamation status", "Reclamation with ID :"+ reclamation.getId() +
+                    " created at the date :" + LocalDateTime.now() +
+                    " reclamation status changed to  :" + reclamation.getStatus());
             return ResponseEntity.ok("Status changed Successfully");
         }else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Reclamation Not Found");
         }
     }
 
-    public ResponseEntity<List<Reclamation>> RetrieveReclamations() {
-        return ResponseEntity.ok(reclamationRepository.findAll());
+    public ResponseEntity<List<ReclamationResponseDTO>> RetrieveReclamations() {
+        List<Reclamation> reclamations = reclamationRepository.findAll();
+        List<ReclamationResponseDTO> response = new ArrayList<>();
+        for (Reclamation reclamation:
+                reclamations
+             ) {
+            ReclamationResponseDTO DTO = ReclamationResponseDTO.builder()
+                    .id(reclamation.getId())
+                    .Email(reclamation.getUser().getEmail())
+                    .date(LocalDateTime.now())
+                    .fullName(reclamation.getUser().getFullName())
+                    .Description(reclamation.getDescription())
+                    .status(reclamation.getStatus().toString())
+                    .type(reclamation.getTypeReclamation().toString())
+                    .build();
+            response.add(DTO);
+        }
+        return ResponseEntity.ok(response);
     }
 
     public ResponseEntity<List<Reclamation>> GetUserRelamations(String userEmail) {

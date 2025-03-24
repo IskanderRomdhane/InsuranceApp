@@ -2,6 +2,7 @@ package com.backend.Insurance.Reclamation.ReclamationService;
 
 import com.backend.Insurance.Message.DTOS.MessageDTO;
 import com.backend.Insurance.Reclamation.DTOS.ReclamationDTO;
+import com.backend.Insurance.Reclamation.DTOS.ReclamationResponseDTO;
 import com.backend.Insurance.Reclamation.Reclamation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -33,13 +34,13 @@ public class ReclamationController {
     //@PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<String> ChangerStatus(
             @PathVariable Long ReclamationID,
-            @RequestBody String status
+            @RequestBody ReclamationDTO reclamationDTO
     ){
-        return reclamationService.ChangerStatus(ReclamationID , status);
+        return reclamationService.ChangerStatus(ReclamationID , reclamationDTO);
     }
     @GetMapping("/getusersrelamations")
     //@PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<List<Reclamation>> RetrieveReclamations (){
+    public ResponseEntity<List<ReclamationResponseDTO>> RetrieveReclamations (){
         return reclamationService.RetrieveReclamations();
     }
     @GetMapping("/getrelamations/{userEmail}")

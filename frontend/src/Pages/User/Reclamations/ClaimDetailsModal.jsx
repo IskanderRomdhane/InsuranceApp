@@ -28,7 +28,7 @@ const ClaimDetailsModal = ({ claim, formatDate, getStatusColor, getTypeIcon, onC
   if (!claim) return null;
   
   return (
-    <div className="fixed inset-0 bg-gray-300 bg-opacity-70 flex items-center justify-center z-50 p-4">
+    <div className="fixed inset-0 flex items-center justify-center z-50 p-4">
       <div ref={modalRef} className="bg-white rounded-lg shadow-xl w-full max-w-3xl max-h-[90vh] overflow-hidden flex flex-col">
         {/* Modal Header */}
         <div className="bg-green-700 text-white px-6 py-4 flex justify-between items-center">

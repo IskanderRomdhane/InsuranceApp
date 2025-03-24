@@ -7,4 +7,5 @@ public class ReclamationDTO {
     private String userEmail;
     private String typeReclamation;
     private String description;
+    private String status;
 }

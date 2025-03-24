@@ -1,37 +1,26 @@
 import { useState } from 'react';
+import { jwtDecode } from 'jwt-decode';
+import { useAuth } from '../../Hooks/AuthContext';
 
 const LoginPage = () => {
-    const [formData, setFormData] = useState({
-        username: '',
-        password: ''
-    });
+    const [formData, setFormData] = useState({ username: '', password: '' });
     const [errors, setErrors] = useState({});
     const [isLoading, setIsLoading] = useState(false);
     const [loginStatus, setLoginStatus] = useState({ message: '', success: null });
-
+    const {getUserRole} = useAuth();
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setFormData(prevState => ({
-            ...prevState,
-            [name]: value
-        }));
-        // Clear error when user types
+        setFormData(prevState => ({ ...prevState, [name]: value }));
+        
         if (errors[name]) {
-            setErrors(prevState => ({
-                ...prevState,
-                [name]: ''
-            }));
+            setErrors(prevState => ({ ...prevState, [name]: '' }));
         }
     };
 
     const validateForm = () => {
         const newErrors = {};
-        if (!formData.username.trim()) {
-            newErrors.username = 'Username is required';
-        }
-        if (!formData.password) {
-            newErrors.password = 'Password is required';
-        }
+        if (!formData.username.trim()) newErrors.username = 'Username is required';
+        if (!formData.password) newErrors.password = 'Password is required';
         return newErrors;
     };
 
@@ -50,41 +39,42 @@ const LoginPage = () => {
         try {
             const response = await fetch('http://localhost:8081/api/auth/login', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(formData)
             });
-        
-            if (!response.ok) {
-                throw new Error('Invalid credentials');
-            }
-        
+
+            if (!response.ok) throw new Error('Invalid credentials');
+
             const data = await response.json();
-            console.log('Response data:', data);
-        
             const accessToken = data.access_token;
             const refreshToken = data.refresh_token;
-        
+
+            var clientRoles = [];
+            try {
+                const decoded = jwtDecode(accessToken);
+                console.log(decoded);
+                clientRoles = decoded.resource_access?.Insurance?.roles || [];
+            } catch (error) {
+                console.error('Error parsing auth token:', error);
+            }
+            localStorage.setItem('client_role', clientRoles);
             localStorage.setItem('access_token', accessToken);
             localStorage.setItem('refresh_token', refreshToken);
+            getUserRole();
 
-        
-            setLoginStatus({
-                message: 'Login successful! Redirecting...',
-                success: true
-            });
+            setLoginStatus({ message: 'Login successful! Redirecting...', success: true });
 
             setTimeout(() => {
-                window.location.href = '/dashboard';
+                if (clientRoles.includes("client_admin")) {
+                    window.location.href = '/admin';
+                } else if (clientRoles.includes("client_user")) {
+                    window.location.href = '/dashboard';
+                }
             }, 1500);
-        
+            
         } catch (error) {
             console.error('Error:', error);
-            setLoginStatus({
-                message: 'Login failed. Please try again.',
-                success: false
-            });
+            setLoginStatus({ message: 'Login failed. Please try again.', success: false });
         } finally {
             setIsLoading(false);
         }
@@ -120,9 +110,7 @@ const LoginPage = () => {
                                         errors.username ? 'border-red-300' : 'border-gray-300'
                                     } rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm`}
                                 />
-                                {errors.username && (
-                                    <p className="mt-2 text-sm text-red-600">{errors.username}</p>
-                                )}
+                                {errors.username && <p className="mt-2 text-sm text-red-600">{errors.username}</p>}
                             </div>
                         </div>
 
@@ -142,9 +130,7 @@ const LoginPage = () => {
                                         errors.password ? 'border-red-300' : 'border-gray-300'
                                     } rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm`}
                                 />
-                                {errors.password && (
-                                    <p className="mt-2 text-sm text-red-600">{errors.password}</p>
-                                )}
+                                {errors.password && <p className="mt-2 text-sm text-red-600">{errors.password}</p>}
                             </div>
                         </div>
 
@@ -159,12 +145,6 @@ const LoginPage = () => {
                                 <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-900">
                                     Remember me
                                 </label>
-                            </div>
-
-                            <div className="text-sm">
-                                <a href="#" className="font-medium text-blue-600 hover:text-blue-500">
-                                    Forgot your password?
-                                </a>
                             </div>
                         </div>
 
@@ -183,23 +163,11 @@ const LoginPage = () => {
 
                     {loginStatus.message && (
                         <div className={`mt-4 p-2 rounded ${
-                            loginStatus.success
-                                ? 'bg-green-50 text-green-800 border border-green-200'
-                                : 'bg-red-50 text-red-800 border border-red-200'
+                            loginStatus.success ? 'bg-green-50 text-green-800 border border-green-200' : 'bg-red-50 text-red-800 border border-red-200'
                         }`}>
                             {loginStatus.message}
                         </div>
                     )}
-
-                    <div className="mt-6">
-                        <div className="relative">
-                            <div className="absolute inset-0 flex items-center">
-                                <div className="w-full border-t border-gray-300"></div>
-                            </div>
-                            <div className="relative flex justify-center text-sm">
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>
