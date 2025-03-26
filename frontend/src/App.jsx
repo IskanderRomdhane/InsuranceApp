@@ -16,6 +16,7 @@ import AdminDashboard from './Pages/Admin/AdminDashboard.jsx';
 import AdminSideBar from './Components/AdminSideBar.jsx';
 import { useAuth } from './Hooks/AuthContext.jsx';
 import UsersReclamations from './Pages/Admin/Reclamations/UsersReclamations.jsx';
+import ReclamationDetails from './Pages/Admin/Reclamations/ReclamationDetails.jsx';
 const DashboardLayout = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const role = localStorage.getItem("client_admin");
@@ -99,6 +100,14 @@ function App() {
           element={
             <DashboardLayout>
               <UsersReclamations />
+            </DashboardLayout>
+          }
+          />
+          <Route 
+          path='admin/reclamation/:id'
+          element={
+            <DashboardLayout>
+              <ReclamationDetails />
             </DashboardLayout>
           }
           />
