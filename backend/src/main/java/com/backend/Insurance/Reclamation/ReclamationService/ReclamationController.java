@@ -6,7 +6,6 @@ import com.backend.Insurance.Reclamation.DTOS.ReclamationResponseDTO;
 import com.backend.Insurance.Reclamation.Reclamation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -51,7 +50,7 @@ public class ReclamationController {
         return reclamationService.GetUserRelamations(userEmail);
     }
     @GetMapping("/getreclamation/{reclamationId}")
-    public ResponseEntity<Reclamation> GetRelamation (
+    public ResponseEntity<ReclamationResponseDTO> GetRelamation (
             @PathVariable Long reclamationId
     ){
         return reclamationService.GetRelamation(reclamationId);

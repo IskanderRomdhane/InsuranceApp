@@ -12,7 +12,6 @@ import com.backend.Insurance.Reclamation.Reclamation;
 import com.backend.Insurance.Reclamation.ReclamationRepository;
 import com.backend.Insurance.User.User;
 import com.backend.Insurance.User.UserRepository;
-import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -141,10 +140,20 @@ public class ReclamationService {
 
     }
 
-    public ResponseEntity<Reclamation> GetRelamation(Long reclamationId) {
+    public ResponseEntity<ReclamationResponseDTO> GetRelamation(Long reclamationId) {
         Optional<Reclamation> reclamationOptional = reclamationRepository.findById(reclamationId);
         if (reclamationOptional.isPresent()){
-            return ResponseEntity.ok(reclamationOptional.get());
+            Reclamation reclamation = reclamationOptional.get();
+            ReclamationResponseDTO response = ReclamationResponseDTO.builder()
+                    .id(reclamation.getId())
+                    .Email(reclamation.getUser().getEmail())
+                    .date(LocalDateTime.now())
+                    .fullName(reclamation.getUser().getFullName())
+                    .Description(reclamation.getDescription())
+                    .status(reclamation.getStatus().toString())
+                    .type(reclamation.getTypeReclamation().toString())
+                    .build();
+            return ResponseEntity.ok(response);
         }else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
