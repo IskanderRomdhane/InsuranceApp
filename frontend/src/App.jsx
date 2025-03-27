@@ -19,10 +19,8 @@ import UsersReclamations from './Pages/Admin/Reclamations/UsersReclamations.jsx'
 import ReclamationDetails from './Pages/Admin/Reclamations/ReclamationDetails.jsx';
 const DashboardLayout = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
-  const role = localStorage.getItem("client_admin");
-  console.log(role);
-  const SidebarComponent = role === "client_admin" ? SideBar : AdminSideBar;
-  console.log(role === "client_admin" ? "SideBar" : "AdminSideBar");
+  const role = localStorage.getItem("client_role");
+  const SidebarComponent = role === "client_admin" ? AdminSideBar : SideBar;
   return (
     <div className="flex">
       <SidebarComponent isOpen={sidebarOpen} setIsOpen={setSidebarOpen} />

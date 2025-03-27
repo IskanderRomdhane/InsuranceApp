@@ -61,7 +61,7 @@ const LoginPage = () => {
             localStorage.setItem('access_token', accessToken);
             localStorage.setItem('refresh_token', refreshToken);
             getUserRole();
-
+            console.log(clientRoles);
             setLoginStatus({ message: 'Login successful! Redirecting...', success: true });
 
             setTimeout(() => {
