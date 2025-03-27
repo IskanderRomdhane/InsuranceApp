@@ -1,9 +1,9 @@
 package com.backend.Insurance.Reclamation.ReclamationService;
 
 import com.backend.Insurance.Emails.EmailSenderService;
-import com.backend.Insurance.Message.DTOS.MessageDTO;
-import com.backend.Insurance.Message.Message;
-import com.backend.Insurance.Message.MessageRepository;
+import com.backend.Insurance.Image.Image;
+import com.backend.Insurance.Image.ImageRepository;
+import com.backend.Insurance.Image.ImageService;
 import com.backend.Insurance.Reclamation.DTOS.ReclamationDTO;
 import com.backend.Insurance.Reclamation.DTOS.ReclamationResponseDTO;
 import com.backend.Insurance.Reclamation.ENUMS.Status;
@@ -16,20 +16,24 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class ReclamationService {
     private final ReclamationRepository reclamationRepository;
     private final UserRepository userRepository;
-    private final MessageRepository messageRepository;
     private final EmailSenderService emailSenderService;
-    public ResponseEntity<String> CreerReclamation(ReclamationDTO reclamationDTO) {
+    private final ImageService imageService;
+    private final ImageRepository imageRepository;
+    public ResponseEntity<String> CreerReclamation(ReclamationDTO reclamationDTO , MultipartFile image) {
         Optional<User> userOptional = userRepository.findByEmail(reclamationDTO.getUserEmail());
         if (userOptional.isPresent()) {
             User foundUser = userOptional.get();
@@ -40,12 +44,6 @@ public class ReclamationService {
                     .status(Status.PENDING)
                     .description(reclamationDTO.getDescription())
                     .build();
-
-            List<Message> reclamationMessages = reclamation.getMessage();
-            if (reclamationMessages == null){
-                reclamationMessages = new ArrayList<>();
-            }
-            reclamation.setMessage(reclamationMessages);
             reclamation.setUser(foundUser);
 
             List<Reclamation> userReclamations = foundUser.getReclamation();
@@ -57,40 +55,33 @@ public class ReclamationService {
 
             reclamationRepository.save(reclamation);
             userRepository.save(foundUser);
+
+            try {
+                String imageUrl = imageService.uploadImage(image);
+                Image imageSaved = Image.builder()
+                        .imageUrl(imageUrl)
+                        .name("user : "+foundUser.getId()+" Reclamation Image")
+                        .reclamation(reclamation)
+                        .build();
+                imageRepository.save(imageSaved);
+                List<Image> images = reclamation.getImages();
+                if (images == null){
+                    images = new ArrayList<>();
+                }
+                images.add(imageSaved);
+                reclamation.setImages(images);
+                reclamationRepository.save(reclamation);
+            }catch (Exception e){
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+            }
+
+
             emailSenderService.sendEmail(foundUser.getEmail() , "Reclamation", "Reclamation with ID :"+ reclamation.getId() +
                     " created at the date :" + LocalDateTime.now() +
                     " with reclamation status  :" + reclamation.getStatus());
             return ResponseEntity.ok("User Reclamation saved Successfully");
         }else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User Not Found");
-        }
-    }
-
-    public ResponseEntity<String> RepondreReclamation(Long reclamationID , MessageDTO messageDTO) {
-        Optional<Reclamation> reclamationOptional = reclamationRepository.findById(reclamationID);
-        if(reclamationOptional.isPresent()){
-            Reclamation reclamation = reclamationOptional.get();
-
-            List<Message> reclamationMessages = reclamation.getMessage();
-            Message message = Message.builder()
-                    .content(messageDTO.getContent())
-                    .expediteurEmail(reclamation.getUser().getEmail())
-                    .dateDenvoi(LocalDateTime.now())
-                    .expediteur(reclamation.getUser().getFullName())
-                    .associatedReclamation(reclamation)
-                    .build();
-            message = messageRepository.save(message);
-
-            if (reclamationMessages == null){
-                reclamationMessages = new ArrayList<>();
-            }
-            reclamationMessages.add(message);
-            reclamation.setMessage(reclamationMessages);
-
-            reclamationRepository.save(reclamation);
-            return ResponseEntity.ok("Message Sent Successfully");
-        }else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Reclamation Not Found");
         }
     }
 
@@ -115,6 +106,9 @@ public class ReclamationService {
         for (Reclamation reclamation:
                 reclamations
              ) {
+            List<String> imagesUrls = reclamation.getImages().stream()
+                    .map(Image::getImageUrl)
+                    .collect(Collectors.toList());
             ReclamationResponseDTO DTO = ReclamationResponseDTO.builder()
                     .id(reclamation.getId())
                     .Email(reclamation.getUser().getEmail())
@@ -123,6 +117,7 @@ public class ReclamationService {
                     .Description(reclamation.getDescription())
                     .status(reclamation.getStatus().toString())
                     .type(reclamation.getTypeReclamation().toString())
+                    .imageUrl(imagesUrls)
                     .build();
             response.add(DTO);
         }
@@ -144,6 +139,9 @@ public class ReclamationService {
         Optional<Reclamation> reclamationOptional = reclamationRepository.findById(reclamationId);
         if (reclamationOptional.isPresent()){
             Reclamation reclamation = reclamationOptional.get();
+            List<String> imagesUrls = reclamation.getImages().stream()
+                    .map(Image::getImageUrl)
+                    .collect(Collectors.toList());
             ReclamationResponseDTO response = ReclamationResponseDTO.builder()
                     .id(reclamation.getId())
                     .Email(reclamation.getUser().getEmail())
@@ -152,6 +150,7 @@ public class ReclamationService {
                     .Description(reclamation.getDescription())
                     .status(reclamation.getStatus().toString())
                     .type(reclamation.getTypeReclamation().toString())
+                    .imageUrl(imagesUrls)
                     .build();
             return ResponseEntity.ok(response);
         }else {

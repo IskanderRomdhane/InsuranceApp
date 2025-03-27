@@ -1,12 +1,13 @@
 package com.backend.Insurance.Reclamation.ReclamationService;
 
-import com.backend.Insurance.Message.DTOS.MessageDTO;
 import com.backend.Insurance.Reclamation.DTOS.ReclamationDTO;
 import com.backend.Insurance.Reclamation.DTOS.ReclamationResponseDTO;
 import com.backend.Insurance.Reclamation.Reclamation;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -15,20 +16,21 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ReclamationController {
     private final ReclamationService reclamationService;
+    private final ObjectMapper objectMapper;
+
 
     @PostMapping("/CreerReclamation")
-    public ResponseEntity<String> CreerReclamation(
-            @RequestBody ReclamationDTO reclamationDTO
-            ){
-        return reclamationService.CreerReclamation(reclamationDTO);
+    public ResponseEntity<String> uploadReclamation(
+            @RequestParam("file") MultipartFile file,
+            @RequestParam("claim") String reclamationJson) {
+        try {
+            ReclamationDTO reclamationDTO = objectMapper.readValue(reclamationJson, ReclamationDTO.class);
+            return reclamationService.CreerReclamation(reclamationDTO,file);
+        }catch (Exception e){
+            throw new RuntimeException(e.getMessage());
+        }
     }
-    @PostMapping("/repondreReclamation/{ReclamationID}")
-    public ResponseEntity<String> RepondreReclamation(
-            @PathVariable Long ReclamationID ,
-            @RequestBody MessageDTO messageDTO
-    ){
-        return reclamationService.RepondreReclamation(ReclamationID , messageDTO);
-    }
+
     @PutMapping("/changerstatus/{ReclamationID}")
     //@PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<String> ChangerStatus(

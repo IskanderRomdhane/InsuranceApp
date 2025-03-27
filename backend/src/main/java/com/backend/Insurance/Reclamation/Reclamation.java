@@ -1,6 +1,6 @@
 package com.backend.Insurance.Reclamation;
 
-import com.backend.Insurance.Message.Message;
+import com.backend.Insurance.Image.Image;
 import com.backend.Insurance.Reclamation.ENUMS.Status;
 import com.backend.Insurance.Reclamation.ENUMS.TypeReclamation;
 import com.backend.Insurance.User.User;
@@ -13,7 +13,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
 
 @Data
@@ -31,11 +30,11 @@ public class Reclamation {
     private Status status;
     private String description;
     private LocalDateTime date;
-    @OneToMany(mappedBy = "associatedReclamation")
+    @OneToMany
     @JsonManagedReference
-    private List<Message> message;
+    private List<Image> images;
 
     @ManyToOne
-    @JsonBackReference // Child side, avoid serialization
+    @JsonBackReference
     private User user;
 }
