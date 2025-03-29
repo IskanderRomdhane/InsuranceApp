@@ -12,6 +12,9 @@ import com.backend.Insurance.Reclamation.Reclamation;
 import com.backend.Insurance.Reclamation.ReclamationRepository;
 import com.backend.Insurance.User.User;
 import com.backend.Insurance.User.UserRepository;
+import com.backend.Insurance.notification.Notification;
+import com.backend.Insurance.notification.NotificationService;
+import com.backend.Insurance.notification.NotificationStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,6 +36,9 @@ public class ReclamationService {
     private final EmailSenderService emailSenderService;
     private final ImageService imageService;
     private final ImageRepository imageRepository;
+    private final NotificationService notificationService;
+
+
     public ResponseEntity<String> CreerReclamation(ReclamationDTO reclamationDTO , MultipartFile image) {
         Optional<User> userOptional = userRepository.findByEmail(reclamationDTO.getUserEmail());
         if (userOptional.isPresent()) {
@@ -52,6 +58,14 @@ public class ReclamationService {
             }
             userReclamations.add(reclamation);
             foundUser.setReclamation(userReclamations);
+
+            notificationService.sendNotification(
+                    String.valueOf(reclamation.getUser().getId()),
+                    Notification
+                            .builder()
+                            .status(NotificationStatus.PENDING)
+                            .message("Your Reclamation status is PENDING")
+                            .build());
 
             reclamationRepository.save(reclamation);
             userRepository.save(foundUser);
@@ -90,6 +104,13 @@ public class ReclamationService {
         if(reclamationOptional.isPresent()){
             Reclamation reclamation = reclamationOptional.get();
             reclamation.setStatus(Status.valueOf(reclamationDTO.getStatus().toUpperCase()));
+            notificationService.sendNotification(
+                    String.valueOf(reclamation.getUser().getId()),
+                    Notification
+                            .builder()
+                            .status(NotificationStatus.UNDER_REVIEW)
+                            .message("Your Reclamation is UNDER_REVIEW")
+                            .build());
             reclamationRepository.save(reclamation);
             emailSenderService.sendEmail(reclamation.getUser().getEmail() , "Reclamation status", "Reclamation with ID :"+ reclamation.getId() +
                     " created at the date :" + LocalDateTime.now() +
