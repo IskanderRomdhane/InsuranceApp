@@ -48,7 +48,7 @@ const Agences = () => {
   ];
 
   return (
-    <div className="bg-green-50 min-h-screen">
+    <div className="bg-white min-h-screen">
       {/* Header */}
       <div className="bg-green-700 text-white py-12">
         <div className="container mx-auto px-4 flex items-center">

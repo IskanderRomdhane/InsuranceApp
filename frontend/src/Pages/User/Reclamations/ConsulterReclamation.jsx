@@ -87,12 +87,22 @@ const ClaimsDashboard = () => {
     }
   };
 
+  const getModalBg = (status) => {
+    switch(status) {
+      case 'PENDING': return 'bg-yellow-100 text-yellow-800';
+      case 'FINISHED': return 'bg-green-100 text-green-800';
+      case 'CANCELLED': return 'bg-red-700 text-white';
+      case 'UNDER_REVIEW': return 'bg-blue-700 text-white';
+      default: return 'bg-gray-100 text-gray-800';
+    }
+  };
+
   const getDivBorderColor = (status) => {
     switch(status) {
       case 'PENDING': return 'border-yellow-100';
-      case 'RESOLVED': return 'border-green-100';
-      case 'REJECTED': return 'border-red-700';
-      case 'IN_PROGRESS': return 'border-blue-100';
+      case 'FINISHED': return 'border-green-100';
+      case 'CANCELLED': return 'border-red-700';
+      case 'UNDER_REVIEW': return 'border-blue-700';
       default: return 'border-red-700';
     }
   };
@@ -276,6 +286,7 @@ const ClaimsDashboard = () => {
             getStatusColor={getStatusColor}
             getTypeIcon={getTypeIcon}
             onClose={handleCloseModal}
+            getModalBg = {getModalBg}
           />
         )}
       </div>

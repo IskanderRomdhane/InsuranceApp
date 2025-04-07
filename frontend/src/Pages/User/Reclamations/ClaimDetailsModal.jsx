@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { Calendar, Clock, X } from 'lucide-react';
 
-const ClaimDetailsModal = ({ claim, formatDate, getStatusColor, getTypeIcon, onClose }) => {
+const ClaimDetailsModal = ({ claim, formatDate, getStatusColor, getTypeIcon, onClose , getModalBg }) => {
   const modalRef = useRef(null);
 
   useEffect(() => {
@@ -11,7 +11,7 @@ const ClaimDetailsModal = ({ claim, formatDate, getStatusColor, getTypeIcon, onC
         onClose();
       }
     };
-    console.log(claim);
+    console.log("status :"+ claim.status  + getModalBg(claim.status));
     // Add event listener when the modal is shown
     document.addEventListener("mousedown", handleClickOutside);
 
@@ -34,7 +34,7 @@ const ClaimDetailsModal = ({ claim, formatDate, getStatusColor, getTypeIcon, onC
       <div className="fixed inset-0 flex items-center justify-center z-50 p-4">
         <div ref={modalRef} className="bg-white rounded-lg shadow-xl w-full max-w-3xl max-h-[90vh] overflow-hidden flex flex-col">
           {/* Modal Header */}
-          <div className="bg-green-700 text-white px-6 py-4 flex justify-between items-center">
+          <div className= {` ${getModalBg(claim.status)} px-6 py-4 flex justify-between items-center`}>
             <h3 className="text-xl font-bold">Claim #{claim.id} Details</h3>
             <button onClick={onClose} className="text-white hover:text-green-200">
               <X className="w-6 h-6" />
