@@ -17,22 +17,27 @@ import AdminSideBar from './Components/AdminSideBar.jsx';
 import { useAuth } from './Hooks/AuthContext.jsx';
 import UsersReclamations from './Pages/Admin/Reclamations/UsersReclamations.jsx';
 import ReclamationDetails from './Pages/Admin/Reclamations/ReclamationDetails.jsx';
+import Navbar from './Components/Navbar.jsx'
 const DashboardLayout = ({ children }) => {
-  const [sidebarOpen, setSidebarOpen] = useState(true);
-  const role = localStorage.getItem("client_role");
-  const SidebarComponent = role === "client_admin" ? AdminSideBar : SideBar;
-  return (
-    <div className="flex">
-      <SidebarComponent isOpen={sidebarOpen} setIsOpen={setSidebarOpen} />
-      <div 
-        className={`flex-1 transition-all duration-300 ${
-          sidebarOpen ? 'ml-64' : 'ml-16'
-        }`}
-      >
-        {children}
-      </div>
-    </div>
-  );
+    const [sidebarOpen, setSidebarOpen] = useState(true);
+    const role = localStorage.getItem("client_role");
+    const SidebarComponent = role === "client_admin" ? AdminSideBar : SideBar;
+
+    return (
+        <div className="flex">
+            <SidebarComponent isOpen={sidebarOpen} setIsOpen={setSidebarOpen} />
+            <div
+                className={`flex flex-col flex-1 transition-all duration-300 ${
+                    sidebarOpen ? 'ml-64' : 'ml-16'
+                }`}
+            >
+                {role === "client_user" && <Navbar />}
+                <div className="flex-1">
+                    {children}
+                </div>
+            </div>
+        </div>
+    );
 };
 
 function App() {
