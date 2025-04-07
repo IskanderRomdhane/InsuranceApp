@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import { NavLink } from 'react-router-dom';
-import { 
-  ChevronLeft, 
-  ChevronRight, 
+import {
+  ChevronLeft,
+  ChevronRight,
   ChevronDown,
-  LayoutDashboard, 
-  FileWarning, 
-  Umbrella, 
-  MapPin, 
-  HelpCircle, 
+  LayoutDashboard,
+  FileWarning,
+  Umbrella,
+  MapPin,
+  HelpCircle,
   User,
   Plus,
   List
@@ -69,7 +69,7 @@ const SideBar = ({ isOpen, setIsOpen }) => {
       hasDropdown: false
     }
   ];
-  
+
   const supportItems = [
     {
       id: 'faqs',
@@ -97,21 +97,21 @@ const SideBar = ({ isOpen, setIsOpen }) => {
         <span className="sr-only">Toggle sidebar</span>
         {isOpen ? <ChevronLeft className="w-6 h-6" /> : <ChevronRight className="w-6 h-6" />}
       </button>
-      
-      <aside 
+
+      <aside
         className={`fixed top-0 left-0 z-40 h-screen transition-all duration-300 ${
           isOpen ? 'w-64' : 'w-16'
-        } sm:translate-x-0 flex flex-col`} 
+        } sm:translate-x-0 flex flex-col`}
         aria-label="Sidebar"
       >
-        <div className="flex-1 px-3 py-4 overflow-y-auto bg-green-50">
+        <div className="flex-1 px-3 py-4 overflow-y-auto bg-white shadow-xl">
           <div className={`flex items-center ps-2 mb-5 ${isOpen ? 'justify-between' : 'justify-center'}`}>
             {isOpen && (
               <>
                 <div className="flex items-center">
                   <img src={icon} className="h-12" alt="Wiqaya Logo" />
                 </div>
-                <button 
+                <button
                   onClick={toggleSidebar}
                   className="hidden sm:block text-green-800 hover:bg-green-100 rounded-lg p-1"
                 >
@@ -121,7 +121,7 @@ const SideBar = ({ isOpen, setIsOpen }) => {
             )}
             {!isOpen && (
               <>
-                <button 
+                <button
                   onClick={toggleSidebar}
                   className="hidden sm:block text-green-800 hover:bg-green-100 rounded-lg p-1 mt-4"
                 >
@@ -130,13 +130,13 @@ const SideBar = ({ isOpen, setIsOpen }) => {
               </>
             )}
           </div>
-          
+
           <ul className="space-y-2 font-medium">
             {menuItems.map((item) => (
               <li key={item.id}>
                 {item.hasDropdown ? (
                   <div>
-                    <a 
+                    <a
                       href="#"
                       onClick={(e) => toggleMenu(item.id, e)}
                       className={`
@@ -149,18 +149,18 @@ const SideBar = ({ isOpen, setIsOpen }) => {
                         {isOpen && <span className="ms-3">{item.title}</span>}
                       </div>
                       {isOpen && (
-                        <ChevronDown 
-                          className={`w-4 h-4 transition-transform duration-200 ${openMenus[item.id] ? 'rotate-180' : ''}`} 
+                        <ChevronDown
+                          className={`w-4 h-4 transition-transform duration-200 ${openMenus[item.id] ? 'rotate-180' : ''}`}
                         />
                       )}
                     </a>
-                    
+
                     {/* Submenu */}
                     {isOpen && openMenus[item.id] && (
                       <ul className="mt-1 space-y-1 ps-4">
                         {item.submenu.map((subItem, idx) => (
                           <li key={idx}>
-                            <NavLink 
+                            <NavLink
                               to={subItem.link}
                               className={({ isActive }) => `
                                 flex items-center p-2 text-sm rounded-lg hover:bg-green-100 group
@@ -178,8 +178,8 @@ const SideBar = ({ isOpen, setIsOpen }) => {
                     )}
                   </div>
                 ) : (
-                  <NavLink 
-                    to={item.link} 
+                  <NavLink
+                    to={item.link}
                     className={({ isActive }) => `
                       flex items-center p-2 rounded-lg hover:bg-green-100 group
                       ${isActive ? 'bg-green-200 text-green-900' : 'text-green-800'}
@@ -193,18 +193,18 @@ const SideBar = ({ isOpen, setIsOpen }) => {
             ))}
           </ul>
         </div>
-        
+
         {/* Bottom section for FAQs and Profile */}
-        <div className="px-3 py-4 bg-green-100 border-t border-green-200">
+        <div className="px-3 py-4 bg-white border-t border-gray-300">
           {isOpen && <div className="mb-2 text-sm font-medium text-green-800 px-2">Support & Account</div>}
           <ul className="space-y-2 font-medium">
             {supportItems.map((item) => (
               <li key={item.id}>
-                <NavLink 
-                  to={item.link} 
+                <NavLink
+                  to={item.link}
                   className={({ isActive }) => `
-                    flex items-center p-2 rounded-lg hover:bg-green-200 group
-                    ${isActive ? 'bg-green-300 text-green-900' : 'text-green-800'}
+                    flex items-center p-2 rounded-lg hover: group text-green-700
+                    
                   `}
                 >
                   {item.icon}

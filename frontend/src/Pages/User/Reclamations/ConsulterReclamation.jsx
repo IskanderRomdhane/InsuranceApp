@@ -86,6 +86,17 @@ const ClaimsDashboard = () => {
       default: return 'bg-gray-100 text-gray-800';
     }
   };
+
+  const getDivBorderColor = (status) => {
+    switch(status) {
+      case 'PENDING': return 'border-yellow-100';
+      case 'RESOLVED': return 'border-green-100';
+      case 'REJECTED': return 'border-red-700';
+      case 'IN_PROGRESS': return 'border-blue-100';
+      default: return 'border-red-700';
+    }
+  };
+
   
   const getTypeIcon = (type) => {
     switch(type) {
@@ -118,13 +129,11 @@ const ClaimsDashboard = () => {
   };
   
   return (
-    <div className="min-h-screen bg-gradient-to-b from-white to-green-50">
+    <div className="min-h-screen bg-white">
       <div className="max-w-6xl mx-auto px-4 py-8">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-green-800">Consulting Claims Dashboard</h1>
-          <p className="text-green-600 mt-2">Manage and track all your consulting service claims</p>
-          {email && <p className="text-sm text-gray-600 mt-1">Logged in as: {email}</p>}
+          <h1 className="text-xl font-bold text-grey">Consulting Claims Dashboard</h1>
           
           {/* Added link to Deposer Reclamation page */}
           <a href="deposer" className="mt-4 inline-block bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-lg transition-colors">
@@ -159,7 +168,7 @@ const ClaimsDashboard = () => {
               <select
                 value={filter}
                 onChange={(e) => setFilter(e.target.value)}
-                className="appearance-none bg-green-100 border border-green-200 text-green-800 py-2 pl-3 pr-8 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                className="appearance-none bg-white border border-green-200 text-green-800 py-2 pl-3 pr-8 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
               >
                 <option value="ALL">All Status</option>
                 <option value="PENDING">Pending</option>
@@ -195,7 +204,7 @@ const ClaimsDashboard = () => {
         ) : (
           <div className="grid grid-cols-1 gap-6">
             {displayClaims.length > 0 ? displayClaims.map(claim => (
-              <div key={claim.id} className="bg-white rounded-lg shadow-md overflow-hidden border-l-4 border-green-500 hover:shadow-lg transition-shadow">
+              <div key={claim.id} className={`bg-white rounded-lg shadow-md overflow-hidden border-l-4 ${getDivBorderColor(claim.status)} hover:shadow-lg transition-shadow`}>
                 <div className="p-6">
                   <div className="flex flex-col md:flex-row md:items-center justify-between mb-4">
                     <div className="flex items-center">

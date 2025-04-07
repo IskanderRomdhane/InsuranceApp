@@ -166,7 +166,7 @@ const DeposerReclamations = () => {
   };
 
   return (
-      <div className="min-h-screen bg-gradient-to-b from-white to-green-50 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="min-h-screen bg-white py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-10">
             <h1 className="text-4xl font-extrabold text-green-800 tracking-tight">Déposer une Réclamation</h1>
@@ -185,26 +185,6 @@ const DeposerReclamations = () => {
                   </h2>
 
                   <form onSubmit={handleSubmit} className="space-y-8">
-                    {/* Email input remains the same */}
-                    <div>
-                      <label className="block text-lg font-medium mb-3 text-gray-700">Adresse Email</label>
-                      <div className="relative">
-                        <input
-                            type="email"
-                            value={email}
-                            className="w-full p-4 bg-gray-50 border-none rounded-lg shadow-sm text-gray-700"
-                            placeholder="Votre adresse email sera automatiquement récupérée"
-                            disabled
-                        />
-                        <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-                          <svg className="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
-                            <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 116 0z" clipRule="evenodd" />
-                          </svg>
-                        </div>
-                      </div>
-                      <p className="mt-2 text-sm text-gray-500">Email récupéré de votre compte</p>
-                    </div>
-
                     {/* Type of Complaint input remains the same */}
                     <div>
                       <label className="block text-lg font-medium mb-3 text-gray-700">Type de Réclamation</label>
@@ -251,14 +231,14 @@ const DeposerReclamations = () => {
 
                     {/* New File Upload Section */}
                     <div>
-                      <label className="block text-lg font-medium mb-3 text-gray-700">Pièce Jointe (Optionnel)</label>
+                      <label className="block text-lg font-medium  text-gray-700">Pièce Jointe (Optionnel)</label>
                       <div className="relative">
                         <input
                             type="file"
                             name="fileInput"
                             onChange={handleFileChange}
                             accept=".jpg,.jpeg,.png,.gif,.pdf"
-                            className="w-full p-4 bg-gray-50 rounded-lg shadow-sm focus:ring-2 focus:ring-green-500 border-none file:mr-4 file:rounded-lg file:border-0 file:bg-green-50 file:px-4 file:py-2 file:text-green-700 hover:file:bg-green-100"
+                            className="w-full p-4 bg-gray-50 rounded-lg shadow-sm focus:ring-2 focus:ring-green-500 border-none file:mr-4 file:rounded-lg file:border-0 file:bg-white file:px-4 file:py-2 file:text-gray-700 hover:file:bg-gray-50"
                         />
                         <p className="mt-2 text-sm text-gray-500">
                           Formats acceptés: JPG, PNG, GIF, PDF (max 5 Mo)

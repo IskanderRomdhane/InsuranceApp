@@ -132,7 +132,7 @@ const ReclamationsTable = () => {
         {/* Refresh button */}
         <div className="mb-6">
           <button 
-            className="flex items-center justify-center bg-green-100 text-green-800 font-medium py-2 px-4 rounded-md hover:bg-green-200 transition-colors"
+            className="flex items-center justify-center bg-white text-gray-600 font-medium py-2 px-4 rounded-md hover:bg-green-200 transition-colors"
             onClick={fetchClaims}
           >
             <RefreshCw className="w-4 h-4 mr-2" />
