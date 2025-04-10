@@ -180,7 +180,7 @@ const DeposerReclamations = () => {
             <div className="w-full lg:w-3/5">
               <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
                 <div className="px-8 pt-8 pb-10">
-                  <h2 className="text-2xl font-bold text-green-700 mb-6 border-b border-green-100 pb-3">
+                  <h2 className="text-2xl font-bold text-blakc mb-6  pb-3">
                     Détails de votre réclamation
                   </h2>
 

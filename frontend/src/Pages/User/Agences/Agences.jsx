@@ -50,15 +50,7 @@ const Agences = () => {
   return (
     <div className="bg-white min-h-screen">
       {/* Header */}
-      <div className="bg-green-700 text-white py-12">
-        <div className="container mx-auto px-4 flex items-center">
-          <Building className="w-10 h-10 mr-4" />
-          <div>
-            <h1 className="text-3xl font-bold">Our Agencies</h1>
-            <p className="text-green-100">Locations across Tunisia to serve you better</p>
-          </div>
-        </div>
-      </div>
+
       
       {/* Main Content */}
       <div className="container mx-auto px-4 py-10">
