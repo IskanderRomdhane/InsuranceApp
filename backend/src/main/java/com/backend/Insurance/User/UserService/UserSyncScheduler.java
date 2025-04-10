@@ -26,7 +26,7 @@ public class UserSyncScheduler {
             ResponseEntity<UserRepresentation[]> response = restTemplate.getForEntity(apiUrl, UserRepresentation[].class);
             if (response.getStatusCode() == HttpStatusCode.valueOf(200) && response.getBody() != null) {
                 List<UserRepresentation> userList = Arrays.asList(response.getBody());
-                userService.syncUsers(userList);
+                //userService.syncUsers(userList);
             } else {
                 System.out.println("Failed to fetch users, status: " + response.getStatusCode());
             }

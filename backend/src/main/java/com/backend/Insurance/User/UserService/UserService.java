@@ -17,20 +17,20 @@ import java.util.Optional;
 public class UserService {
     private final UserRepository userRepository;
     private final AuthService authService;
-    public ResponseEntity<String> syncUsers(List<UserRepresentation> userList) {
+    public ResponseEntity<String> syncUsers(List<User> userList) {
         if (userList.isEmpty()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User list is empty");
         }
-        for (UserRepresentation user : userList) {
-            Optional<User> optUser = userRepository.findByCIN(user.getId());
+        for (User user : userList) {
+            Optional<User> optUser = userRepository.findByCIN(user.getCIN());
             if (optUser.isPresent()) {
                 continue;
             }
             User foundUser = User.builder()
-                    .CIN(user.getId())
+                    .CIN(user.getCIN())
                     .email(user.getEmail())
-                    .firstname(user.getFirstName())
-                    .lastname(user.getLastName())
+                    .firstname(user.getFirstname())
+                    .lastname(user.getLastname())
                     .username(user.getUsername())
                     .role("client_user") //Users will have by default client_user Role
                     .build();

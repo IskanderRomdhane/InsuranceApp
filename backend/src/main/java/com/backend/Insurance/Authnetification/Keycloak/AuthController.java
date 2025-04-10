@@ -1,6 +1,7 @@
 package com.backend.Insurance.Authnetification.Keycloak;
 
 import com.backend.Insurance.Authnetification.DTOs.LoginRequest;
+import com.backend.Insurance.Authnetification.DTOs.PasswordUpdateRequest;
 import com.backend.Insurance.Authnetification.DTOs.RegisterRequest;
 import com.nimbusds.jose.shaded.gson.JsonObject;
 import org.springframework.http.ResponseEntity;
@@ -26,4 +27,9 @@ public class AuthController {
     public ResponseEntity<String> refresh(@RequestBody Map<String , String> refreshToken) {
         return authService.refresh(refreshToken);
     }
+    @PostMapping("/update-password")
+    public ResponseEntity<String> updatePassword(@RequestBody PasswordUpdateRequest request) {
+        return  authService.updatePassword(request);
+    }
+
 }

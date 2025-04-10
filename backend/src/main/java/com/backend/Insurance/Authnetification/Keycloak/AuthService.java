@@ -2,10 +2,17 @@ package com.backend.Insurance.Authnetification.Keycloak;
 
 import com.backend.Insurance.Authnetification.Config.KeycloakConfig;
 import com.backend.Insurance.Authnetification.DTOs.LoginRequest;
+import com.backend.Insurance.Authnetification.DTOs.PasswordUpdateRequest;
 import com.backend.Insurance.Authnetification.Security.JwtParser;
+import com.backend.Insurance.Emails.EmailSenderService;
+import com.backend.Insurance.User.User;
 import com.backend.Insurance.User.UserRepository;
+import com.backend.Insurance.Authnetification.DTOs.Credentials;
 import lombok.RequiredArgsConstructor;
+import org.keycloak.admin.client.Keycloak;
+import org.keycloak.admin.client.resource.UserResource;
 import org.keycloak.admin.client.resource.UsersResource;
+import org.keycloak.representations.idm.CredentialRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
@@ -16,6 +23,8 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import javax.ws.rs.core.Response;
+import java.security.SecureRandom;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
@@ -33,6 +42,8 @@ public class AuthService {
 
     private final JwtParser jwtParser;
     private final UserRepository userRepository;
+    private final EmailSenderService emailSenderService;
+
     public ResponseEntity<String> login(LoginRequest loginDto) {
         RestTemplate restTemplate = new RestTemplate();
         String url = "http://localhost:8080/realms/InsuranceApp/protocol/openid-connect/token";
@@ -52,7 +63,9 @@ public class AuthService {
             ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, entity, String.class);
             return ResponseEntity.ok(response.getBody());
         } catch (HttpClientErrorException e) {
-            // Handle 401, 403, and other 4xx errors
+            if (e.getStatusCode() == HttpStatusCode.valueOf(400)){
+                return ResponseEntity.status(HttpStatus.valueOf(400)).body("Put your new password.");
+            }
             if (e.getStatusCode() == HttpStatus.UNAUTHORIZED) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid username or password.");
             } else if (e.getStatusCode() == HttpStatus.FORBIDDEN) {
@@ -86,19 +99,37 @@ public class AuthService {
         }
     }
 
-    public Integer register(UserRepresentation userRep) {
+    public Integer register(User userRep) {
         try {
             UserRepresentation user = new UserRepresentation();
             user.setUsername(userRep.getUsername());
-            user.setFirstName(userRep.getFirstName());
-            user.setLastName(userRep.getLastName());
+            user.setFirstName(userRep.getFirstname());
+            user.setLastName(userRep.getLastname());
             user.setEmail(userRep.getEmail());
-            user.setCredentials(userRep.getCredentials());
+            String password = generateRandomPassword(12);
+            List<CredentialRepresentation> credentials = Collections.singletonList(Credentials.createPasswordCredentials(password));
+            user.setCredentials(credentials);
             user.setEnabled(true);
             user.setEmailVerified(true);
+            Map<String , List<String>> ClientRoles = new HashMap<>();
+            List<String> roles = new ArrayList<>();
+            roles.add("client_user");
+            ClientRoles.put("Insurance" , roles);
+            user.setClientRoles(ClientRoles);
+            user.setRequiredActions(Collections.singletonList("UPDATE_PASSWORD"));
             UsersResource instance = KeycloakConfig.getInstance().realm(realm).users();
             Response response = instance.create(user);
             if (response.getStatus() == 201) {
+                emailSenderService.sendEmail(userRep.getEmail(),
+                        "Création de votre compte",
+                        "Votre compte chez Wiqaya Insurance a été créé avec succès." +
+                                "\n\nVoici vos informations de connexion :" +
+                                "\nAdresse e-mail : " + userRep.getEmail() +
+                                "\nNom d'utilisateur : " + userRep.getUsername() +
+                                "\nMot de passe temporaire : " + password +
+                                "\n\n⚠️ Ce mot de passe est à usage unique et temporaire." +
+                                "\nVeuillez vous connecter dès que possible et le modifier pour sécuriser votre compte."
+                );
                 return response.getStatus();
             } else {
                 throw new RuntimeException("Failed to create user: HTTP Status : " + response.getStatus());
@@ -108,5 +139,55 @@ public class AuthService {
         }
     }
 
+    private String generateRandomPassword(int length) {
+        String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        SecureRandom random = new SecureRandom();
+        StringBuilder password = new StringBuilder(length);
 
+        for (int i = 0; i < length; i++) {
+            int randomIndex = random.nextInt(chars.length());
+            password.append(chars.charAt(randomIndex));
+        }
+
+        return password.toString();
+    }
+
+    public ResponseEntity<String> updatePassword(PasswordUpdateRequest request) {
+        try {
+            UsersResource usersResource = KeycloakConfig.getInstance().realm(realm).users();
+            List<UserRepresentation> users = usersResource.search(request.getUsername());
+            if (users.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found.");
+            }
+            UserResource userResource = usersResource.get(users.get(0).getId());
+
+            CredentialRepresentation newCredential = new CredentialRepresentation();
+            newCredential.setTemporary(false);
+            newCredential.setType(CredentialRepresentation.PASSWORD);
+            newCredential.setValue(request.getNewPassword());
+
+            userResource.resetPassword(newCredential);
+            
+            return ResponseEntity.ok("Password updated successfully.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error updating password.");
+        }
+    }
+
+    public void initiatePasswordReset(String email) {
+        Keycloak keycloak = KeycloakConfig.getInstance();
+
+        List<UserRepresentation> users = keycloak.realm(realm)
+                .users()
+                .search(email, true);
+
+        if (users.isEmpty()) {
+            return; //users list is empty
+        }
+
+        String userId = users.get(0).getId();
+
+        UsersResource usersResource = keycloak.realm(realm).users();
+        usersResource.get(userId).executeActionsEmail(Arrays.asList("UPDATE_PASSWORD"));
+    }
 }

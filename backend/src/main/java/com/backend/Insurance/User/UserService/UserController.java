@@ -17,7 +17,7 @@ import java.util.*;
 public class UserController {
     private final UserService userservice;
     @PutMapping("/synchronize")
-    public ResponseEntity<String> SyncUsers (@RequestBody List<UserRepresentation> userList){
+    public ResponseEntity<String> SyncUsers (@RequestBody List<User> userList){
         return userservice.syncUsers(userList);
     }
 }
