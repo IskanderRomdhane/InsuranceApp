@@ -1,6 +1,7 @@
 package com.backend.Insurance.User;
 
 import com.backend.Insurance.Reclamation.Reclamation;
+import com.backend.Insurance.Sinistre.Sinistre;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
@@ -31,6 +32,9 @@ public class User {
     @OneToMany(mappedBy = "user")
     @JsonManagedReference
     private List<Reclamation> reclamation;
+    @OneToMany(mappedBy = "user")
+    @JsonManagedReference
+    private List<Sinistre> sinistres;
 
     @Override
     public String toString() {
