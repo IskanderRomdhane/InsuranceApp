@@ -59,13 +59,6 @@ public class ReclamationService {
             userReclamations.add(reclamation);
             foundUser.setReclamation(userReclamations);
 
-            notificationService.sendNotification(
-                    String.valueOf(reclamation.getUser().getId()),
-                    Notification
-                            .builder()
-                            .status(NotificationStatus.PENDING)
-                            .message("Your Reclamation status is PENDING")
-                            .build());
 
             reclamationRepository.save(reclamation);
             userRepository.save(foundUser);
