@@ -31,10 +31,12 @@ public class Reclamation {
     private String description;
     private LocalDateTime date;
     @OneToMany
-    @JsonManagedReference
+    @JsonManagedReference("reclamation-images")
     private List<Image> images;
 
+
     @ManyToOne
-    @JsonBackReference
+    @JsonBackReference("user-reclamations")
     private User user;
+
 }

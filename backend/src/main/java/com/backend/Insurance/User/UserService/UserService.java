@@ -24,6 +24,7 @@ public class UserService {
         for (User user : userList) {
             Optional<User> optUser = userRepository.findByCIN(user.getCIN());
             if (optUser.isPresent()) {
+                System.out.println(optUser.get());
                 continue;
             }
             User foundUser = User.builder()

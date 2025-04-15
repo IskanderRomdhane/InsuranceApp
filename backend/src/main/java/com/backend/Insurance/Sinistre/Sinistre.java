@@ -29,11 +29,12 @@ public class Sinistre {
     private String description;
     private String object;
     @OneToMany
-    @JsonManagedReference
-    @Lazy
+    @JsonManagedReference("sinistre-images")
     private List<Image> images;
 
+
     @ManyToOne
-    @JsonBackReference
+    @JsonBackReference("user-sinistres")
     private User user;
+
 }

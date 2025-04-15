@@ -30,10 +30,10 @@ public class User {
     private String lastname;
     private String role;
     @OneToMany(mappedBy = "user")
-    @JsonManagedReference
+    @JsonManagedReference("user-reclamations")
     private List<Reclamation> reclamation;
     @OneToMany(mappedBy = "user")
-    @JsonManagedReference
+    @JsonManagedReference("user-sinistres")
     private List<Sinistre> sinistres;
 
     @Override

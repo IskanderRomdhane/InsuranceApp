@@ -3,6 +3,7 @@ package com.backend.Insurance.Image;
 import com.backend.Insurance.Reclamation.Reclamation;
 import com.backend.Insurance.Sinistre.Sinistre;
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -25,11 +26,11 @@ public class Image {
     private String imageUrl;
 
     @ManyToOne
-    @JsonBackReference
+    @JsonBackReference("reclamation-images")
     private Reclamation reclamation;
 
     @ManyToOne
-    @JsonBackReference
+    @JsonBackReference("sinistre-images")
     private Sinistre sinistre;
 
 }
