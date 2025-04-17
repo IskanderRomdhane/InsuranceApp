@@ -1,8 +1,8 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/Insurance
-    username: skander
-    password: skander12
+    url: jdbc:postgresql://localhost:5432/insurance
+    username: postgres
+    password: sadek
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
@@ -20,6 +20,17 @@ spring:
         jwt:
           issuer-uri: http://localhost:8080/realms/InsuranceApp
           jwk-set-uri: http://localhost:8080/realms/InsuranceApp/protocol/openid-connect/certs
+  mail:
+    host: smtp.gmail.com
+    port: 2525
+    properties:
+      mail:
+        smtp:
+          auth: true
+        starttls:
+          enable: true
+    username: belkhiriasadek@gmail.com
+    password: bqplxmyfwswfvqom
 
 server:
   port: 8081
