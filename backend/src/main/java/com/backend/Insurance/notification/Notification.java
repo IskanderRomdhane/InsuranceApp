@@ -26,8 +26,6 @@ public class Notification {
 
     private String message;
 
-    private Boolean read = false;
-
     //     optionally you can link the notification to a user (example)
     @ManyToOne
     @JoinColumn(name = "user_id")

@@ -1,8 +1,8 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/Insurance
-    username: skander
-    password: skander12
+    url: jdbc:postgresql://localhost:5432/insurance
+    username: postgres
+    password: sadek
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
@@ -29,8 +29,8 @@ spring:
           auth: true
         starttls:
           enable: true
-    username: skander20034@gmail.com
-    password: bqzjpcvqtwevggsl
+    username: belkhiriasadek@gmail.com
+    password: bqplxmyfwswfvqom
 
 server:
   port: 8081

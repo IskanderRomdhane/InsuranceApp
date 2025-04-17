@@ -1,10 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import { jwtDecode } from "jwt-decode"; // Correct named import
 import Default_pfp from "/src/assets/NavBar/Default_pfp.jpg";
-import { useNavigate } from "react-router-dom";
 
 const Navbar = () => {
-  const navigate = useNavigate();
   const [showNotifications, setShowNotifications] = useState(false);
   const [notifications, setNotifications] = useState([]);
   const notificationRef = useRef(null);
@@ -54,7 +52,10 @@ const Navbar = () => {
   }, []);
 
   // Handle profile click
-  const handleProfileClick = () => {};
+  const handleProfileClick = () => {
+    // In a real app, you would use router navigation here
+    // For example with React Router: navigate('/profile')
+  };
 
   // Toggle notifications dropdown
   const toggleNotifications = () => {
@@ -63,24 +64,13 @@ const Navbar = () => {
 
   // Manually refresh notifications
   const handleViewAllNotifications = () => {
-    navigate("/notifications");
-  };
-
-  const handleNotificationClick = async (id) => {
-    try {
-      await fetch(`http://localhost:8081/api/notifications/${id}/read`, {
-        method: "PUT",
-      });
-
-      // Optionally refresh notifications here if you want to reflect the change in the UI
-      // OR: remove from list locally:
-      setNotifications((prev) =>
-        prev.map((n) => (n.id === id ? { ...n, read: true } : n))
-      );
-
-      navigate(`/notifications/${id}`);
-    } catch (error) {
-      console.error("Error marking notification as read", error);
+    const token = localStorage.getItem("access_token");
+    if (token) {
+      const decoded = jwtDecode(token);
+      const userEmail = decoded.email;
+      fetchNotifications(userEmail);
+    } else {
+      console.error("No access token found in LocalStorage.");
     }
   };
 
@@ -114,9 +104,9 @@ const Navbar = () => {
 
             {/* Notification count badge */}
             {localStorage.getItem("access_token") &&
-              notifications.filter((n) => !n.read).length > 0 && (
+              notifications.length > 0 && (
                 <span className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full h-5 w-5 flex items-center justify-center text-xs">
-                  {notifications.filter((n) => !n.read).length}
+                  {notifications.length}
                 </span>
               )}
           </button>
@@ -131,29 +121,21 @@ const Navbar = () => {
               {/* Notification Items */}
               <div className="max-h-80 overflow-y-auto">
                 {notifications.length > 0 ? (
-                  [...notifications]
-                    .filter((notification) => !notification.read)
-                    .slice(0, 5)
-                    .map((notification, index) => (
-                      <div
-                        key={index}
-                        className="px-4 py-3 hover:bg-gray-50 flex items-center space-x-3 border-b border-gray-100"
-                      >
-                        <div>
-                          <p
-                            className="text-sm text-gray-800 cursor-pointer hover:underline"
-                            onClick={() =>
-                              handleNotificationClick(notification.id)
-                            }
-                          >
-                            {notification.message}
-                          </p>
-                          <p className="text-xs text-gray-500 mt-1">
-                            5 minutes ago
-                          </p>
-                        </div>
+                  notifications.map((notification, index) => (
+                    <div
+                      key={index}
+                      className="px-4 py-3 hover:bg-gray-50 flex items-center space-x-3 border-b border-gray-100"
+                    >
+                      <div>
+                        <p className="text-sm text-gray-800">
+                          {notification.message}
+                        </p>
+                        <p className="text-xs text-gray-500 mt-1">
+                          5 minutes ago
+                        </p>
                       </div>
-                    ))
+                    </div>
+                  ))
                 ) : (
                   <div className="px-4 py-3 text-center text-gray-500">
                     No notifications yet.
