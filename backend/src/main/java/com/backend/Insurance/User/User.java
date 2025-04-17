@@ -2,12 +2,15 @@ package com.backend.Insurance.User;
 
 import com.backend.Insurance.Reclamation.Reclamation;
 import com.backend.Insurance.Sinistre.Sinistre;
+import com.backend.Insurance.notification.Notification;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -36,6 +39,11 @@ public class User {
     @OneToMany(mappedBy = "user")
     @JsonManagedReference("user-sinistres")
     private List<Sinistre> sinistres;
+
+    @OneToMany(mappedBy = "user")
+    @JsonManagedReference
+    @JsonIgnore
+    private List<Notification> notifications;
 
     @Override
     public String toString() {
