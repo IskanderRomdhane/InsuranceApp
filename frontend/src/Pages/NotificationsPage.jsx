@@ -1,10 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { jwtDecode } from "jwt-decode";
-import { useNavigate } from "react-router-dom";
 
 const NotificationsPage = () => {
   const [notifications, setNotifications] = useState([]);
-  const navigate = useNavigate();
 
   useEffect(() => {
     const token = localStorage.getItem("access_token");
@@ -19,17 +17,6 @@ const NotificationsPage = () => {
     }
   }, []);
 
-  const handleNotificationClick = async (id) => {
-    try {
-      await fetch(`http://localhost:8081/api/notifications/${id}/read`, {
-        method: "PUT",
-      });
-      navigate(`/notifications/${id}`);
-    } catch (error) {
-      console.error("Error marking notification as read:", error);
-    }
-  };
-
   return (
     <div className="p-6 max-w-4xl mx-auto">
       <h2 className="text-xl font-bold mb-4">All Notifications</h2>
@@ -37,12 +24,7 @@ const NotificationsPage = () => {
         notifications.map((notification, idx) => (
           <div
             key={idx}
-            onClick={() => handleNotificationClick(notification.id)}
-            className={`relative cursor-pointer border-b border-gray-200 py-3 text-gray-800 px-4 ${
-              notification.read
-                ? "bg-white hover:bg-green-200"
-                : "bg-green-100 hover:bg-green-200"
-            }`}
+            className="border-b border-gray-200 py-3 text-gray-800 hover:bg-gray-50 px-4"
           >
             <p className="text-sm">{notification.message}</p>
             <p className="text-xs text-gray-500 mt-1">5 minutes ago</p>
