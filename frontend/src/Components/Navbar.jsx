@@ -119,7 +119,12 @@ const Navbar = () => {
                       className="px-4 py-3 hover:bg-gray-50 flex items-center space-x-3 border-b border-gray-100"
                     >
                       <div>
-                        <p className="text-sm text-gray-800">
+                        <p
+                          className="text-sm text-gray-800 cursor-pointer hover:underline"
+                          onClick={() =>
+                            navigate(`/notifications/${notification.id}`)
+                          }
+                        >
                           {notification.message}
                         </p>
                         <p className="text-xs text-gray-500 mt-1">
