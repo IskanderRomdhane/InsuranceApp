@@ -20,6 +20,7 @@ import Navbar from "./Components/Navbar.jsx";
 import PasswordPage from "./Pages/Auth/PasswordPage.jsx";
 import ChatbotWidget from "./Components/ChatbotWidget.jsx";
 import NotificationsPage from "./Pages/NotificationsPage.jsx";
+import NotificationDetail from "./Pages/NotificationDetail.jsx";
 
 const DashboardLayout = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -119,6 +120,7 @@ function App() {
           }
         />
         <Route path="/notifications" element={<NotificationsPage />} />
+        <Route path="/notifications/:id" element={<NotificationDetail />} />
       </Routes>
     </Router>
   );
