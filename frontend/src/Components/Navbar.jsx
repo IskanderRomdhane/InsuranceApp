@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useRef } from "react";
 import { jwtDecode } from "jwt-decode"; // Correct named import
 import Default_pfp from "/src/assets/NavBar/Default_pfp.jpg";
+import { useNavigate } from "react-router-dom";
 
 const Navbar = () => {
+  const navigate = useNavigate();
   const [showNotifications, setShowNotifications] = useState(false);
   const [notifications, setNotifications] = useState([]);
   const notificationRef = useRef(null);
@@ -52,10 +54,7 @@ const Navbar = () => {
   }, []);
 
   // Handle profile click
-  const handleProfileClick = () => {
-    // In a real app, you would use router navigation here
-    // For example with React Router: navigate('/profile')
-  };
+  const handleProfileClick = () => {};
 
   // Toggle notifications dropdown
   const toggleNotifications = () => {
@@ -64,14 +63,7 @@ const Navbar = () => {
 
   // Manually refresh notifications
   const handleViewAllNotifications = () => {
-    const token = localStorage.getItem("access_token");
-    if (token) {
-      const decoded = jwtDecode(token);
-      const userEmail = decoded.email;
-      fetchNotifications(userEmail);
-    } else {
-      console.error("No access token found in LocalStorage.");
-    }
+    navigate("/notifications");
   };
 
   return (
@@ -121,7 +113,7 @@ const Navbar = () => {
               {/* Notification Items */}
               <div className="max-h-80 overflow-y-auto">
                 {notifications.length > 0 ? (
-                  notifications.map((notification, index) => (
+                  [...notifications].slice(0, 5).map((notification, index) => (
                     <div
                       key={index}
                       className="px-4 py-3 hover:bg-gray-50 flex items-center space-x-3 border-b border-gray-100"
