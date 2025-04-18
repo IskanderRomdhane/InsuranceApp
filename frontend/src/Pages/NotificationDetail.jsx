@@ -38,7 +38,12 @@ const NotificationDetail = () => {
   return (
     <div className="p-6">
       <h2 className="text-2xl font-bold mb-4">Notification Details</h2>
-      <div className="bg-white shadow p-4 rounded">
+      <div className="bg-white shadow p-4 rounded relative">
+        {notification.read && (
+          <span className="absolute top-2 right-2 bg-green-100 text-green-800 text-xs font-semibold px-2 py-1 rounded-full">
+            Read
+          </span>
+        )}
         <p>
           <strong>ID:</strong> {notification.id}
         </p>

@@ -4,10 +4,7 @@ import com.backend.Insurance.User.User;
 import com.backend.Insurance.User.UserRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.security.core.Authentication;
 
 import java.util.List;
@@ -57,6 +54,20 @@ public class NotificationController {
         }
 
         return ResponseEntity.ok(notifications);
+    }
+
+    @PutMapping("/{id}/read")
+    public ResponseEntity<String> markNotificationAsRead(@PathVariable Long id) {
+        Optional<Notification> optionalNotification = notificationRepository.findById(id);
+
+        if (optionalNotification.isPresent()) {
+            Notification notification = optionalNotification.get();
+            notification.setRead(true);
+            notificationRepository.save(notification);
+            return ResponseEntity.ok("Notification marked as read");
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Notification not found");
+        }
     }
 
 }
