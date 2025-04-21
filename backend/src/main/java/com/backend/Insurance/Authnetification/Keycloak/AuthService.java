@@ -190,4 +190,27 @@ public class AuthService {
         UsersResource usersResource = keycloak.realm(realm).users();
         usersResource.get(userId).executeActionsEmail(Arrays.asList("UPDATE_PASSWORD"));
     }
+
+    public ResponseEntity<String> toggleUserStatus(String username, boolean enable) {
+        try {
+            Keycloak keycloak = KeycloakConfig.getInstance();
+            UsersResource usersResource = keycloak.realm(realm).users();
+            List<UserRepresentation> users = usersResource.search(username);
+
+            if (users.isEmpty()) {
+                return ResponseEntity.status(404).body("User not found");
+            }
+
+            UserRepresentation user = users.get(0);
+            user.setEnabled(enable);
+
+            UserResource userResource = usersResource.get(user.getId());
+            userResource.update(user);
+
+            return ResponseEntity.ok("User " + (enable ? "enabled" : "disabled") + " successfully");
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Error toggling user status: " + e.getMessage());
+        }
+    }
+
 }

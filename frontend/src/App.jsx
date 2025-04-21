@@ -21,6 +21,8 @@ import PasswordPage from "./Pages/Auth/PasswordPage.jsx";
 import ChatbotWidget from "./Components/ChatbotWidget.jsx";
 import NotificationsPage from "./Pages/NotificationsPage.jsx";
 import NotificationDetail from "./Pages/NotificationDetail.jsx";
+import UsersTable from "./Pages/Admin/user managment/UsersTable.jsx";
+import UserDetails from "./Pages/Admin/user managment/userDetails.jsx";
 
 const DashboardLayout = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -108,6 +110,22 @@ function App() {
           element={
             <DashboardLayout>
               <UsersReclamations />
+            </DashboardLayout>
+          }
+        />
+        <Route
+          path="admin/users"
+          element={
+            <DashboardLayout>
+              <UsersTable />
+            </DashboardLayout>
+          }
+        />
+        <Route
+          path="admin/users/:id"
+          element={
+            <DashboardLayout>
+              <UserDetails />
             </DashboardLayout>
           }
         />

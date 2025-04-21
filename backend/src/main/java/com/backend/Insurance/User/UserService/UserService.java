@@ -51,4 +51,28 @@ public class UserService {
         return ResponseEntity.ok("Users synchronized successfully");
     }
 
+    public ResponseEntity<List<User>> getAllUsers() {
+        return ResponseEntity.ok(userRepository.findAll());
+    }
+
+    public ResponseEntity<User> getUserById(Long id) {
+        return userRepository.findById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    public ResponseEntity<String> deleteUser(Long id) {
+        return userRepository.findById(id).map(user -> {
+            userRepository.delete(user);
+            return ResponseEntity.ok("User deleted successfully");
+        }).orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found"));
+    }
+
+    public ResponseEntity<User> updateUserStatus(Long id, boolean active) {
+        return userRepository.findById(id).map(user -> {
+            user.setActive(active);
+            return ResponseEntity.ok(userRepository.save(user));
+        }).orElse(ResponseEntity.notFound().build());
+    }
+
 }
