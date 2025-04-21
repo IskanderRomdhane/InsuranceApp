@@ -38,19 +38,12 @@ const NotificationsPage = () => {
           <div
             key={idx}
             onClick={() => handleNotificationClick(notification.id)}
-            className="relative cursor-pointer border-b border-gray-200 py-3 text-gray-800 hover:bg-gray-50 px-4"
+            className={`relative cursor-pointer border-b border-gray-200 py-3 text-gray-800 px-4 ${
+              notification.read
+                ? "bg-white hover:bg-green-200"
+                : "bg-green-100 hover:bg-green-200"
+            }`}
           >
-            {/* Badge */}
-            {notification.read ? (
-              <span className="absolute top-2 right-4 bg-green-100 text-green-800 text-xs font-semibold px-2 py-0.5 rounded-full">
-                Read
-              </span>
-            ) : (
-              <span className="absolute top-2 right-4 bg-red-100 text-red-800 text-xs font-semibold px-2 py-0.5 rounded-full">
-                Unread
-              </span>
-            )}
-
             <p className="text-sm">{notification.message}</p>
             <p className="text-xs text-gray-500 mt-1">5 minutes ago</p>
           </div>
