@@ -33,7 +33,7 @@ public class User {
     private String lastname;
     private String role;
     @Column(nullable = false)
-    private boolean active = true;
+    private boolean active = false;
     @OneToMany(mappedBy = "user")
     @JsonManagedReference("user-reclamations")
     private List<Reclamation> reclamation;

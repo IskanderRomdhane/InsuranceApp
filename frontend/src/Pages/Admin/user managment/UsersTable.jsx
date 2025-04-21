@@ -8,15 +8,7 @@ const UsersTable = () => {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [error, setError] = useState("");
-  const [statusFilter, setStatusFilter] = useState("all");
-  const [currentPage, setCurrentPage] = useState(1);
-  const [usersPerPage, setUsersPerPage] = useState(10);
   const navigate = useNavigate();
-
-  const indexOfLastUser = currentPage * usersPerPage;
-  const indexOfFirstUser = indexOfLastUser - usersPerPage;
-  const currentUsers = filteredUsers.slice(indexOfFirstUser, indexOfLastUser);
-  const totalPages = Math.ceil(filteredUsers.length / usersPerPage);
 
   const fetchUsers = async () => {
     setLoading(true);
@@ -42,35 +34,22 @@ const UsersTable = () => {
   }, []);
 
   useEffect(() => {
-    const filtered = users.filter((user) => {
-      const matchesSearch =
+    const filtered = users.filter(
+      (user) =>
         user.firstname?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         user.lastname?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         user.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         user.username?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        user.id.toString().includes(searchTerm);
-
-      const matchesStatus =
-        statusFilter === "all" ||
-        (statusFilter === "active" && user.active) ||
-        (statusFilter === "inactive" && !user.active);
-
-      return matchesSearch && matchesStatus;
-    });
-
-    setCurrentPage(1);
+        user.id.toString().includes(searchTerm)
+    );
     setFilteredUsers(filtered);
-  }, [searchTerm, statusFilter, users]);
-
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [usersPerPage]);
+  }, [searchTerm, users]);
 
   return (
     <div className="bg-white p-6 rounded-lg shadow-sm min-h-screen">
       <h1 className="text-2xl font-bold text-green-800 mb-6">Users</h1>
 
-      {/* Search and Filters */}
+      {/* Search */}
       <div className="mb-6 flex flex-col md:flex-row md:items-center gap-4">
         <div className="relative w-full md:w-1/3">
           <input
@@ -83,16 +62,6 @@ const UsersTable = () => {
           <Search className="absolute left-3 top-2.5 text-gray-400 w-5 h-5" />
         </div>
 
-        <select
-          value={statusFilter}
-          onChange={(e) => setStatusFilter(e.target.value)}
-          className="w-full md:w-1/4 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-        >
-          <option value="all">All</option>
-          <option value="active">Active</option>
-          <option value="inactive">Inactive</option>
-        </select>
-
         <button
           className="flex items-center justify-center bg-white text-gray-600 font-medium py-2 px-4 rounded-md hover:bg-green-200 transition-colors"
           onClick={fetchUsers}
@@ -102,7 +71,7 @@ const UsersTable = () => {
         </button>
       </div>
 
-      {/* Error Message */}
+      {/* Error message */}
       {error && (
         <div className="mb-6 p-4 bg-red-100 text-red-800 rounded-md">
           {error}
@@ -139,7 +108,7 @@ const UsersTable = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
-              {currentUsers.map((user) => (
+              {filteredUsers.map((user) => (
                 <tr
                   key={user.id}
                   className="hover:bg-green-50 cursor-pointer"
@@ -178,41 +147,6 @@ const UsersTable = () => {
             </tbody>
           </table>
         )}
-
-        {/* Pagination and Per Page Dropdown */}
-        <div className="flex flex-col md:flex-row justify-between items-center mt-6 gap-4 px-[50px] py-0">
-          <div className="flex space-x-2">
-            {Array.from({ length: totalPages }, (_, index) => (
-              <button
-                key={index}
-                onClick={() => setCurrentPage(index + 1)}
-                className={`px-3 py-1 rounded-md ${
-                  currentPage === index + 1
-                    ? "bg-green-600 text-white"
-                    : "bg-gray-200 text-gray-700"
-                }`}
-              >
-                {index + 1}
-              </button>
-            ))}
-          </div>
-
-          <div>
-            <label className="mr-2 text-sm text-gray-600">
-              Users per page:
-            </label>
-            <select
-              value={usersPerPage}
-              onChange={(e) => setUsersPerPage(Number(e.target.value))}
-              className="px-3 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 text-sm"
-            >
-              <option value={10}>10</option>
-              <option value={20}>20</option>
-              <option value={50}>50</option>
-              <option value={100}>100</option>
-            </select>
-          </div>
-        </div>
       </div>
     </div>
   );
