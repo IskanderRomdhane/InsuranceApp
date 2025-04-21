@@ -4,10 +4,7 @@ import com.backend.Insurance.User.User;
 import lombok.RequiredArgsConstructor;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
 
@@ -19,5 +16,22 @@ public class UserController {
     @PutMapping("/synchronize")
     public ResponseEntity<String> SyncUsers (@RequestBody List<User> userList){
         return userservice.syncUsers(userList);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<User>> getAllUsers() {
+        return userservice.getAllUsers();
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<User> getUserById(@PathVariable Long id) {
+        return userservice.getUserById(id);
+    }
+
+    @PutMapping("/{id}/status")
+    public ResponseEntity<User> updateUserStatus(
+            @PathVariable Long id,
+            @RequestParam boolean active) {
+        return userservice.updateUserStatus(id, active);
     }
 }
