@@ -8,6 +8,7 @@ const UsersTable = () => {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [error, setError] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
   const navigate = useNavigate();
 
   const fetchUsers = async () => {
@@ -34,16 +35,24 @@ const UsersTable = () => {
   }, []);
 
   useEffect(() => {
-    const filtered = users.filter(
-      (user) =>
+    const filtered = users.filter((user) => {
+      const matchesSearch =
         user.firstname?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         user.lastname?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         user.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         user.username?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        user.id.toString().includes(searchTerm)
-    );
+        user.id.toString().includes(searchTerm);
+
+      const matchesStatus =
+        statusFilter === "all" ||
+        (statusFilter === "active" && user.active) ||
+        (statusFilter === "inactive" && !user.active);
+
+      return matchesSearch && matchesStatus;
+    });
+
     setFilteredUsers(filtered);
-  }, [searchTerm, users]);
+  }, [searchTerm, statusFilter, users]);
 
   return (
     <div className="bg-white p-6 rounded-lg shadow-sm min-h-screen">
@@ -61,6 +70,16 @@ const UsersTable = () => {
           />
           <Search className="absolute left-3 top-2.5 text-gray-400 w-5 h-5" />
         </div>
+
+        <select
+          value={statusFilter}
+          onChange={(e) => setStatusFilter(e.target.value)}
+          className="w-full md:w-1/4 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+        >
+          <option value="all">All</option>
+          <option value="active">Active</option>
+          <option value="inactive">Inactive</option>
+        </select>
 
         <button
           className="flex items-center justify-center bg-white text-gray-600 font-medium py-2 px-4 rounded-md hover:bg-green-200 transition-colors"
