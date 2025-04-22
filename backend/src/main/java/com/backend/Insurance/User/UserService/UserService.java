@@ -1,6 +1,7 @@
 package com.backend.Insurance.User.UserService;
 
 import com.backend.Insurance.Authnetification.Keycloak.AuthService;
+import com.backend.Insurance.Authnetification.Keycloak.KeycloakService;
 import com.backend.Insurance.User.User;
 import com.backend.Insurance.User.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +18,8 @@ import java.util.Optional;
 public class UserService {
     private final UserRepository userRepository;
     private final AuthService authService;
+    private final KeycloakService keycloakService;
+
     public ResponseEntity<String> syncUsers(List<User> userList) {
         if (userList.isEmpty()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User list is empty");
@@ -69,10 +72,19 @@ public class UserService {
     }
 
     public ResponseEntity<User> updateUserStatus(Long id, boolean active) {
-        return userRepository.findById(id).map(user -> {
-            user.setActive(active);
-            return ResponseEntity.ok(userRepository.save(user));
+        return (ResponseEntity<User>) userRepository.findById(id).map(user -> {
+            try {
+                // First update Keycloak
+                keycloakService.updateUserEnabledStatus(user.getUsername(), active);
+
+                // Then update local DB
+                user.setActive(active);
+                return ResponseEntity.ok(userRepository.save(user));
+            } catch (Exception e) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            }
         }).orElse(ResponseEntity.notFound().build());
     }
+
 
 }
