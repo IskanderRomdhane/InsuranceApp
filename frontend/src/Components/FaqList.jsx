@@ -61,7 +61,7 @@ const FaqPage = () => {
       backgroundColor: "white",
       maxWidth: "600px",
       width: "100%",
-      // zIndex: 10,
+      zIndex: 10,
       padding: "2rem 1.5rem",
       borderRadius: "1rem",
       boxShadow: "rgb(154 229 181) 0px 4px 8px",
@@ -145,7 +145,7 @@ const FaqPage = () => {
         {/* Title */}
         <div style={styles.title}>
           <img style={styles.star} src={Star} alt="star" />
-          <h1 style={styles.titleText}>FAQs</h1>
+          <h1 style={styles.titleText}>FAQS</h1>
         </div>
 
         {/* Paginated FAQs */}
