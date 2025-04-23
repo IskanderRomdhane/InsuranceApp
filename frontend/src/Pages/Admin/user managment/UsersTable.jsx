@@ -9,7 +9,14 @@ const UsersTable = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [error, setError] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [currentPage, setCurrentPage] = useState(1);
+  const usersPerPage = 8;
   const navigate = useNavigate();
+
+  const indexOfLastUser = currentPage * usersPerPage;
+  const indexOfFirstUser = indexOfLastUser - usersPerPage;
+  const currentUsers = filteredUsers.slice(indexOfFirstUser, indexOfLastUser);
+  const totalPages = Math.ceil(filteredUsers.length / usersPerPage);
 
   const fetchUsers = async () => {
     setLoading(true);
@@ -47,6 +54,8 @@ const UsersTable = () => {
         statusFilter === "all" ||
         (statusFilter === "active" && user.active) ||
         (statusFilter === "inactive" && !user.active);
+
+      setCurrentPage(1);
 
       return matchesSearch && matchesStatus;
     });
@@ -127,7 +136,7 @@ const UsersTable = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
-              {filteredUsers.map((user) => (
+              {currentUsers.map((user) => (
                 <tr
                   key={user.id}
                   className="hover:bg-green-50 cursor-pointer"
@@ -166,6 +175,21 @@ const UsersTable = () => {
             </tbody>
           </table>
         )}
+        <div className="flex justify-center mt-6 space-x-2">
+          {Array.from({ length: totalPages }, (_, index) => (
+            <button
+              key={index}
+              onClick={() => setCurrentPage(index + 1)}
+              className={`px-3 py-1 rounded-md ${
+                currentPage === index + 1
+                  ? "bg-green-600 text-white"
+                  : "bg-gray-200 text-gray-700"
+              }`}
+            >
+              {index + 1}
+            </button>
+          ))}
+        </div>
       </div>
     </div>
   );
