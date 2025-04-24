@@ -20,7 +20,7 @@ public class DocumentController {
     private DocumentService documentService;
 
     @PostMapping("/upload")
-    public ResponseEntity<Document> uploadDocument(
+    public ResponseEntity<Documents> uploadDocument(
             @RequestParam("title") String title,
             @RequestParam("description") String description,
             @RequestParam("file") MultipartFile file) throws IOException {
@@ -28,18 +28,18 @@ public class DocumentController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Document> getDocument(@PathVariable Long id) {
+    public ResponseEntity<Documents> getDocument(@PathVariable Long id) {
         return ResponseEntity.ok(documentService.getDocument(id));
     }
 
     @GetMapping
-    public ResponseEntity<List<Document>> getAllDocuments() {
+    public ResponseEntity<List<Documents>> getAllDocuments() {
         return ResponseEntity.ok(documentService.getAllDocuments());
     }
 
     @GetMapping("/{id}/download")
     public ResponseEntity<Resource> downloadFile(@PathVariable Long id) {
-        Document document = documentService.getDocument(id);
+        Documents document = documentService.getDocument(id);
 
         return ResponseEntity.ok()
                 .contentType(MediaType.parseMediaType(document.getFileType()))

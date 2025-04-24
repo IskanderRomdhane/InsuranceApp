@@ -12,11 +12,11 @@ import java.util.List;
 public class DocumentServiceImpl implements DocumentService{
 
     @Autowired
-    private DocumentRepository documentRepository;
+    private DocumentsRepository documentRepository;
 
     @Override
-    public Document saveDocument(String title, String description, MultipartFile file) throws IOException {
-        Document doc = new Document();
+    public Documents saveDocument(String title, String description, MultipartFile file) throws IOException {
+        Documents doc = new Documents();
         doc.setTitle(title);
         doc.setDescription(description);
         doc.setFileName(file.getOriginalFilename());
@@ -26,18 +26,18 @@ public class DocumentServiceImpl implements DocumentService{
         doc.setData(file.getBytes());
         doc.setFileDownloadUri("/api/documents/" + doc.getId() + "/download"); // to be finalized after saving
 
-        Document saved = documentRepository.save(doc);
+        Documents saved = documentRepository.save(doc);
         saved.setFileDownloadUri("/api/documents/" + saved.getId() + "/download"); // update with real id
         return documentRepository.save(saved); // re-save to store the URI
     }
 
     @Override
-    public Document getDocument(Long id) {
+    public Documents getDocument(Long id) {
         return documentRepository.findById(id).orElseThrow(() -> new RuntimeException("Document not found"));
     }
 
     @Override
-    public List<Document> getAllDocuments() {
+    public List<Documents> getAllDocuments() {
         return documentRepository.findAll();
     }
 }
