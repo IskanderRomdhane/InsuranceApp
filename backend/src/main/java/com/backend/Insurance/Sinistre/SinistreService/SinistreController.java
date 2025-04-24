@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.ws.rs.Path;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -21,12 +22,13 @@ public class SinistreController {
     private final SinistreService sinistreService;
     @PostMapping("/creersinistre")
     private ResponseEntity<String> CreateSinistre(
-            @RequestParam("file") MultipartFile file,
-            @RequestParam("sinistre") String sinistreJson
+            @RequestParam("image") MultipartFile image,
+            @RequestParam("sinistre") String sinistreJson,
+            @RequestParam("document") MultipartFile document
     ){
         try {
             SinistreDTO sinistreDTO = objectMapper.readValue(sinistreJson, SinistreDTO.class);
-            return sinistreService.CreateSinistre(file , sinistreDTO);
+            return sinistreService.CreateSinistre(document ,image , sinistreDTO);
         }catch (Exception e){
             throw new RuntimeException(e.getMessage());
         }
@@ -42,22 +44,28 @@ public class SinistreController {
     }
     @GetMapping("/sinistres")
     //@PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<List<Sinistre>> getSinistres(){
+    public ResponseEntity<List<SinistreDTO>> getSinistres(){
         return  sinistreService.getSinistres();
     }
 
 
     @GetMapping("/getusersinistres/{userId}")
     //@PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<List<Sinistre>> GetUserRelamations (
+    public ResponseEntity<List<Sinistre>> GetUserSinistre (
             @PathVariable Long userId
     ){
         return sinistreService.GetUserSinistres(userId);
     }
-    @GetMapping("/getsinistre/{sinistreId}")
-    public ResponseEntity<Sinistre> GetRelamation (
+    @GetMapping("/getsinistre/id/{sinistreId}")
+    public ResponseEntity<Sinistre> GetSinistre (
             @PathVariable Long sinistreId
     ){
         return sinistreService.GetSinistre(sinistreId);
+    }
+    @GetMapping("/getsinistre/type/{sinistre_type}")
+    public ResponseEntity<List<?>> GetAutoMobileSinistres(
+            @PathVariable String sinistre_type
+    ){
+        return sinistreService.getAutoMobileSinistres(sinistre_type);
     }
 }

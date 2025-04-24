@@ -1,17 +1,24 @@
 package com.backend.Insurance.Sinistre.SinistreService;
 
+import com.backend.Insurance.Document.Document;
+import com.backend.Insurance.Document.DocumentRepository;
+import com.backend.Insurance.Document.DocumentService;
 import com.backend.Insurance.Emails.EmailSenderService;
 import com.backend.Insurance.Image.Image;
 import com.backend.Insurance.Image.ImageRepository;
 import com.backend.Insurance.Image.ImageService;
+import com.backend.Insurance.Sinistre.AutoMobile.AutoMobile;
 import com.backend.Insurance.Sinistre.DTOS.SinistreDTO;
-import com.backend.Insurance.Sinistre.Enums.Categorie;
 import com.backend.Insurance.Sinistre.Enums.Etat;
+import com.backend.Insurance.Sinistre.Habilitation.Habilitation;
+import com.backend.Insurance.Sinistre.Mapper.SinistreMapper;
+import com.backend.Insurance.Sinistre.Sante.Sante;
 import com.backend.Insurance.Sinistre.Sinistre;
 import com.backend.Insurance.Sinistre.SinistreRepository;
 import com.backend.Insurance.User.User;
 import com.backend.Insurance.User.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
@@ -31,34 +38,54 @@ public class SinistreService {
     private final ImageService imageService;
     private final ImageRepository imageRepository;
     private final SinistreRepository sinistreRepository;
+    private final DocumentService documentService;
+    private final DocumentRepository documentRepository;
+    @Autowired
+    private SinistreMapper sinistreMapper;
 
-
-    public ResponseEntity<String> CreateSinistre(MultipartFile image, SinistreDTO sinistreDTO) {
+    public ResponseEntity<String> CreateSinistre(MultipartFile document,MultipartFile image, SinistreDTO sinistreDTO) {
         Optional<User> optionalUser = userRepository.findById(sinistreDTO.getUserId());
         if (optionalUser.isPresent()) {
             User foundUser = optionalUser.get();
             List<Image> imageList = new ArrayList<>();
+            List<Document> documentList = new ArrayList<>();
+            Sinistre sinistre = Sinistre.builder()
+                    .images(imageList)
+                    .document(documentList)
+                    .description(sinistreDTO.getDescriptionSinistre())
+                    .object(sinistreDTO.getObjectSinistre())
+                    .etat(Etat.PENDING)
+                    .user(foundUser)
+                    .date(LocalDateTime.now())
+                    .amount(sinistreDTO.getAmount())
+                    .build();
+            sinistreRepository.save(sinistre);
             try {
                 String imageUrl = imageService.uploadImage(image);
                 Image imageSaved = Image.builder()
                         .imageUrl(imageUrl)
                         .name("user : " + foundUser.getId() + " Reclamation Image")
-                        .sinistre(null)
+                        .sinistre(sinistre)
                         .build();
                 imageList.add(imageSaved);
                 imageRepository.save(imageSaved);
+                sinistre.setImages(imageList);
             } catch (Exception e) {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
             }
-            Sinistre sinistre = Sinistre.builder()
-                    .images(imageList)
-                    .description(sinistreDTO.getDescriptionSinistre())
-                    .object(sinistreDTO.getObjectSinistre())
-                    .etat(Etat.PENDING)
-                    .categorie(Categorie.valueOf(sinistreDTO.getCategorie().toUpperCase()))
-                    .user(foundUser)
-                    .date(LocalDateTime.now())
-                    .build();
+            try {
+                String documentUrl = documentService.uploadDocument(document);
+                Document documentSaved = Document.builder()
+                        .documentUrl(documentUrl)
+                        .documentName("user : " + foundUser.getId() + " Reclamation Image")
+                        .sinistre(sinistre)
+                        .build();
+                documentList.add(documentSaved);
+                documentRepository.save(documentSaved);
+                sinistre.setDocument(documentList);
+            }catch (Exception e){
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+            }
             sinistreRepository.save(sinistre);
             List<Sinistre> sinistres =foundUser.getSinistres();
             if(sinistres == null){
@@ -89,9 +116,10 @@ public class SinistreService {
         }
     }
 
-    public ResponseEntity<List<Sinistre>> getSinistres() {
+    public ResponseEntity<List<SinistreDTO>> getSinistres() {
         List<Sinistre> sinistres = sinistreRepository.findAll();
-        return ResponseEntity.ok(sinistres);
+        List<SinistreDTO> sinistreDTOS = sinistreMapper.toDtoList(sinistres);
+        return ResponseEntity.ok(sinistreDTOS);
     }
 
     public ResponseEntity<List<Sinistre>> GetUserSinistres(Long userId) {
@@ -112,6 +140,15 @@ public class SinistreService {
             return ResponseEntity.ok(sinistre);
         }else {
             return ResponseEntity.status(HttpStatus.valueOf(404)).body(null);
+        }
+    }
+
+    public ResponseEntity<List<?>> getAutoMobileSinistres(String sinistre_type) {
+        switch (sinistre_type.toLowerCase()){
+            case "automobile": return ResponseEntity.ok(sinistreRepository.findBySubclass(AutoMobile.class));
+            case "habilitation": return ResponseEntity.ok(sinistreRepository.findBySubclass(Habilitation.class));
+            case "sante": return ResponseEntity.ok(sinistreRepository.findBySubclass(Sante.class));
+            default: return ResponseEntity.notFound().build();
         }
     }
 }
