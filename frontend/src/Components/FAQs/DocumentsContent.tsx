@@ -1,5 +1,7 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
 import { FileTextIcon, DownloadIcon, ExternalLinkIcon } from "lucide-react";
+
 interface Document {
   id: number;
   title: string;
@@ -8,51 +10,21 @@ interface Document {
   fileSize: string;
   updatedAt: string;
 }
+
 export const DocumentsContent = () => {
-  const documents: Document[] = [
-    {
-      id: 1,
-      title: "User Manual",
-      description: "Complete guide to using all features of our platform",
-      fileType: "PDF",
-      fileSize: "2.4 MB",
-      updatedAt: "June 12, 2023",
-    },
-    {
-      id: 2,
-      title: "API Documentation",
-      description:
-        "Technical documentation for developers integrating with our API",
-      fileType: "HTML",
-      fileSize: "Online",
-      updatedAt: "August 3, 2023",
-    },
-    {
-      id: 3,
-      title: "Security Whitepaper",
-      description:
-        "Details about our security practices and data protection measures",
-      fileType: "PDF",
-      fileSize: "1.8 MB",
-      updatedAt: "July 15, 2023",
-    },
-    {
-      id: 4,
-      title: "Quick Start Guide",
-      description: "Get up and running with our platform in minutes",
-      fileType: "PDF",
-      fileSize: "850 KB",
-      updatedAt: "September 5, 2023",
-    },
-    {
-      id: 5,
-      title: "Release Notes",
-      description: "Details about the latest features and bug fixes",
-      fileType: "HTML",
-      fileSize: "Online",
-      updatedAt: "October 1, 2023",
-    },
-  ];
+  const [documents, setDocuments] = useState<Document[]>([]);
+
+  useEffect(() => {
+    axios
+      .get("http://localhost:8081/api/documents") // update port if needed
+      .then((res) => setDocuments(res.data))
+      .catch((err) => console.error("Failed to fetch documents", err));
+  }, []);
+
+  const handleDownload = (id: number) => {
+    window.open(`http://localhost:8081/api/documents/${id}/download`, "_blank");
+  };
+
   return (
     <div className="bg-white rounded-lg shadow-md p-6">
       <h2 className="text-2xl font-semibold text-gray-800 mb-6">
@@ -80,12 +52,18 @@ export const DocumentsContent = () => {
             </div>
             <div className="flex items-center">
               {doc.fileType === "PDF" ? (
-                <button className="text-blue-600 hover:text-blue-800 flex items-center">
+                <button
+                  onClick={() => handleDownload(doc.id)}
+                  className="text-blue-600 hover:text-blue-800 flex items-center"
+                >
                   <DownloadIcon size={16} className="mr-1" />
                   <span className="text-sm">Download</span>
                 </button>
               ) : (
-                <button className="text-blue-600 hover:text-blue-800 flex items-center">
+                <button
+                  onClick={() => window.open(`/documents/${doc.id}`, "_blank")}
+                  className="text-blue-600 hover:text-blue-800 flex items-center"
+                >
                   <ExternalLinkIcon size={16} className="mr-1" />
                   <span className="text-sm">View Online</span>
                 </button>
