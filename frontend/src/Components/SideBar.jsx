@@ -37,14 +37,14 @@ const SideBar = ({ isOpen, setIsOpen }) => {
     {
       id: 'dashboard',
       title: 'Dashboard',
-      icon: <LayoutDashboard className="w-5 h-5 text-green-600 transition duration-75 group-hover:text-green-800" />,
+      icon: <LayoutDashboard className="w-5 h-5 text-[#476f66] transition duration-75 group-hover:text-[#3e6159]" />,
       link: '/dashboard',
       hasDropdown: false
     },
     {
       id: 'reclamations',
       title: 'Mes Reclamations',
-      icon: <FileWarning className="w-5 h-5 text-green-600 transition duration-75 group-hover:text-green-800" />,
+      icon: <FileWarning className="w-5 h-5 text-[#476f66] transition duration-75 group-hover:text-[#3e6159]" />,
       hasDropdown: true,
       submenu: [
         { title: 'Déposer réclamation', link: '/reclamations/deposer', icon: <Plus className="w-4 h-4" /> },
@@ -54,7 +54,7 @@ const SideBar = ({ isOpen, setIsOpen }) => {
     {
       id: 'sinistres',
       title: 'Mes sinistres',
-      icon: <Umbrella className="w-5 h-5 text-green-600 transition duration-75 group-hover:text-green-800" />,
+      icon: <Umbrella className="w-5 h-5 text-[#476f66] transition duration-75 group-hover:text-[#3e6159]" />,
       hasDropdown: true,
       submenu: [
         { title: 'Créer sinistre', link: '/sinistres/creer', icon: <Plus className="w-4 h-4" /> },
@@ -64,7 +64,7 @@ const SideBar = ({ isOpen, setIsOpen }) => {
     {
       id: 'agences',
       title: 'Agences',
-      icon: <MapPin className="w-5 h-5 text-green-600 transition duration-75 group-hover:text-green-800" />,
+      icon: <MapPin className="w-5 h-5 text-[#476f66] transition duration-75 group-hover:text-[#3e6159]" />,
       link: '/agences',
       hasDropdown: false
     }
@@ -74,14 +74,14 @@ const SideBar = ({ isOpen, setIsOpen }) => {
     {
       id: 'faqs',
       title: 'FAQs',
-      icon: <HelpCircle className="w-5 h-5 text-green-600 transition duration-75 group-hover:text-green-800" />,
+      icon: <HelpCircle className="w-5 h-5 text-[#476f66] transition duration-75 group-hover:text-[#3e6159]" />,
       link: '#',
       hasDropdown: false
     },
     {
       id: 'profile',
       title: 'Profile',
-      icon: <User className="w-5 h-5 text-green-600 transition duration-75 group-hover:text-green-800" />,
+      icon: <User className="w-5 h-5 text-[#476f66] transition duration-75 group-hover:text-[#3e6159]" />,
       link: '#',
       hasDropdown: false
     }
@@ -92,7 +92,7 @@ const SideBar = ({ isOpen, setIsOpen }) => {
       <button
         onClick={toggleSidebar}
         type="button"
-        className="fixed top-4 left-4 z-50 inline-flex items-center p-2 text-sm text-green-800 rounded-lg sm:hidden hover:bg-green-100 focus:outline-none focus:ring-2 focus:ring-green-300"
+        className="fixed top-4 left-4 z-50 inline-flex items-center p-2 text-sm text-[#3e6159] rounded-lg sm:hidden hover:bg-[#f5f8f7] focus:outline-none focus:ring-2 focus:ring-[#476f66]"
       >
         <span className="sr-only">Toggle sidebar</span>
         {isOpen ? <ChevronLeft className="w-6 h-6" /> : <ChevronRight className="w-6 h-6" />}
@@ -113,7 +113,7 @@ const SideBar = ({ isOpen, setIsOpen }) => {
                 </div>
                 <button
                   onClick={toggleSidebar}
-                  className="hidden sm:block text-green-800 hover:bg-green-100 rounded-lg p-1"
+                  className="hidden sm:block text-[#3e6159] hover:text-[#476f66] rounded-lg p-1"
                 >
                   <ChevronLeft className="w-5 h-5" />
                 </button>
@@ -123,7 +123,7 @@ const SideBar = ({ isOpen, setIsOpen }) => {
               <>
                 <button
                   onClick={toggleSidebar}
-                  className="hidden sm:block text-green-800 hover:bg-green-100 rounded-lg p-1 mt-4"
+                  className="hidden sm:block text-[#3e6159] hover:bg-[#476f66] hover:text-white rounded-lg p-1 mt-4"
                 >
                   <ChevronRight className="w-5 h-5" />
                 </button>
@@ -140,8 +140,8 @@ const SideBar = ({ isOpen, setIsOpen }) => {
                       href="#"
                       onClick={(e) => toggleMenu(item.id, e)}
                       className={`
-                        flex items-center justify-between p-2 rounded-lg hover:bg-green-100 group
-                        ${openMenus[item.id] ? 'bg-green-200 text-green-900' : 'text-green-800'}
+                        flex items-center justify-between p-2 rounded-lg hover:bg-[#f5f8f7] group
+                        ${openMenus[item.id] ? 'bg-[#e8efed] text-[#3e6159]' : 'text-[#3e6159]'}
                       `}
                     >
                       <div className="flex items-center">
@@ -163,11 +163,11 @@ const SideBar = ({ isOpen, setIsOpen }) => {
                             <NavLink
                               to={subItem.link}
                               className={({ isActive }) => `
-                                flex items-center p-2 text-sm rounded-lg hover:bg-green-100 group
-                                ${isActive ? 'bg-green-200 text-green-900' : 'text-green-800'}
+                                flex items-center p-2 text-sm rounded-lg hover:bg-[#f5f8f7] group
+                                ${isActive ? 'bg-[#e8efed] text-[#3e6159]' : 'text-[#3e6159]'}
                               `}
                             >
-                              <span className="w-4 h-4 text-green-600 transition duration-75 group-hover:text-green-800 mr-2">
+                              <span className="w-4 h-4 text-[#476f66] transition duration-75 group-hover:text-[#3e6159] mr-2">
                                 {subItem.icon}
                               </span>
                               <span>{subItem.title}</span>
@@ -181,8 +181,8 @@ const SideBar = ({ isOpen, setIsOpen }) => {
                   <NavLink
                     to={item.link}
                     className={({ isActive }) => `
-                      flex items-center p-2 rounded-lg hover:bg-green-100 group
-                      ${isActive ? 'bg-green-200 text-green-900' : 'text-green-800'}
+                      flex items-center p-2 rounded-lg hover:bg-[#f5f8f7] group
+                      ${isActive ? 'bg-[#e8efed] text-[#3e6159]' : 'text-[#3e6159]'}
                     `}
                   >
                     {item.icon}
@@ -196,15 +196,14 @@ const SideBar = ({ isOpen, setIsOpen }) => {
 
         {/* Bottom section for FAQs and Profile */}
         <div className="px-3 py-4 bg-white border-t border-gray-300">
-          {isOpen && <div className="mb-2 text-sm font-medium text-green-800 px-2">Support & Account</div>}
+          {isOpen && <div className="mb-2 text-sm font-medium text-[#3e6159] px-2">Support & Account</div>}
           <ul className="space-y-2 font-medium">
             {supportItems.map((item) => (
               <li key={item.id}>
                 <NavLink
                   to={item.link}
                   className={({ isActive }) => `
-                    flex items-center p-2 rounded-lg hover: group text-green-700
-                    
+                    flex items-center p-2 rounded-lg hover:bg-[#f5f8f7] group text-[#476f66]
                   `}
                 >
                   {item.icon}
