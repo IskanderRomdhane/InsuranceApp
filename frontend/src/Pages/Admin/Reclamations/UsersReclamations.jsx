@@ -3,6 +3,7 @@ import { Search, Filter, RefreshCw, AlertCircle, CheckCircle, Clock, FileText } 
 import ReclamationsTable from './ReclamationsTable';
 
 const UsersReclamations = () => {
+  
   return(
     <ReclamationsTable />
   )
