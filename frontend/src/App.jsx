@@ -24,6 +24,7 @@ import NotificationDetail from "./Pages/NotificationDetail.jsx";
 import UsersTable from "./Pages/Admin/user managment/UsersTable.jsx";
 import UserDetails from "./Pages/Admin/user managment/userDetails.jsx";
 import FaqList from "./Components/FaqList.jsx";
+import { FAQPage } from "./Components/FAQs/FAQPage.js";
 
 const DashboardLayout = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -86,7 +87,7 @@ function App() {
           path="/faqs"
           element={
             <DashboardLayout>
-              <FaqList />
+              <FAQPage />
             </DashboardLayout>
           }
         />
