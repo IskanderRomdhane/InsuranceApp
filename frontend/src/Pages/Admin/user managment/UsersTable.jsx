@@ -10,7 +10,7 @@ const UsersTable = () => {
   const [error, setError] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
-  const usersPerPage = 8;
+  const [usersPerPage, setUsersPerPage] = useState(10);
   const navigate = useNavigate();
 
   const indexOfLastUser = currentPage * usersPerPage;
@@ -55,19 +55,22 @@ const UsersTable = () => {
         (statusFilter === "active" && user.active) ||
         (statusFilter === "inactive" && !user.active);
 
-      setCurrentPage(1);
-
       return matchesSearch && matchesStatus;
     });
 
+    setCurrentPage(1);
     setFilteredUsers(filtered);
   }, [searchTerm, statusFilter, users]);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [usersPerPage]);
 
   return (
     <div className="bg-white p-6 rounded-lg shadow-sm min-h-screen">
       <h1 className="text-2xl font-bold text-green-800 mb-6">Users</h1>
 
-      {/* Search */}
+      {/* Search and Filters */}
       <div className="mb-6 flex flex-col md:flex-row md:items-center gap-4">
         <div className="relative w-full md:w-1/3">
           <input
@@ -99,7 +102,7 @@ const UsersTable = () => {
         </button>
       </div>
 
-      {/* Error message */}
+      {/* Error Message */}
       {error && (
         <div className="mb-6 p-4 bg-red-100 text-red-800 rounded-md">
           {error}
@@ -175,20 +178,40 @@ const UsersTable = () => {
             </tbody>
           </table>
         )}
-        <div className="flex justify-center mt-6 space-x-2">
-          {Array.from({ length: totalPages }, (_, index) => (
-            <button
-              key={index}
-              onClick={() => setCurrentPage(index + 1)}
-              className={`px-3 py-1 rounded-md ${
-                currentPage === index + 1
-                  ? "bg-green-600 text-white"
-                  : "bg-gray-200 text-gray-700"
-              }`}
+
+        {/* Pagination and Per Page Dropdown */}
+        <div className="flex flex-col md:flex-row justify-between items-center mt-6 gap-4 px-[50px] py-0">
+          <div className="flex space-x-2">
+            {Array.from({ length: totalPages }, (_, index) => (
+              <button
+                key={index}
+                onClick={() => setCurrentPage(index + 1)}
+                className={`px-3 py-1 rounded-md ${
+                  currentPage === index + 1
+                    ? "bg-green-600 text-white"
+                    : "bg-gray-200 text-gray-700"
+                }`}
+              >
+                {index + 1}
+              </button>
+            ))}
+          </div>
+
+          <div>
+            <label className="mr-2 text-sm text-gray-600">
+              Users per page:
+            </label>
+            <select
+              value={usersPerPage}
+              onChange={(e) => setUsersPerPage(Number(e.target.value))}
+              className="px-3 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 text-sm"
             >
-              {index + 1}
-            </button>
-          ))}
+              <option value={10}>10</option>
+              <option value={20}>20</option>
+              <option value={50}>50</option>
+              <option value={100}>100</option>
+            </select>
+          </div>
         </div>
       </div>
     </div>
