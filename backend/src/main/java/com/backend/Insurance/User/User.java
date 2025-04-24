@@ -29,6 +29,7 @@ public class User {
     private String firstname;
     private String lastname;
     private String role;
+    private String adresse;
     @OneToMany(mappedBy = "user")
     @JsonManagedReference("user-reclamations")
     private List<Reclamation> reclamation;
