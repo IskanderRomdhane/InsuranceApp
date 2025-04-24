@@ -13,6 +13,7 @@ import com.backend.Insurance.Reclamation.ReclamationRepository;
 import com.backend.Insurance.User.User;
 import com.backend.Insurance.User.UserRepository;
 import com.backend.Insurance.notification.Notification;
+import com.backend.Insurance.notification.NotificationRepository;
 import com.backend.Insurance.notification.NotificationService;
 import com.backend.Insurance.notification.NotificationStatus;
 import lombok.RequiredArgsConstructor;
@@ -37,6 +38,7 @@ public class ReclamationService {
     private final ImageService imageService;
     private final ImageRepository imageRepository;
     private final NotificationService notificationService;
+    private final NotificationRepository notificationRepository;
 
 
     public ResponseEntity<String> CreerReclamation(ReclamationDTO reclamationDTO , MultipartFile image) {
@@ -83,9 +85,9 @@ public class ReclamationService {
             }
 
 
-            emailSenderService.sendEmail(foundUser.getEmail() , "Reclamation", "Reclamation with ID :"+ reclamation.getId() +
-                    " created at the date :" + LocalDateTime.now() +
-                    " with reclamation status  :" + reclamation.getStatus());
+//            emailSenderService.sendEmail(foundUser.getEmail() , "Reclamation", "Reclamation with ID :"+ reclamation.getId() +
+//                    " created at the date :" + LocalDateTime.now() +
+//                    " with reclamation status  :" + reclamation.getStatus());
             return ResponseEntity.ok("User Reclamation saved Successfully");
         }else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User Not Found");
@@ -96,30 +98,40 @@ public class ReclamationService {
         Optional<Reclamation> reclamationOptional = reclamationRepository.findById(reclamationID);
         if(reclamationOptional.isPresent()){
             Reclamation reclamation = reclamationOptional.get();
+
+            // Update the reclamation status
             reclamation.setStatus(Status.valueOf(reclamationDTO.getStatus().toUpperCase()));
+            reclamationRepository.save(reclamation);
+
+            // Create a notification
+            Notification notification = Notification.builder()
+                    .status(NotificationStatus.valueOf(reclamationDTO.getStatus().toUpperCase()))
+                    .message("Your reclamation (ID: " + reclamation.getId() + ") status has been changed to " + reclamationDTO.getStatus())
+                    .user(reclamation.getUser())
+                    .build();
+
+            // Save the notification to the database
+            notificationRepository.save(notification);
+
+            // Send the notification to the user
             notificationService.sendNotification(
                     String.valueOf(reclamation.getUser().getId()),
-                    Notification
-                            .builder()
-                            .status(NotificationStatus.UNDER_REVIEW)
-                            .message("Your Reclamation is UNDER_REVIEW")
-                            .build());
-            reclamationRepository.save(reclamation);
-            emailSenderService.sendEmail(reclamation.getUser().getEmail() , "Reclamation status", "Reclamation with ID :"+ reclamation.getId() +
-                    " created at the date :" + LocalDateTime.now() +
-                    " reclamation status changed to  :" + reclamation.getStatus());
-            return ResponseEntity.ok("Status changed Successfully");
-        }else {
+                    notification
+            );
+
+            return ResponseEntity.ok("Status changed and notification saved successfully.");
+        } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Reclamation Not Found");
         }
     }
+
 
     public ResponseEntity<List<ReclamationResponseDTO>> RetrieveReclamations() {
         List<Reclamation> reclamations = reclamationRepository.findAll();
         List<ReclamationResponseDTO> response = new ArrayList<>();
         for (Reclamation reclamation:
                 reclamations
-             ) {
+        ) {
             List<String> imagesUrls = reclamation.getImages().stream()
                     .map(Image::getImageUrl)
                     .collect(Collectors.toList());

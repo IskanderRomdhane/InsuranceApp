@@ -120,16 +120,16 @@ public class AuthService {
             UsersResource instance = KeycloakConfig.getInstance().realm(realm).users();
             Response response = instance.create(user);
             if (response.getStatus() == 201) {
-                emailSenderService.sendEmail(userRep.getEmail(),
-                        "Création de votre compte",
-                        "Votre compte chez Wiqaya Insurance a été créé avec succès." +
-                                "\n\nVoici vos informations de connexion :" +
-                                "\nAdresse e-mail : " + userRep.getEmail() +
-                                "\nNom d'utilisateur : " + userRep.getUsername() +
-                                "\nMot de passe temporaire : " + password +
-                                "\n\n⚠️ Ce mot de passe est à usage unique et temporaire." +
-                                "\nVeuillez vous connecter dès que possible et le modifier pour sécuriser votre compte."
-                );
+//                emailSenderService.sendEmail(userRep.getEmail(),
+//                        "Création de votre compte",
+//                        "Votre compte chez Wiqaya Insurance a été créé avec succès." +
+//                                "\n\nVoici vos informations de connexion :" +
+//                                "\nAdresse e-mail : " + userRep.getEmail() +
+//                                "\nNom d'utilisateur : " + userRep.getUsername() +
+//                                "\nMot de passe temporaire : " + password +
+//                                "\n\n⚠️ Ce mot de passe est à usage unique et temporaire." +
+//                                "\nVeuillez vous connecter dès que possible et le modifier pour sécuriser votre compte."
+//                );
                 return response.getStatus();
             } else {
                 throw new RuntimeException("Failed to create user: HTTP Status : " + response.getStatus());
@@ -190,4 +190,27 @@ public class AuthService {
         UsersResource usersResource = keycloak.realm(realm).users();
         usersResource.get(userId).executeActionsEmail(Arrays.asList("UPDATE_PASSWORD"));
     }
+
+    public ResponseEntity<String> toggleUserStatus(String username, boolean enable) {
+        try {
+            Keycloak keycloak = KeycloakConfig.getInstance();
+            UsersResource usersResource = keycloak.realm(realm).users();
+            List<UserRepresentation> users = usersResource.search(username);
+
+            if (users.isEmpty()) {
+                return ResponseEntity.status(404).body("User not found");
+            }
+
+            UserRepresentation user = users.get(0);
+            user.setEnabled(enable);
+
+            UserResource userResource = usersResource.get(user.getId());
+            userResource.update(user);
+
+            return ResponseEntity.ok("User " + (enable ? "enabled" : "disabled") + " successfully");
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Error toggling user status: " + e.getMessage());
+        }
+    }
+
 }
