@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.util.List;
 
 public interface DocumentService {
-    Documents saveDocument(String title, String description, MultipartFile file) throws IOException;
-    Documents getDocument(Long id);
-    List<Documents> getAllDocuments();
+    Document saveDocument(String title, String description, MultipartFile file) throws IOException;
+    Document getDocument(Long id);
+    List<Document> getAllDocuments();
 }
