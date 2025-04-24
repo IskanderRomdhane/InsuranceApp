@@ -9,7 +9,6 @@ import ContactUs from "./Pages/ContactUs/ContactUs.jsx"
 import Dashboard from './Pages/User/Dashboard.jsx'
 import DeposerReclamations from './Pages/User/Reclamations/DeposerReclamations.jsx';
 import SideBar from './Components/SideBar.jsx';
-import Sinistres from './Pages/User/Sinistres/Sinistres.jsx';
 import Agences from './Pages/User/Agences/Agences.jsx';
 import ConsulterReclamation from './Pages/User/Reclamations/ConsulterReclamation.jsx';
 import AdminDashboard from './Pages/Admin/AdminDashboard.jsx';
@@ -19,7 +18,8 @@ import ReclamationDetails from './Pages/Admin/Reclamations/ReclamationDetails.js
 import Navbar from './Components/Navbar.jsx'
 import PasswordPage from "./Pages/Auth/PasswordPage.jsx";
 import ChatbotWidget from './Components/ChatbotWidget.jsx';
-
+import ConsulterSinistre from './Pages/User/Sinistres/ConsulterSinistre.jsx';
+import CreerSinistres from './Pages/User/Sinistres/CreerSinistres.jsx';
 const DashboardLayout = ({ children }) => {
     const [sidebarOpen, setSidebarOpen] = useState(true);
     const role = localStorage.getItem("client_role");
@@ -60,14 +60,6 @@ function App() {
                     element={
                         <DashboardLayout>
                             <Dashboard />
-                        </DashboardLayout>
-                    }
-                />
-                <Route
-                    path='/sinistres'
-                    element={
-                        <DashboardLayout>
-                            <Sinistres />
                         </DashboardLayout>
                     }
                 />
@@ -116,6 +108,22 @@ function App() {
                     element={
                         <DashboardLayout>
                             <ReclamationDetails />
+                        </DashboardLayout>
+                    }
+                />
+                <Route
+                    path='/sinistres/creer'
+                    element={
+                        <DashboardLayout>
+                            <CreerSinistres />
+                        </DashboardLayout>
+                    }
+                />
+                <Route
+                    path='/sinistres/consulter'
+                    element={
+                        <DashboardLayout>
+                            <ConsulterSinistre />
                         </DashboardLayout>
                     }
                 />
