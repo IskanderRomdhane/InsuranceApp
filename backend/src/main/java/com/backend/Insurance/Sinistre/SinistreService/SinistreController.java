@@ -34,7 +34,7 @@ public class SinistreController {
         }
     }
 
-    @PutMapping("/changeretat/{ReclamationID}")
+    @PutMapping("/changeretat/{sinistreId}")
     //@PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<String> ChangerStatus(
             @PathVariable Long sinistreId,
