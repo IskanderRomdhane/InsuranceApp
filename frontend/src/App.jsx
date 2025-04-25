@@ -26,30 +26,16 @@ import NotificationDetail from "./Pages/NotificationDetail.jsx";
 import UsersTable from "./Pages/Admin/user managment/UsersTable.jsx";
 import UserDetails from "./Pages/Admin/user managment/userDetails.jsx";
 import FaqList from "./Components/FaqList.jsx";
-import UserSinistres from "./Pages/Admin/Sinistres/UserSinistres.jsx";
 import { FAQPage } from "./Components/FAQs/FAQPage.js";
-import SinistresTable from "./Pages/Admin/Sinistres/SinistresTable.jsx";
-import SinistresDetails from "./Pages/Admin/Sinistres/SinistresDetails.jsx";
-import Profil from "./Pages/Profil/Profil.jsx";
-import {MyDashboardLayout} from "./Components/dashboard/DashboardLayout.tsx"
+
 const DashboardLayout = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
-  const [role, setRole] = useState(null);
-
-  useEffect(() => {
-    const storedRole = localStorage.getItem("client_role");
-    setRole(storedRole);
-  }, []);
-
-  if (!role) return null; 
-
+  const role = localStorage.getItem("client_role");
   const SidebarComponent = role === "client_admin" ? AdminSideBar : SideBar;
-  const Chatbot = role === "client_admin" ? null : ChatbotWidget;
 
   return (
     <div className="flex">
       <SidebarComponent isOpen={sidebarOpen} setIsOpen={setSidebarOpen} />
-      {Chatbot && <ChatbotWidget />}
       <div
         className={`flex flex-col flex-1 transition-all duration-300 ${
           sidebarOpen ? "ml-64" : "ml-16"
@@ -65,7 +51,7 @@ const DashboardLayout = ({ children }) => {
 function App() {
   return (
     <Router>
-      
+      <ChatbotWidget />
       <Routes>
         {/* Public routes */}
         <Route path="/" element={<Root />} />
@@ -74,28 +60,13 @@ function App() {
         <Route path="/aboutus" element={<AboutUs />} />
         <Route path="/contactus" element={<ContactUs />} />
         <Route path="/password" element={<PasswordPage />} />
-
+        
+        {/* Dashboard-related routes with layout */}
         <Route
           path="/dashboard"
           element={
             <DashboardLayout>
-              <MyDashboardLayout />
-            </DashboardLayout>
-          }
-        />
-        <Route
-          path="/admin/sinistre"
-          element={
-            <DashboardLayout>
-              <SinistresTable />
-            </DashboardLayout>
-          }
-        />
-        <Route
-          path="/admin/sinistre/details/:id"
-          element={
-            <DashboardLayout>
-              <SinistresDetails />
+              <Dashboard />
             </DashboardLayout>
           }
         />
@@ -192,14 +163,6 @@ function App() {
           element={
             <DashboardLayout>
               <UserDetails />
-            </DashboardLayout>
-          }
-        />
-        <Route
-          path="/profil"
-          element={
-            <DashboardLayout>
-              <Profil />
             </DashboardLayout>
           }
         />

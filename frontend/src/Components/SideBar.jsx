@@ -94,7 +94,7 @@ const SideBar = ({ isOpen, setIsOpen }) => {
       id: "profile",
       title: "Profile",
       icon: <User className="w-5 h-5 text-[#476f66] transition duration-75 group-hover:text-[#3e6159]" />,
-      link: "/profil",
+      link: "#",
     },
   ];
 
