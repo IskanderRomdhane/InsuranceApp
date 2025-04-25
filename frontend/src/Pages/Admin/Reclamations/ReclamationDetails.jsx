@@ -25,6 +25,7 @@ const ReclamationDetails = () => {
         const data = response.data;
         setClaim(data);
         setStatus(data.status);
+      
       } catch (error) {
         setError("Unable to retrieve claim details");
         console.error(error);
