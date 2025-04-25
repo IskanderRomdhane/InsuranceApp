@@ -20,6 +20,7 @@ import PasswordPage from "./Pages/Auth/PasswordPage.jsx";
 import ChatbotWidget from './Components/ChatbotWidget.jsx';
 import ConsulterSinistre from './Pages/User/Sinistres/ConsulterSinistre.jsx';
 import CreerSinistres from './Pages/User/Sinistres/CreerSinistres.jsx';
+import SinistrePage from './Pages/User/Sinistres/SinistrePage.jsx';
 const DashboardLayout = ({ children }) => {
     const [sidebarOpen, setSidebarOpen] = useState(true);
     const role = localStorage.getItem("client_role");
@@ -45,10 +46,8 @@ const DashboardLayout = ({ children }) => {
 function App() {
     return (
         <Router>
-            {/* Add ChatbotWidget here so it appears on all pages */}
             <ChatbotWidget />
             <Routes>
-                {/* Public routes without sidebar */}
                 <Route path="/" element={<Root />} />
                 <Route path='/login' element={<Login />} />
                 <Route path='/unauthorized' element={<Unauthorized />} />
@@ -108,6 +107,14 @@ function App() {
                     element={
                         <DashboardLayout>
                             <ReclamationDetails />
+                        </DashboardLayout>
+                    }
+                />
+                <Route
+                    path='sinistres/sinistre/:id'
+                    element={
+                        <DashboardLayout>
+                            <SinistrePage />
                         </DashboardLayout>
                     }
                 />

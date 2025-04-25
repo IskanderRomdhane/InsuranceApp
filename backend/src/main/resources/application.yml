@@ -4,10 +4,6 @@ spring:
     username: skander
     password: skander12
     driver-class-name: org.postgresql.Driver
-  servlet:
-    multipart:
-      max-file-size: 50MB
-      max-request-size: 50MB
   jpa:
     hibernate:
       ddl-auto: update
@@ -35,7 +31,6 @@ spring:
           enable: true
     username: skander20034@gmail.com
     password: bqzjpcvqtwevggsl
-
 
 server:
   port: 8081

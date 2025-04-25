@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { ChevronDown, ChevronUp, Filter, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
 
 export default function ClaimsPage() {
   const [claims, setClaims] = useState([]);
@@ -8,12 +9,13 @@ export default function ClaimsPage() {
   const [expandedId, setExpandedId] = useState(null);
   const [activeFilter, setActiveFilter] = useState('All');
   
-  // Pagination states
   const [currentPage, setCurrentPage] = useState(1);
   const [claimsPerPage] = useState(10);
-  
+  const navigate = useNavigate();
   const filterOptions = ['All', 'Sante', 'AutoMobile', 'Habilitation'];
-
+  const ClickHandler = (id) => {
+    navigate(`/sinistres/sinistre/${id}`);
+}  
   useEffect(() => {
     const fetchClaims = async () => {
       setLoading(true);
@@ -25,7 +27,7 @@ export default function ClaimsPage() {
         const response = await fetch(url);
         if (!response.ok) throw new Error('Failed to fetch claims');
         setClaims(await response.json());
-        setCurrentPage(1); // Reset to first page when filter changes
+        setCurrentPage(1);
         setError(null);
       } catch (err) {
         setError(err.message);
@@ -38,7 +40,6 @@ export default function ClaimsPage() {
     fetchClaims();
   }, [activeFilter]);
 
-  // Get current claims
   const indexOfLastClaim = currentPage * claimsPerPage;
   const indexOfFirstClaim = indexOfLastClaim - claimsPerPage;
   const currentClaims = claims.slice(indexOfFirstClaim, indexOfLastClaim);
@@ -48,12 +49,10 @@ export default function ClaimsPage() {
   const goToPage = (pageNumber) => {
     if (pageNumber > 0 && pageNumber <= totalPages) {
       setCurrentPage(pageNumber);
-      // Close any expanded item when changing pages
       setExpandedId(null);
     }
   };
 
-  // Status badge with color based on status
   const StatusBadge = ({ status }) => {
     const colors = {
       "APPROVED": "bg-green-100 text-green-800",
@@ -69,7 +68,6 @@ export default function ClaimsPage() {
     );
   };
 
-  // Reusable info field component
   const InfoField = ({ label, value }) => (
     <div>
       <p className="text-xs text-gray-500">{label}</p>
@@ -77,9 +75,7 @@ export default function ClaimsPage() {
     </div>
   );
 
-  // Render claim details based on type
   const renderClaimDetails = (claim) => {
-    // Common details for all claim types
     const commonDetails = (
       <>
         <div className="grid grid-cols-2 gap-4">
@@ -107,7 +103,7 @@ export default function ClaimsPage() {
         </div>
         
         <div className="mt-4 flex justify-end">
-          <button className="px-4 py-2 bg-[#476f66] text-white text-sm font-medium rounded-md hover:bg-[#3e6159]">
+          <button className="px-4 py-2 bg-[#476f66] text-white text-sm font-medium rounded-md hover:bg-[#3e6159]" onClick={() => ClickHandler(claim.id)}>
             View Details
           </button>
         </div>
