@@ -58,7 +58,4 @@ public class User {
         return firstname + " " + lastname;
     }
 
-    public GrantedAuthority getGrantedAuthority() {
-        return new SimpleGrantedAuthority(role);
-    }
 }
