@@ -1,7 +1,8 @@
 package com.backend.Insurance.Sinistre.Enums;
 
-public enum Categorie {
+public enum SinistreType {
     AUTOMOBILE,
-    SANTE,
-    HABITATION
+    HABILITATION,
+    SANTE
 }
+
