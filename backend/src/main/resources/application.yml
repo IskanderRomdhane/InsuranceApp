@@ -4,6 +4,10 @@ spring:
     username: skander
     password: skander12
     driver-class-name: org.postgresql.Driver
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 50MB
   jpa:
     hibernate:
       ddl-auto: update
@@ -20,17 +24,6 @@ spring:
         jwt:
           issuer-uri: http://localhost:8080/realms/InsuranceApp
           jwk-set-uri: http://localhost:8080/realms/InsuranceApp/protocol/openid-connect/certs
-  mail:
-    host: smtp.gmail.com
-    port: 2525
-    properties:
-      mail:
-        smtp:
-          auth: true
-        starttls:
-          enable: true
-    username: skander20034@gmail.com
-    password: bqzjpcvqtwevggsl
 
 server:
   port: 8081

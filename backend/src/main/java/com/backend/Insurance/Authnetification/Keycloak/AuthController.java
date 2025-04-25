@@ -32,4 +32,9 @@ public class AuthController {
         return  authService.updatePassword(request);
     }
 
+    @PutMapping("/toggle-status/{username}")
+    public ResponseEntity<String> toggleUserStatus(@PathVariable String username, @RequestParam boolean enable) {
+        return authService.toggleUserStatus(username, enable);
+    }
+
 }

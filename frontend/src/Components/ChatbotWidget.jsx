@@ -30,7 +30,7 @@ export default function ChatbotWidget() {
         try {
             // Create URL with properly encoded parameter
             const url = `http://localhost:8081/api/chatbot/send-message?userMessage=${encodeURIComponent(userMessage)}`;
-            
+
             const response = await fetch(url, {
                 method: 'POST',
                 headers: {
@@ -43,23 +43,23 @@ export default function ChatbotWidget() {
             }
 
             const data = await response.json();
-            
+
             // Handle the response based on your backend's response structure
             let botResponse = 'Sorry, I couldn\'t process your request.';
-            
+
             if (data && (data.answer || data.response)) {
                 botResponse = data.answer || data.response;
             }
-            
-            setChatHistory(prev => [...prev, { 
-                sender: 'bot', 
+
+            setChatHistory(prev => [...prev, {
+                sender: 'bot',
                 message: botResponse
             }]);
         } catch (error) {
             console.error('Error:', error);
-            setChatHistory(prev => [...prev, { 
-                sender: 'bot', 
-                message: 'Sorry, there was an error connecting to the chat service. Please try again later.' 
+            setChatHistory(prev => [...prev, {
+                sender: 'bot',
+                message: 'Sorry, there was an error connecting to the chat service. Please try again later.'
             }]);
         } finally {
             setIsLoading(false);
@@ -75,7 +75,7 @@ export default function ChatbotWidget() {
                     'Content-Type': 'application/json',
                 }
             });
-            
+
             if (response.ok) {
                 console.log('Connection to chatbot API successful');
             } else {
@@ -109,11 +109,11 @@ export default function ChatbotWidget() {
 
                     <div className="flex-1 p-3 overflow-y-auto bg-gray-50">
                         {chatHistory.map((chat, index) => (
-                            <div 
-                                key={index} 
+                            <div
+                                key={index}
                                 className={`mb-3 ${chat.sender === 'user' ? 'text-right' : ''}`}
                             >
-                                <div 
+                                <div
                                     className={`inline-block rounded-lg px-4 py-2 max-w-xs break-words ${
                                         chat.sender === 'user' 
                                             ? 'bg-blue-600 text-white' 
