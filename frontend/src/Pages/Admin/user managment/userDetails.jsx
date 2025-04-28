@@ -1,6 +1,17 @@
-import React, { useState, useEffect } from "react";
+"use client";
+
+import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Calendar, AlertCircle, ChevronLeft } from "lucide-react";
+import {
+  Calendar,
+  AlertCircle,
+  ChevronLeft,
+  User,
+  Mail,
+  UserCheck,
+  UserX,
+  Loader2,
+} from "lucide-react";
 import axios from "axios";
 
 const UserDetails = () => {
@@ -13,11 +24,11 @@ const UserDetails = () => {
   useEffect(() => {
     const fetchUserDetails = async () => {
       try {
-        const url = `http://localhost:8081/api/user/${id}`; // Adjust endpoint as needed
+        const url = `http://localhost:8081/api/user/${id}`;
         const response = await axios.get(url);
         setUser(response.data);
       } catch (error) {
-        setError("Unable to retrieve user details");
+        setError("Impossible de récupérer les détails de l'utilisateur");
         console.error(error);
       } finally {
         setLoading(false);
@@ -30,8 +41,8 @@ const UserDetails = () => {
   }, [id]);
 
   const formatDate = (dateString) => {
-    if (!dateString) return "Not Available";
-    return new Date(dateString).toLocaleString("en-US", {
+    if (!dateString) return "Non disponible";
+    return new Date(dateString).toLocaleString("fr-FR", {
       year: "numeric",
       month: "long",
       day: "numeric",
@@ -42,134 +53,220 @@ const UserDetails = () => {
 
   const toggleUserStatus = async () => {
     try {
+      setLoading(true);
       const url = `http://localhost:8081/api/user/${id}/status?active=${!user.active}`;
       const response = await axios.put(url);
-      setUser(response.data); // update local state with new status
+      setUser(response.data);
     } catch (error) {
-      console.error("Failed to update user status", error);
-      alert("Error updating user status.");
+      console.error(
+        "Échec de la mise à jour du statut de l'utilisateur",
+        error
+      );
+      alert("Erreur lors de la mise à jour du statut de l'utilisateur.");
+    } finally {
+      setLoading(false);
     }
   };
 
   if (loading) {
     return (
-      <main className="min-h-screen bg-white flex items-center justify-center">
-        <div className="relative">
-          <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-gray-600"></div>
-          <div className="absolute inset-0 animate-ping rounded-full h-16 w-16 border-2 border-gray-200"></div>
+      <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 flex items-center justify-center p-4">
+        <div className="w-full max-w-md bg-white rounded-lg shadow-lg p-6">
+          <div className="space-y-4">
+            <div className="h-8 bg-gray-200 rounded animate-pulse w-3/4"></div>
+            <div className="h-4 bg-gray-200 rounded animate-pulse w-1/2"></div>
+          </div>
+          <div className="space-y-6 mt-6">
+            <div className="space-y-2">
+              <div className="h-4 bg-gray-200 rounded animate-pulse w-1/4"></div>
+              <div className="h-10 bg-gray-200 rounded animate-pulse w-full"></div>
+            </div>
+            <div className="space-y-2">
+              <div className="h-4 bg-gray-200 rounded animate-pulse w-1/4"></div>
+              <div className="h-10 bg-gray-200 rounded animate-pulse w-full"></div>
+            </div>
+            <div className="space-y-2">
+              <div className="h-4 bg-gray-200 rounded animate-pulse w-1/4"></div>
+              <div className="h-10 bg-gray-200 rounded animate-pulse w-full"></div>
+            </div>
+          </div>
+          <div className="mt-6">
+            <div className="h-10 bg-gray-200 rounded animate-pulse w-full"></div>
+          </div>
         </div>
-      </main>
+      </div>
     );
   }
 
   if (error) {
     return (
-      <main className="min-h-screen bg-white flex items-center justify-center p-6">
-        <section className="bg-white border border-gray-300 rounded-lg p-8 max-w-md w-full">
-          <div className="flex items-center text-red-600 mb-6">
-            <AlertCircle className="w-8 h-8 mr-3" />
-            <h3 className="text-xl font-bold">Error</h3>
+      <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 flex items-center justify-center p-4">
+        <div className="w-full max-w-md bg-white rounded-lg shadow-lg border border-red-100 overflow-hidden">
+          <div className="p-6">
+            <div className="flex items-center text-red-600 mb-4">
+              <AlertCircle className="w-6 h-6 mr-2" />
+              <h2 className="text-xl font-bold">Erreur survenue</h2>
+            </div>
+            <p className="text-red-500 text-sm mb-4">{error}</p>
+            <p className="text-gray-600 mb-6">
+              Nous n'avons pas pu récupérer les détails de l'utilisateur
+              demandé. Veuillez réessayer ou contacter le support si le problème
+              persiste.
+            </p>
+            <button
+              onClick={() => navigate(-1)}
+              className="w-full py-2 px-4 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition-all duration-200 flex items-center justify-center"
+            >
+              <ChevronLeft className="w-4 h-4 mr-2" />
+              Retour à la liste des utilisateurs
+            </button>
           </div>
-          <p className="text-gray-600 mb-6 text-lg">{error}</p>
-          <button
-            onClick={() => navigate(-1)}
-            className="w-full py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-all duration-300"
-          >
-            Return to Users
-          </button>
-        </section>
-      </main>
+        </div>
+      </div>
     );
   }
 
   return (
-    <main className="min-h-screen bg-white py-12 px-4 sm:px-6 lg:px-8">
-      {/* Header */}
-      <header className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-800">User #{user.id}</h1>
-      </header>
-
-      {/* Main Content */}
-      <article className="space-y-10">
-        {/* User Info */}
-        <section className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 py-8 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-4xl mx-auto">
+        {/* Header */}
+        <div className="flex items-center mb-6">
+          <button
+            onClick={() => navigate(-1)}
+            className="mr-4 text-gray-600 hover:text-gray-900 p-2 rounded-full hover:bg-gray-200 transition-colors"
+          >
+            <ChevronLeft className="w-5 h-5" />
+          </button>
           <div>
-            <p className="text-sm text-gray-600 font-medium">User Role</p>
-            <p className="text-lg font-semibold text-gray-800">
-              {user.role || "USER"}
-            </p>
+            <h1 className="text-2xl font-bold text-gray-900">
+              Profil Utilisateur
+            </h1>
+            <p className="text-gray-500">Détails de l'utilisateur #{user.id}</p>
           </div>
-          <div className="mt-4 sm:mt-0 sm:ml-4 flex items-center text-gray-700">
-            <Calendar className="w-6 h-6 mr-3 text-gray-600" />
-            <div>
-              <p className="text-sm text-gray-500">Joined On</p>
-              <span className="text-base font-medium">
-                {formatDate(user.createdDate)}
+        </div>
+
+        {/* Main Card */}
+        <div className="bg-white rounded-lg shadow-lg overflow-hidden border-t-4 border-t-blue-500">
+          <div className="p-6 pb-4">
+            <div className="flex justify-between items-start">
+              <div>
+                <h2 className="text-2xl font-bold text-gray-900">
+                  {user.firstname || ""} {user.lastname || ""}
+                </h2>
+                <div className="flex items-center mt-1 text-gray-500">
+                  <Mail className="w-4 h-4 mr-1" />
+                  {user.email || "Aucun email disponible"}
+                </div>
+              </div>
+              <span
+                className={`px-3 py-1 rounded-full text-sm font-medium ${
+                  user.active
+                    ? "bg-green-100 text-green-800"
+                    : "bg-red-100 text-red-800"
+                }`}
+              >
+                {user.active ? "Actif" : "Inactif"}
               </span>
             </div>
           </div>
-        </section>
 
-        {/* User Details */}
-        <section className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700">
-                First Name
-              </label>
-              <p className="mt-1 p-2 w-full border border-gray-300 rounded-md bg-gray-50 text-gray-900">
-                {user.firstname || "N/A"}
-              </p>
+          <div className="border-t border-gray-200"></div>
+
+          <div className="p-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div className="space-y-6">
+                <div>
+                  <h3 className="text-sm font-medium text-gray-500 mb-2">
+                    Informations du Compte
+                  </h3>
+                  <div className="space-y-4">
+                    <div className="bg-gray-50 p-4 rounded-lg border border-gray-100">
+                      <p className="text-xs text-gray-500 mb-1">
+                        Nom d'utilisateur
+                      </p>
+                      <div className="flex items-center">
+                        <User className="w-4 h-4 mr-2 text-gray-400" />
+                        <p className="font-medium">
+                          {user.username || "Non défini"}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="bg-gray-50 p-4 rounded-lg border border-gray-100">
+                      <p className="text-xs text-gray-500 mb-1">Rôle</p>
+                      <p className="font-medium">
+                        {user.role || "UTILISATEUR"}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-6">
+                <div>
+                  <h3 className="text-sm font-medium text-gray-500 mb-2">
+                    Détails Personnels
+                  </h3>
+                  <div className="space-y-4">
+                    <div className="bg-gray-50 p-4 rounded-lg border border-gray-100">
+                      <p className="text-xs text-gray-500 mb-1">Prénom</p>
+                      <p className="font-medium">
+                        {user.firstname || "Non fourni"}
+                      </p>
+                    </div>
+
+                    <div className="bg-gray-50 p-4 rounded-lg border border-gray-100">
+                      <p className="text-xs text-gray-500 mb-1">Nom</p>
+                      <p className="font-medium">
+                        {user.lastname || "Non fourni"}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Last Name
-              </label>
-              <p className="mt-1 p-2 w-full border border-gray-300 rounded-md bg-gray-50 text-gray-900">
-                {user.lastname || "N/A"}
-              </p>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Email
-              </label>
-              <p className="mt-1 p-2 w-full border border-gray-300 rounded-md bg-gray-50 text-gray-900">
-                {user.email || "N/A"}
-              </p>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Username
-              </label>
-              <p className="mt-1 p-2 w-full border border-gray-300 rounded-md bg-gray-50 text-gray-900">
-                {user.username || "N/A"}
-              </p>
+
+            <div className="mt-8 p-4 bg-gray-50 rounded-lg border border-gray-100 flex items-center">
+              <Calendar className="w-5 h-5 mr-3 text-gray-500" />
+              <div>
+                <p className="text-xs text-gray-500">Compte créé le</p>
+                <p className="font-medium">{formatDate(user.createdDate)}</p>
+              </div>
             </div>
           </div>
-        </section>
-      </article>
 
-      {/* Footer */}
-      <footer className="mt-8 pt-6 border-t border-gray-200 flex flex-col sm:flex-row sm:justify-between items-center gap-4">
-        <button
-          onClick={toggleUserStatus}
-          className={`px-4 py-2 rounded-md transition-all duration-200 ${
-            user.active
-              ? "bg-red-500 text-white hover:bg-red-600"
-              : "bg-green-500 text-white hover:bg-green-600"
-          }`}
-        >
-          {user.active ? "Deactivate User" : "Activate User"}
-        </button>
+          <div className="p-6 border-t border-gray-200 flex flex-col sm:flex-row sm:justify-between gap-4">
+            <button
+              onClick={toggleUserStatus}
+              className={`px-4 py-2 rounded-md transition-all duration-200 flex items-center justify-center ${
+                user.active
+                  ? "bg-red-500 text-white hover:bg-red-600"
+                  : "bg-green-500 text-white hover:bg-green-600"
+              }`}
+              disabled={loading}
+            >
+              {loading ? (
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+              ) : user.active ? (
+                <UserX className="w-4 h-4 mr-2" />
+              ) : (
+                <UserCheck className="w-4 h-4 mr-2" />
+              )}
+              {user.active
+                ? "Désactiver l'utilisateur"
+                : "Activer l'utilisateur"}
+            </button>
 
-        <button
-          onClick={() => navigate(-1)}
-          className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition-all duration-200"
-        >
-          Back to Users
-        </button>
-      </footer>
-    </main>
+            <button
+              onClick={() => navigate(-1)}
+              className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition-all duration-200"
+            >
+              Retour à la liste des utilisateurs
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 };
 
