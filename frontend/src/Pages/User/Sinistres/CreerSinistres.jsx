@@ -10,16 +10,15 @@ const CreerSinistres = () => {
   const navigate = useNavigate();
   const [step, setStep] = useState(1);
   const totalSteps = 5;
-  
-  // Form data state
+
   const [formData, setFormData] = useState({
     userId: '302',
     type_sinistre: '',
     objectSinistre: '',
     descriptionSinistre: '',
     amount: '',
-    Matricule: '',
-    Location: '',
+    matricule: '',
+    location: '',
     propertyAddress: '',
     damageType: '',
     hospitalName: '',
@@ -29,7 +28,6 @@ const CreerSinistres = () => {
     document: null
   });
 
-  // Validation state
   const [verify, setVerify] = useState({
     type_sinistre: false,
     objectSinistreVer: false,
@@ -48,7 +46,6 @@ const CreerSinistres = () => {
   const validateStep = () => {
     switch (step) {
       case 1:
-        // Check if sinistre type is selected
         if (!formData.type_sinistre) {
           setVerify(prev => ({ ...prev, type_sinistre: true }));
           return false;
@@ -57,9 +54,7 @@ const CreerSinistres = () => {
       
       case 2:
         let isValid = true;
-        const requiredFields = ['objectSinistre', 'descriptionSinistre'];
-        
-        // Check required fields
+        const requiredFields = ['objectSinistre', 'descriptionSinistre']; 
         for (const field of requiredFields) {
           if (!formData[field]) {
             setVerify(prev => ({ ...prev, [`${field}Ver`]: true }));
@@ -112,7 +107,7 @@ const CreerSinistres = () => {
     }
   };
 
-  // Navigation functions
+
   const nextStep = () => {
     if (validateStep()) {
       setStep(step + 1);
@@ -125,7 +120,6 @@ const CreerSinistres = () => {
     }
   }
 
-  // Render current step content
   const renderStep = () => {
     switch (step) {
       case 1: return <SinistreType formData={formData} setFormData={setFormData} Verify={verify} setVerify={setVerify} />;
@@ -137,16 +131,12 @@ const CreerSinistres = () => {
     }
   };
 
-  // Step titles
   const stepTitles = ["Type", "Information", "Documents", "Review", "Confirmation"];
 
-  // Form submission handler
   const handleSubmit = async () => {
-    // Final validation
     let isValid = true;
     const requiredFields = ['type_sinistre', 'objectSinistre', 'descriptionSinistre'];
     
-    // Add type-specific requirements
     if (formData.type_sinistre === 'automobile') {
       requiredFields.push('Matricule', 'Location', 'amount');
     } else if (formData.type_sinistre === 'sante') {
@@ -154,8 +144,6 @@ const CreerSinistres = () => {
     } else if (formData.type_sinistre === 'habilitation') {
       requiredFields.push('propertyAddress', 'damageType');
     }
-    
-    // Check all fields
     for (const field of requiredFields) {
       if (!formData[field]) {
         const verifyField = field === 'type_sinistre' ? field : `${field}Ver`;
@@ -166,13 +154,10 @@ const CreerSinistres = () => {
     
     if (!isValid) return;
 
-    // Prepare form data for submission
     const reqData = new FormData();
     
     if (formData.image) reqData.append("image", formData.image);
     if (formData.document) reqData.append("document", formData.document);
-    
-    // Create type-specific data
     let sinistereData;
     switch (formData.type_sinistre) {
       case "automobile":
@@ -219,7 +204,6 @@ const CreerSinistres = () => {
     reqData.append("sinistre", JSON.stringify(sinistereData));
 
     try {
-      // Choose endpoint based on sinistre type
       let endpoint = "http://localhost:8081/api/sinistre";
       endpoint += `/${formData.type_sinistre}/creersinistre`;
 
@@ -230,7 +214,7 @@ const CreerSinistres = () => {
 
       if (response.ok) {
         console.log("Succès :", await response.text());
-        setStep(5); // Move to confirmation
+        setStep(5);
       } else {
         console.error("Erreur lors de l'envoi :", response.status);
       }
