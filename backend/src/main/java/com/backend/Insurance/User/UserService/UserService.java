@@ -64,8 +64,10 @@ public class UserService {
         return ResponseEntity.ok("Users synchronized successfully");
     }
 
-    public ResponseEntity<List<User>> getAllUsers() {
-        return ResponseEntity.ok(userRepository.findAll());
+    public ResponseEntity<List<UserDTO>> getAllUsers() {
+        List<User> userList = userRepository.findAll();
+        List<UserDTO> userDTOS = userMapper.toDtoList(userList);
+        return ResponseEntity.ok(userDTOS);
     }
 
     public ResponseEntity<UserDTO> getUserById(Long id) {
