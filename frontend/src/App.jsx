@@ -30,6 +30,7 @@ import UserSinistres from "./Pages/Admin/Sinistres/UserSinistres.jsx";
 import { FAQPage } from "./Components/FAQs/FAQPage.js";
 import SinistresTable from "./Pages/Admin/Sinistres/SinistresTable.jsx";
 import SinistresDetails from "./Pages/Admin/Sinistres/SinistresDetails.jsx";
+import Profil from "./Pages/Profil/Profil.jsx"
 const DashboardLayout = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const role = localStorage.getItem("client_role");
@@ -62,8 +63,7 @@ function App() {
         <Route path="/aboutus" element={<AboutUs />} />
         <Route path="/contactus" element={<ContactUs />} />
         <Route path="/password" element={<PasswordPage />} />
-        
-        {/* Dashboard-related routes with layout */}
+
         <Route
           path="/dashboard"
           element={
@@ -181,6 +181,14 @@ function App() {
           element={
             <DashboardLayout>
               <UserDetails />
+            </DashboardLayout>
+          }
+        />
+        <Route
+          path="/profil"
+          element={
+            <DashboardLayout>
+              <Profil />
             </DashboardLayout>
           }
         />
