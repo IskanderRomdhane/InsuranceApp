@@ -2,12 +2,10 @@ package com.backend.Insurance.Image;
 
 import com.backend.Insurance.Reclamation.Reclamation;
 import com.backend.Insurance.Sinistre.Sinistre;
+import com.backend.Insurance.User.User;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -33,4 +31,6 @@ public class Image {
     @JsonBackReference("sinistre-images")
     private Sinistre sinistre;
 
+    @OneToOne
+    private User user;
 }
