@@ -1,310 +1,199 @@
-import { useState, useEffect } from "react";
-import {
-  ChevronDown,
-  ChevronUp,
-  ChevronLeft,
-  ChevronRight,
-} from "lucide-react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useState, useEffect } from 'react';
+import { ChevronDown, ChevronUp, Filter, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
 
-export default function SinistresPage() {
-  const [sinistres, setSinistres] = useState([]);
+export default function ClaimsPage() {
+  const [claims, setClaims] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [expandedId, setExpandedId] = useState(null);
-
-  const [typeFiltre, setTypeFiltre] = useState("Tous");
-  const [statutFiltre, setStatutFiltre] = useState("Tous");
-  const [showTypeMenu, setShowTypeMenu] = useState(false);
-  const [showStatutMenu, setShowStatutMenu] = useState(false);
-
-  const [pageCourante, setPageCourante] = useState(1);
-  const [sinistreParPage] = useState(10);
+  const [activeFilter, setActiveFilter] = useState('All');
+  
+  const [currentPage, setCurrentPage] = useState(1);
+  const [claimsPerPage] = useState(10);
   const navigate = useNavigate();
-  const location = useLocation();
-
-  // Retrieve typeFiltre from location state on initial load
+  const filterOptions = ['All', 'Sante', 'AutoMobile', 'Habilitation'];
+  const ClickHandler = (id) => {
+    navigate(`/sinistres/sinistre/${id}`);
+}  
   useEffect(() => {
-    if (location.state?.typeFiltre) {
-      setTypeFiltre(location.state.typeFiltre);
-    }
-  }, [location.state]);
-
-  const typeFiltreOptions = ["Tous", "Sante", "AutoMobile", "Habilitation"];
-  const statutFiltreOptions = [
-    "Tous",
-    "PENDING",
-    "UNDER_REVIEW",
-    "ACCEPTED",
-    "REJECTED",
-  ];
-
-  const voirDetail = (id) => navigate(`/sinistres/sinistre/${id}`);
-
-  const statutCouleurs = {
-    ACCEPTED: {
-      bg: "bg-green-100",
-      text: "text-green-800",
-      border: "border-green-300",
-    },
-    PENDING: {
-      bg: "bg-yellow-100",
-      text: "text-yellow-800",
-      border: "border-yellow-300",
-    },
-    REJECTED: {
-      bg: "bg-red-100",
-      text: "text-red-800",
-      border: "border-red-300",
-    },
-    UNDER_REVIEW: {
-      bg: "bg-blue-100",
-      text: "text-blue-800",
-      border: "border-blue-300",
-    },
-  };
-
-  useEffect(() => {
-    const getSinistres = async () => {
+    const fetchClaims = async () => {
       setLoading(true);
       try {
-        let url = "http://localhost:8081/api/sinistre/sinistres";
-
-        if (typeFiltre !== "Tous") {
-          url = `http://localhost:8081/api/sinistre/getsinistre/type/${typeFiltre}`;
-        }
-
-        if (statutFiltre !== "Tous" && typeFiltre === "Tous") {
-          url = `http://localhost:8081/api/sinistre/getsinistre/statut/${statutFiltre}`;
-        }
-
+        const url = activeFilter === 'All' 
+          ? 'http://localhost:8081/api/sinistre/sinistres'
+          : `http://localhost:8081/api/sinistre/getsinistre/type/${activeFilter}`;
+        
         const response = await fetch(url);
-        if (!response.ok)
-          throw new Error("Échec de récupération des sinistres");
-        let data = await response.json();
-
-        if (statutFiltre !== "Tous" && typeFiltre !== "Tous") {
-          data = data.filter((sinistre) => sinistre.etat === statutFiltre);
-        }
-
-        setSinistres(data);
-        setPageCourante(1);
+        if (!response.ok) throw new Error('Failed to fetch claims');
+        setClaims(await response.json());
+        setCurrentPage(1);
         setError(null);
       } catch (err) {
         setError(err.message);
-        setSinistres([]);
+        setClaims([]);
       } finally {
         setLoading(false);
       }
     };
+    
+    fetchClaims();
+  }, [activeFilter]);
 
-    getSinistres();
-  }, [typeFiltre, statutFiltre]);
+  const indexOfLastClaim = currentPage * claimsPerPage;
+  const indexOfFirstClaim = indexOfLastClaim - claimsPerPage;
+  const currentClaims = claims.slice(indexOfFirstClaim, indexOfLastClaim);
+  const totalPages = Math.ceil(claims.length / claimsPerPage);
 
-  useEffect(() => {
-    const handleClickOutside = () => {
-      setShowTypeMenu(false);
-      setShowStatutMenu(false);
-    };
-
-    document.addEventListener("click", handleClickOutside);
-    return () => document.removeEventListener("click", handleClickOutside);
-  }, []);
-
-  const dernierIndex = pageCourante * sinistreParPage;
-  const premierIndex = dernierIndex - sinistreParPage;
-  const sinistresCourants = sinistres.slice(premierIndex, dernierIndex);
-  const totalPages = Math.ceil(sinistres.length / sinistreParPage);
-
-  const allerPage = (numero) => {
-    if (numero > 0 && numero <= totalPages) {
-      setPageCourante(numero);
+  // Change page
+  const goToPage = (pageNumber) => {
+    if (pageNumber > 0 && pageNumber <= totalPages) {
+      setCurrentPage(pageNumber);
       setExpandedId(null);
     }
   };
 
-  const BadgeStatut = ({ status }) => {
-    const couleur = statutCouleurs[status] || {
-      bg: "bg-gray-200",
-      text: "text-gray-700",
+  const StatusBadge = ({ status }) => {
+    const colors = {
+      "ACCEPTED": "bg-green-100 text-green-800",
+      "PENDING": "bg-yellow-100 text-yellow-800",
+      "REJECTED": "bg-red-100 text-red-800",
+      "UNDER_REVIEW": "bg-blue-100 text-blue-800"
     };
+    
     return (
-      <span
-        className={`px-2 py-1 rounded-md text-xs font-medium ${couleur.bg} ${couleur.text}`}
-      >
+      <span className={`px-2 py-1 rounded-md text-xs font-medium ${colors[status] || "bg-gray-200 text-gray-700"}`}>
         {status?.replace("_", " ")}
       </span>
     );
   };
 
-  const ChampInfo = ({ label, value }) => (
+  const InfoField = ({ label, value }) => (
     <div>
       <p className="text-xs text-gray-500">{label}</p>
       <p className="text-sm font-medium">{value}</p>
     </div>
   );
 
-  const afficherDetails = (sinistre) => (
-    <div className="p-4 rounded-b-lg">
-      <div className="grid grid-cols-2 gap-4">
-        <div>
-          <h4 className="text-sm font-medium text-gray-500">
-            Détails du sinistre
-          </h4>
-          <div className="mt-3 space-y-3">
-            <ChampInfo label="ID Sinistre" value={sinistre.id} />
-            <ChampInfo
-              label="Date"
-              value={new Date(sinistre.date).toLocaleDateString()}
-            />
-            <div>
-              <p className="text-xs text-gray-500">Statut</p>
-              <BadgeStatut status={sinistre.etat} />
+  const renderClaimDetails = (claim) => {
+    const commonDetails = (
+      <>
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <h4 className="text-sm font-medium text-gray-500">Claim Details</h4>
+            <div className="mt-3 space-y-3">
+              <InfoField label="Claim ID" value={claim.id} />
+              <InfoField label="Claim Date" value={new Date(claim.date).toLocaleDateString()} />
+              <div>
+                <p className="text-xs text-gray-500">Status</p>
+                <StatusBadge status={claim.etat} />
+              </div>
             </div>
           </div>
+          
+          {/* Type-specific details column */}
+          <div>
+          <div className="col-span-2">
+            <h4 className="text-sm font-medium text-gray-500">Description</h4>
+            <p className="mt-1 text-sm">{claim.descriptionSinistre}</p>
+          </div>
+          </div>
+          
+          
         </div>
-        <div>
-          <h4 className="text-sm font-medium text-gray-500">Description</h4>
-          <p className="mt-1 text-sm">{sinistre.descriptionSinistre}</p>
+        
+        <div className="mt-4 flex justify-end">
+          <button className="px-4 py-2 bg-[#476f66] text-white text-sm font-medium rounded-md hover:bg-[#3e6159]" onClick={() => ClickHandler(claim.id)}>
+            View Details
+          </button>
         </div>
-      </div>
-      <div className="mt-4 flex justify-end">
-        <button
-          className="px-4 py-2 bg-[#476f66] text-white text-sm font-medium rounded-md hover:bg-[#3e6159]"
-          onClick={() => voirDetail(sinistre.id)}
-        >
-          Voir détails
-        </button>
-      </div>
-    </div>
-  );
-
-  const MenuFiltre = ({
-    label,
-    options,
-    optionActive,
-    setOptionActive,
-    isOpen,
-    setIsOpen,
-  }) => {
-    const handleClick = (e) => {
-      e.stopPropagation();
-      setIsOpen(!isOpen);
-    };
-
-    const selectOption = (e, option) => {
-      e.stopPropagation();
-      setOptionActive(option);
-      setIsOpen(false);
-    };
+      </>
+    );
 
     return (
-      <div className="relative">
-        <button
-          onClick={handleClick}
-          className="flex items-center justify-between w-40 px-3 py-2 text-sm font-medium bg-white border border-gray-200 rounded-md shadow-sm hover:bg-gray-50"
-        >
-          <span>
-            {label}: {optionActive}
-          </span>
-          <ChevronDown className="w-4 h-4 ml-2" />
-        </button>
-
-        {isOpen && (
-          <div className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-md shadow-lg">
-            {options.map((option) => (
-              <button
-                key={option}
-                className={`block w-full px-4 py-2 text-left text-sm hover:bg-gray-100 ${
-                  optionActive === option ? "bg-gray-100 font-medium" : ""
-                }`}
-                onClick={(e) => selectOption(e, option)}
-              >
-                {option}
-              </button>
-            ))}
-          </div>
-        )}
+      <div className="p-4 rounded-b-lg">
+        {commonDetails}
       </div>
     );
   };
 
+  // Pagination component
   const Pagination = () => {
     if (totalPages <= 1) return null;
-
-    const pages = [];
-    const maxPages = 5;
-
-    let debut = Math.max(1, pageCourante - Math.floor(maxPages / 2));
-    let fin = Math.min(totalPages, debut + maxPages - 1);
-
-    if (fin - debut + 1 < maxPages) {
-      debut = Math.max(1, fin - maxPages + 1);
+    
+    const pageNumbers = [];
+    const maxDisplayPages = 5;
+    
+    let startPage = Math.max(1, currentPage - Math.floor(maxDisplayPages / 2));
+    let endPage = Math.min(totalPages, startPage + maxDisplayPages - 1);
+    
+    if (endPage - startPage + 1 < maxDisplayPages) {
+      startPage = Math.max(1, endPage - maxDisplayPages + 1);
     }
-
-    for (let i = debut; i <= fin; i++) {
-      pages.push(i);
+    
+    for (let i = startPage; i <= endPage; i++) {
+      pageNumbers.push(i);
     }
-
+    
     return (
       <div className="flex items-center justify-center space-x-2 mt-6">
         <button
-          onClick={() => allerPage(pageCourante - 1)}
-          disabled={pageCourante === 1}
+          onClick={() => goToPage(currentPage - 1)}
+          disabled={currentPage === 1}
           className={`p-2 rounded-md ${
-            pageCourante === 1
-              ? "text-gray-400 cursor-not-allowed"
-              : "text-gray-700 hover:bg-gray-100"
+            currentPage === 1 
+              ? 'text-gray-400 cursor-not-allowed' 
+              : 'text-gray-700 hover:bg-gray-100'
           }`}
         >
           <ChevronLeft className="h-5 w-5" />
         </button>
-
-        {debut > 1 && (
+        
+        {startPage > 1 && (
           <>
             <button
-              onClick={() => allerPage(1)}
+              onClick={() => goToPage(1)}
               className="px-3 py-1 rounded-md hover:bg-gray-100"
             >
               1
             </button>
-            {debut > 2 && <span className="px-1">...</span>}
+            {startPage > 2 && <span className="px-1">...</span>}
           </>
         )}
-
-        {pages.map((num) => (
+        
+        {pageNumbers.map(number => (
           <button
-            key={num}
-            onClick={() => allerPage(num)}
+            key={number}
+            onClick={() => goToPage(number)}
             className={`px-3 py-1 rounded-md ${
-              pageCourante === num
-                ? "bg-[#476f66] text-white"
-                : "hover:bg-gray-100"
+              currentPage === number 
+                ? 'bg-[#476f66] text-white' 
+                : 'hover:bg-gray-100'
             }`}
           >
-            {num}
+            {number}
           </button>
         ))}
-
-        {fin < totalPages && (
+        
+        {endPage < totalPages && (
           <>
-            {fin < totalPages - 1 && <span className="px-1">...</span>}
+            {endPage < totalPages - 1 && <span className="px-1">...</span>}
             <button
-              onClick={() => allerPage(totalPages)}
+              onClick={() => goToPage(totalPages)}
               className="px-3 py-1 rounded-md hover:bg-gray-100"
             >
               {totalPages}
             </button>
           </>
         )}
-
+        
         <button
-          onClick={() => allerPage(pageCourante + 1)}
-          disabled={pageCourante === totalPages}
+          onClick={() => goToPage(currentPage + 1)}
+          disabled={currentPage === totalPages}
           className={`p-2 rounded-md ${
-            pageCourante === totalPages
-              ? "text-gray-400 cursor-not-allowed"
-              : "text-gray-700 hover:bg-gray-100"
+            currentPage === totalPages 
+              ? 'text-gray-400 cursor-not-allowed' 
+              : 'text-gray-700 hover:bg-gray-100'
           }`}
         >
           <ChevronRight className="h-5 w-5" />
@@ -315,82 +204,69 @@ export default function SinistresPage() {
 
   return (
     <div className="max-w-4xl mx-auto p-4">
+      {/* Header */}
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Mes Sinistres</h1>
-        <div className="flex items-center space-x-4">
-          <MenuFiltre
-            label="Type"
-            options={typeFiltreOptions}
-            optionActive={typeFiltre}
-            setOptionActive={setTypeFiltre}
-            isOpen={showTypeMenu}
-            setIsOpen={(val) => {
-              setShowTypeMenu(val);
-              if (val) setShowStatutMenu(false);
-            }}
-          />
-
-          <MenuFiltre
-            label="Statut"
-            options={statutFiltreOptions}
-            optionActive={statutFiltre}
-            setOptionActive={setStatutFiltre}
-            isOpen={showStatutMenu}
-            setIsOpen={(val) => {
-              setShowStatutMenu(val);
-              if (val) setShowTypeMenu(false);
-            }}
-          />
+        <div className="flex items-center bg-white p-1 rounded-lg shadow-sm">
+          <Filter className="h-4 w-4 text-gray-400 ml-2" />
+          <div className="flex space-x-1 ml-2">
+            {filterOptions.map((option) => (
+              <button
+                key={option}
+                className={`px-3 py-1 text-sm font-medium rounded-md transition-colors ${
+                  activeFilter === option
+                    ? 'bg-[#476f66] text-white'
+                    : 'text-gray-700 hover:bg-gray-100'
+                }`}
+                onClick={() => setActiveFilter(option)}
+              >
+                {option}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
+      {/* Column Headers */}
       <div className="grid grid-cols-4 bg-gray-50 px-6 py-3 border-b border-gray-200">
         <div className="text-sm font-medium text-gray-500">Objet</div>
-        <div className="text-sm font-medium text-gray-500">Catégorie</div>
+        <div className="text-sm font-medium text-gray-500">Categorie</div>
         <div className="text-sm font-medium text-gray-500">Statut</div>
-        <div className="text-sm font-medium text-gray-500 text-right">
-          Montant
-        </div>
+        <div className="text-sm font-medium text-gray-500 text-right">Montant</div>
       </div>
 
+      {/* Main Content */}
       {loading ? (
         <div className="flex justify-center items-center h-64">
           <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#476f66]"></div>
         </div>
       ) : error ? (
         <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md">
-          <p className="font-medium">Erreur de chargement</p>
+          <p className="font-medium">Error loading claims</p>
           <p className="text-sm">{error}</p>
         </div>
-      ) : sinistres.length === 0 ? (
+      ) : claims.length === 0 ? (
         <div className="bg-gray-50 border border-gray-200 rounded-lg p-8 text-center">
-          <p className="text-gray-500">
-            Aucun sinistre trouvé pour les filtres sélectionnés.
-          </p>
+          <p className="text-gray-500">No claims found for the selected type.</p>
         </div>
       ) : (
         <>
           <div className="space-y-2">
-            {sinistresCourants.map((sinistre) => {
-              const isExpanded = expandedId === sinistre.id;
-              const borderColor =
-                statutCouleurs[sinistre.etat]?.border || "border-gray-200";
+            {currentClaims.map((claim) => {
+              const isExpanded = expandedId === claim.id;
 
               return (
                 <div
-                  key={sinistre.id}
-                  className={`border ${borderColor} overflow-hidden rounded-md`}
+                  key={claim.id}
+                  className="border border-gray-200 overflow-hidden rounded-md"
                 >
                   <div
                     className={`grid grid-cols-4 items-center p-4 cursor-pointer transition-colors ${
-                      isExpanded
-                        ? "bg-[#476f66] text-white hover:bg-[#3e6159]"
-                        : "bg-white text-gray-800 hover:bg-gray-50"
+                      isExpanded ? 'bg-[#476f66] text-white hover:bg-[#3e6159]' : 'bg-white text-gray-800 hover:bg-gray-50'
                     }`}
-                    onClick={() =>
-                      setExpandedId(isExpanded ? null : sinistre.id)
-                    }
+                    onClick={() => setExpandedId(isExpanded ? null : claim.id)}
                   >
+                    {/* Column 1: Object + Icon */}
                     <div className="flex items-center">
                       {isExpanded ? (
                         <ChevronUp className="h-5 w-5 mr-2" />
@@ -398,42 +274,40 @@ export default function SinistresPage() {
                         <ChevronDown className="h-5 w-5 mr-2 text-gray-500" />
                       )}
                       <div>
-                        <h3 className="font-medium">
-                          {sinistre.objectSinistre}
-                        </h3>
-                        <p
-                          className={`text-sm ${
-                            isExpanded ? "text-gray-200" : "text-gray-500"
-                          }`}
-                        >
-                          {sinistre.sinistre_type || sinistre.categorie}{" "}
-                          sinistre
+                        <h3 className="font-medium">{claim.objectSinistre}</h3>
+                        <p className={`text-sm ${isExpanded ? 'text-gray-200' : 'text-gray-500'}`}>
+                          {claim.sinistre_type || claim.categorie} sinistre
                         </p>
                       </div>
                     </div>
+
+                    {/* Column 2 */}
+                    <div className="text-sm">{claim.sinistre_type || claim.categorie}</div>
+
+                    {/* Column 3 */}
                     <div className="text-sm">
-                      {sinistre.sinistre_type || sinistre.categorie}
+                      <StatusBadge status={claim.etat} />
                     </div>
-                    <div className="text-sm">
-                      <BadgeStatut status={sinistre.etat} />
-                    </div>
+
+                    {/* Column 4 */}
                     <div className="text-right">
-                      <p className="font-bold">
-                        {sinistre.amount?.toFixed(2) || "0.00"} TND
-                      </p>
+                      <p className="font-bold">{claim.amount?.toFixed(2) || '0.00'} TND</p>
                     </div>
                   </div>
-                  {isExpanded && afficherDetails(sinistre)}
+
+                  {/* Expanded Details */}
+                  {isExpanded && renderClaimDetails(claim)}
                 </div>
               );
             })}
           </div>
-
+          
+          {/* Pagination controls */}
           <Pagination />
-
+          
+          {/* Claims count info */}
           <div className="mt-4 text-sm text-gray-500 text-center">
-            {premierIndex + 1}-{Math.min(dernierIndex, sinistres.length)} de{" "}
-            {sinistres.length} Sinistres
+             {indexOfFirstClaim + 1}-{Math.min(indexOfLastClaim, claims.length)} De {claims.length} Sinistres
           </div>
         </>
       )}
