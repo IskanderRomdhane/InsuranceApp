@@ -104,11 +104,11 @@ public class SinistreService {
         }
     }
 
-    public ResponseEntity<String> ChangerEtat(Long sinistreId , String etat) {
+    public ResponseEntity<String> ChangerEtat(Long sinistreId , SinistreDTO sinistreDTO) {
         Optional<Sinistre> sinistreOptional = sinistreRepository.findById(sinistreId);
         if(sinistreOptional.isPresent()){
             Sinistre sinistre = sinistreOptional.get();
-            sinistre.setEtat(Etat.valueOf(etat.toUpperCase()));
+            sinistre.setEtat(sinistreDTO.getEtat());
             sinistreRepository.save(sinistre);
             return ResponseEntity.ok("Etat changé avec succés");
         }else {
@@ -145,9 +145,9 @@ public class SinistreService {
 
     public ResponseEntity<List<?>> getAutoMobileSinistres(String sinistre_type) {
         switch (sinistre_type.toLowerCase()){
-            case "automobile": return ResponseEntity.ok(sinistreRepository.findBySubclass(AutoMobile.class));
-            case "habilitation": return ResponseEntity.ok(sinistreRepository.findBySubclass(Habilitation.class));
-            case "sante": return ResponseEntity.ok(sinistreRepository.findBySubclass(Sante.class));
+            case "automobile": return ResponseEntity.ok(sinistreMapper.toDtoList(sinistreRepository.findBySubclass(AutoMobile.class)));
+            case "habilitation": return ResponseEntity.ok(sinistreMapper.toDtoList(sinistreRepository.findBySubclass(Habilitation.class)));
+            case "sante": return ResponseEntity.ok(sinistreMapper.toDtoList(sinistreRepository.findBySubclass(Sante.class)));
             default: return ResponseEntity.notFound().build();
         }
     }

@@ -87,7 +87,7 @@ const Navbar = () => {
   return (
     <nav className="bg-white px-6 py-2 flex items-center justify-between">
       {/* Brand/Logo */}
-      <div className="text-lg font-bold text-gray-800">YourApp</div>
+      <div className="text-lg font-bold text-gray-800"></div>
 
       {/* Icons */}
       <div className="flex items-center space-x-6">
