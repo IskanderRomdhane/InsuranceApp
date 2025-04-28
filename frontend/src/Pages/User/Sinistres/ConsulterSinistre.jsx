@@ -231,7 +231,7 @@ export default function ClaimsPage() {
       <div className="grid grid-cols-4 bg-gray-50 px-6 py-3 border-b border-gray-200">
         <div className="text-sm font-medium text-gray-500">Objet</div>
         <div className="text-sm font-medium text-gray-500">Categorie</div>
-        <div className="text-sm font-medium text-gray-500">Statut</div>
+        <div className="text-sm font-medium text-gray-500">Statut </div>
         <div className="text-sm font-medium text-gray-500 text-right">Montant</div>
       </div>
 

@@ -2,6 +2,11 @@ package com.backend.Insurance.User.UserService;
 
 import com.backend.Insurance.Authnetification.Keycloak.AuthService;
 import com.backend.Insurance.Authnetification.Keycloak.KeycloakService;
+import com.backend.Insurance.Image.Image;
+import com.backend.Insurance.Image.ImageRepository;
+import com.backend.Insurance.Image.ImageService;
+import com.backend.Insurance.User.DTO.UserDTO;
+import com.backend.Insurance.User.Mapper.UserMapper;
 import com.backend.Insurance.User.User;
 import com.backend.Insurance.User.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -9,7 +14,10 @@ import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.ws.rs.core.Response;
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,7 +27,9 @@ public class UserService {
     private final UserRepository userRepository;
     private final AuthService authService;
     private final KeycloakService keycloakService;
-
+    private final ImageService imageService;
+    private final ImageRepository imageRepository;
+    private final UserMapper userMapper;
     public ResponseEntity<String> syncUsers(List<User> userList) {
         if (userList.isEmpty()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User list is empty");
@@ -54,14 +64,19 @@ public class UserService {
         return ResponseEntity.ok("Users synchronized successfully");
     }
 
-    public ResponseEntity<List<User>> getAllUsers() {
-        return ResponseEntity.ok(userRepository.findAll());
+    public ResponseEntity<List<UserDTO>> getAllUsers() {
+        List<User> userList = userRepository.findAll();
+        List<UserDTO> userDTOS = userMapper.toDtoList(userList);
+        return ResponseEntity.ok(userDTOS);
     }
 
-    public ResponseEntity<User> getUserById(Long id) {
-        return userRepository.findById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<UserDTO> getUserById(Long id) {
+        Optional<User> optionalUser = userRepository.findById(id);
+        if(optionalUser.isPresent()){
+            User user = optionalUser.get();
+            return ResponseEntity.ok(userMapper.toDto(user));
+        }
+        return ResponseEntity.notFound().build();
     }
 
     public ResponseEntity<String> deleteUser(Long id) {
@@ -86,5 +101,29 @@ public class UserService {
         }).orElse(ResponseEntity.notFound().build());
     }
 
+
+    public ResponseEntity<String> uploadProfilePicture(MultipartFile file, Long id) throws IOException {
+        Optional<User> optionalUser = userRepository.findById(id);
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get();
+            String imageUrl = imageService.uploadImage(file);
+            Image image = user.getProfilePicture();
+            if (image == null) {
+                image = Image.builder()
+                        .name("user : " + id + " profile picture")
+                        .imageUrl(imageUrl)
+                        .user(user)
+                        .build();
+            } else {
+                image.setImageUrl(imageUrl);
+                image.setName("user : " + id + " profile picture");
+            }
+            imageRepository.save(image);
+            user.setProfilePicture(image);
+            userRepository.save(user);
+            return ResponseEntity.ok("Image changed successfully");
+        }
+        return ResponseEntity.notFound().build();
+    }
 
 }

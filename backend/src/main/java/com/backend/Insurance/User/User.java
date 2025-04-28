@@ -1,5 +1,6 @@
 package com.backend.Insurance.User;
 
+import com.backend.Insurance.Image.Image;
 import com.backend.Insurance.Reclamation.Reclamation;
 import com.backend.Insurance.Sinistre.Sinistre;
 import com.backend.Insurance.notification.Notification;
@@ -33,7 +34,7 @@ public class User {
     private String lastname;
     private String role;
     @Column(nullable = false)
-    private boolean active = false;
+    private boolean active = true;
     private String adresse;
     @OneToMany(mappedBy = "user")
     @JsonManagedReference("user-reclamations")
@@ -46,6 +47,9 @@ public class User {
     @JsonManagedReference
     @JsonIgnore
     private List<Notification> notifications;
+
+    @OneToOne
+    private Image profilePicture;
 
     @Override
     public String toString() {
