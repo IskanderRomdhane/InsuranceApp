@@ -30,7 +30,8 @@ import UserSinistres from "./Pages/Admin/Sinistres/UserSinistres.jsx";
 import { FAQPage } from "./Components/FAQs/FAQPage.js";
 import SinistresTable from "./Pages/Admin/Sinistres/SinistresTable.jsx";
 import SinistresDetails from "./Pages/Admin/Sinistres/SinistresDetails.jsx";
-import Profil from "./Pages/Profil/Profil.jsx"
+import Profil from "./Pages/Profil/Profil.jsx";
+import {MyDashboardLayout} from "./Components/dashboard/DashboardLayout.tsx"
 const DashboardLayout = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const role = localStorage.getItem("client_role");
@@ -68,7 +69,7 @@ function App() {
           path="/dashboard"
           element={
             <DashboardLayout>
-              <Dashboard />
+              <MyDashboardLayout />
             </DashboardLayout>
           }
         />
