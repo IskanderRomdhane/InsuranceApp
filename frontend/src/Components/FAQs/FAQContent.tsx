@@ -23,7 +23,7 @@ export const FAQContent = () => {
         );
         setFaqs(response.data);
       } catch (error) {
-        console.error("Error fetching FAQs:", error);
+        console.error("Erreur lors de la récupération des FAQ :", error);
       }
     };
 
@@ -45,14 +45,14 @@ export const FAQContent = () => {
   const handlePageChange = (newPage: number) => {
     if (newPage >= 1 && newPage <= totalPages) {
       setCurrentPage(newPage);
-      setOpenItems([]); // close all open items when page changes
+      setOpenItems([]); // Close all open items when page changes
     }
   };
 
   return (
     <div className="bg-white rounded-lg shadow-md p-6">
       <h2 className="text-2xl font-semibold text-gray-800 mb-6">
-        Frequently Asked Questions
+        Questions fréquemment posées
       </h2>
       <div className="space-y-4">
         {currentFaqs.map((faq, index) => (
@@ -85,25 +85,30 @@ export const FAQContent = () => {
         <button
           onClick={() => handlePageChange(currentPage - 1)}
           disabled={currentPage === 1}
-          className="px-3 py-1 border rounded disabled:opacity-50"
+          className="px-4 py-2 bg-green-600 text-white rounded-full hover:bg-green-700 disabled:bg-green-300 transition"
         >
           &lt;
         </button>
+
+        {/* Page Numbers */}
         {[...Array(totalPages)].map((_, index) => (
           <button
             key={index + 1}
             onClick={() => handlePageChange(index + 1)}
-            className={`px-3 py-1 border rounded ${
-              currentPage === index + 1 ? "bg-green-100 font-semibold" : ""
+            className={`px-4 py-2 rounded-full border transition ${
+              currentPage === index + 1
+                ? "bg-green-600 text-white font-semibold"
+                : "bg-white text-gray-700 hover:bg-green-50"
             }`}
           >
             {index + 1}
           </button>
         ))}
+
         <button
           onClick={() => handlePageChange(currentPage + 1)}
           disabled={currentPage === totalPages}
-          className="px-3 py-1 border rounded disabled:opacity-50"
+          className="px-4 py-2 bg-green-600 text-white rounded-full hover:bg-green-700 disabled:bg-green-300 transition"
         >
           &gt;
         </button>
