@@ -1,18 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, FileText, Image as ImageIcon, Download, XCircle } from 'lucide-react';
-import axios from 'axios';
-import ReportModal from './ReportModal';
+import { ArrowLeft, CheckCircle, XCircle, Clock, AlertCircle, FileText, Image as ImageIcon, Download } from 'lucide-react';
+
 const SinistresDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [claim, setClaim] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [processingAction, setProcessingAction] = useState(false);
   const [activeImage, setActiveImage] = useState(null);
-  const [showModal, setShowModal] = useState(false);
-  const [aiReport, setAiReport] = useState('');
-  const [aiLoading, setAiLoading] = useState(false);
 
   useEffect(() => {
     const fetchClaimDetails = async () => {
@@ -20,17 +17,17 @@ const SinistresDetails = () => {
       try {
         const response = await fetch(`http://localhost:8081/api/sinistre/getsinistre/id/${id}`);
         if (!response.ok) {
-          throw new Error('Échec de récupération des détails du sinistre');
+          throw new Error('Failed to fetch claim details');
         }
         const data = await response.json();
         setClaim(data);
-        console.log(data);
+        // Set the first image as active by default if images exist
         if (data.images && data.images.length > 0) {
           setActiveImage(data.images[0].imageUrl);
         }
       } catch (err) {
         console.error(err);
-        setError('Impossible de charger les détails du sinistre. Veuillez réessayer plus tard.');
+        setError('Failed to load claim details. Please try again later.');
       } finally {
         setLoading(false);
       }
@@ -41,60 +38,35 @@ const SinistresDetails = () => {
     }
   }, [id]);
 
-  const handleStatusChange = async (status) => {
+  const handleStatusChange = async (newStatus) => {
+    setProcessingAction(true);
     try {
-      const url = `http://localhost:8081/api/sinistre/changeretat/${id}`;
-      const response = await axios.put(
-        url,
-        {etat: status},
-        {
-          headers: { "Content-Type": "application/json" },
-        }
-      );
+      // Using the correct API endpoint from the provided documentation
+      const response = await fetch(`http://localhost:8081/api/sinistre/changeretat/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newStatus), // Send the status as a plain string as per the API's expectation
+      });
 
-      if (response.status === 200) {
-        setClaim(prev => ({
-          ...prev,
-          etat: status
-        }));
-        setShowModal(false);
-      } else {
-        throw new Error('Échec de mise à jour du statut');
+      if (!response.ok) {
+        throw new Error('Failed to update status');
       }
+
+      // Update the local state to reflect the change
+      setClaim(prev => ({
+        ...prev,
+        etat: newStatus
+      }));
+      
+      // Show success message
+      alert(`Status successfully updated to ${newStatus}`);
     } catch (err) {
       console.error(err);
-    }
-  };
-
-  const generateAIDecision = async () => {
-    setAiLoading(true);
-    try {
-      const url = `http://localhost:8081/api/model/generate-response/${claim.id}`;
-      console.log(`Making request to: ${url}`);
-      
-      const response = await axios.get(url);
-      console.log('API Response:', response.data);
-      
-      if (response.status === 200) {
-        // Extract the 'response' property from the API response object
-        if (response.data && response.data.response) {
-          setAiReport(response.data.response);
-        } else {
-          // Fallback in case the structure is different
-          setAiReport(typeof response.data === 'string' 
-            ? response.data 
-            : JSON.stringify(response.data, null, 2));
-        }
-        
-        setShowModal(true);
-      } else {
-        throw new Error(`Échec de génération du rapport: Status ${response.status}`);
-      }
-    } catch (err) {
-      console.error('API Error:', err);
-      setAiReport("Une erreur s'est produite lors de la génération du rapport.");
+      alert('Failed to update status. Please try again.');
     } finally {
-      setAiLoading(false);
+      setProcessingAction(false);
     }
   };
 
@@ -113,21 +85,6 @@ const SinistresDetails = () => {
     }
   };
 
-  const getStatusInFrench = (status) => {
-    switch (status) {
-      case 'ACCEPTED':
-        return 'ACCEPTÉ';
-      case 'REJECTED':
-        return 'REJETÉ';
-      case 'PENDING':
-        return 'EN ATTENTE';
-      case 'UNDER_REVIEW':
-        return 'EN COURS D\'EXAMEN';
-      default:
-        return status;
-    }
-  };
-
   if (loading) {
     return (
       <div className="flex justify-center items-center h-64">
@@ -140,13 +97,13 @@ const SinistresDetails = () => {
     return (
       <div className="max-w-4xl mx-auto p-4">
         <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md">
-          <p className="font-medium">Erreur</p>
+          <p className="font-medium">Error</p>
           <p className="text-sm">{error}</p>
           <button 
             className="mt-3 px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
             onClick={() => navigate('/admin/sinistre')}
           >
-            Retour à la liste des sinistres
+            Return to Claims List
           </button>
         </div>
       </div>
@@ -157,12 +114,12 @@ const SinistresDetails = () => {
     return (
       <div className="max-w-4xl mx-auto p-4">
         <div className="bg-gray-50 border border-gray-200 rounded-lg p-8 text-center">
-          <p className="text-gray-500">Aucun sinistre trouvé avec cet identifiant.</p>
+          <p className="text-gray-500">No claim found with the provided ID.</p>
           <button 
             className="mt-3 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
             onClick={() => navigate('/admin/sinistre')}
           >
-            Retour à la liste des sinistres
+            Return to Claims List
           </button>
         </div>
       </div>
@@ -174,23 +131,19 @@ const SinistresDetails = () => {
 
   return (
     <div className="max-w-4xl mx-auto p-4">
-      {/* Modal */}
-      {showModal && <ReportModal 
-      setShowModal = {setShowModal} 
-      handleStatusChange = {handleStatusChange}
-      aiReport={aiReport}
-      />}
-
+      {/* Back button and title */}
       <div className="mb-6">
         <button 
           className="flex items-center text-gray-600 hover:text-gray-900"
           onClick={() => navigate('/admin/sinistre')}
         >
           <ArrowLeft className="h-4 w-4 mr-1" />
-          <span>Retour à la liste des sinistres</span>
+          <span>Back to Claims List</span>
         </button>
-        <h1 className="text-2xl font-bold mt-2">Détails du sinistre</h1>
+        <h1 className="text-2xl font-bold mt-2">Claim Details</h1>
       </div>
+
+      {/* Claim header card */}
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
         <div className="flex justify-between">
           <div>
@@ -199,74 +152,74 @@ const SinistresDetails = () => {
           </div>
           <div className="flex items-center">
             <span className={`ml-2 px-3 py-1 rounded-full text-sm font-medium border ${getStatusBadgeColor(claim.etat)}`}>
-              {getStatusInFrench(claim.etat)}
+              {claim.etat?.replace("_", " ")}
             </span>
           </div>
         </div>
       </div>
 
-      {/* Contenu principal */}
+      {/* Main content */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {/* Colonne gauche */}
+        {/* Left column */}
         <div className="md:col-span-2 space-y-6">
-          {/* Carte d'informations de base */}
+          {/* Basic information card */}
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-            <h3 className="text-lg font-medium mb-4">Informations de base</h3>
+            <h3 className="text-lg font-medium mb-4">Basic Information</h3>
             
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <p className="text-sm text-gray-500">Objet du sinistre</p>
+                <p className="text-sm text-gray-500">Claim Object</p>
                 <p className="font-medium">{claim.object || claim.objectSinistre}</p>
               </div>
               <div>
-                <p className="text-sm text-gray-500">Montant</p>
+                <p className="text-sm text-gray-500">Amount</p>
                 <p className="font-medium">{claim.amount?.toFixed(2) || '0.00'} TND</p>
               </div>
               <div>
-                <p className="text-sm text-gray-500">Date de soumission</p>
+                <p className="text-sm text-gray-500">Date Submitted</p>
                 <p className="font-medium">{new Date(claim.date).toLocaleDateString()} {new Date(claim.date).toLocaleTimeString()}</p>
               </div>
               <div>
-                <p className="text-sm text-gray-500">ID du sinistre</p>
+                <p className="text-sm text-gray-500">Claim ID</p>
                 <p className="font-medium">{claim.id}</p>
               </div>
               {claim.matricule && (
                 <div>
-                  <p className="text-sm text-gray-500">Immatriculation</p>
+                  <p className="text-sm text-gray-500">License Plate</p>
                   <p className="font-medium">{claim.matricule}</p>
                 </div>
               )}
               {claim.location && (
                 <div>
-                  <p className="text-sm text-gray-500">Lieu</p>
+                  <p className="text-sm text-gray-500">Location</p>
                   <p className="font-medium">{claim.location}</p>
                 </div>
               )}
             </div>
           </div>
 
-          {/* Carte de description */}
+          {/* Description card */}
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
             <h3 className="text-lg font-medium mb-4">Description</h3>
             <p className="text-gray-700 whitespace-pre-line">{claim.description || claim.descriptionSinistre}</p>
           </div>
 
-          {/* Section des images */}
+          {/* Images section */}
           {hasImages && (
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
               <h3 className="text-lg font-medium mb-4">
                 <div className="flex items-center">
                   <ImageIcon className="h-5 w-5 mr-2 text-gray-600" />
-                  Photos justificatives
+                  Supporting Images
                 </div>
               </h3>
               
               <div className="mt-4">
-                {/* Affichage de l'image principale */}
+                {/* Main image display */}
                 <div className="w-full border border-gray-200 rounded-lg overflow-hidden mb-4">
                   <img 
                     src={activeImage} 
-                    alt="Preuve du sinistre" 
+                    alt="Claim evidence" 
                     className="w-full h-64 object-contain"
                     onError={(e) => {
                       e.target.onerror = null;
@@ -275,7 +228,7 @@ const SinistresDetails = () => {
                   />
                 </div>
                 
-                {/* Sélecteur de miniatures */}
+                {/* Thumbnail selector */}
                 {claim.images.length > 1 && (
                   <div className="flex space-x-2 overflow-x-auto pb-2">
                     {claim.images.map((image, index) => (
@@ -288,7 +241,7 @@ const SinistresDetails = () => {
                       >
                         <img 
                           src={image.imageUrl} 
-                          alt={`Miniature ${index + 1}`} 
+                          alt={`Thumbnail ${index + 1}`} 
                           className="w-full h-full object-cover"
                           onError={(e) => {
                             e.target.onerror = null;
@@ -303,13 +256,13 @@ const SinistresDetails = () => {
             </div>
           )}
 
-          {/* Section des documents */}
+          {/* Documents section */}
           {hasDocuments && (
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
               <h3 className="text-lg font-medium mb-4">
                 <div className="flex items-center">
                   <FileText className="h-5 w-5 mr-2 text-gray-600" />
-                  Documents justificatifs
+                  Supporting Documents
                 </div>
               </h3>
               
@@ -320,7 +273,7 @@ const SinistresDetails = () => {
                       <FileText className="h-5 w-5 text-gray-600 mr-3" />
                       <div>
                         <p className="font-medium">{doc.documentName}</p>
-                        <p className="text-xs text-gray-500">ID du document: {doc.id}</p>
+                        <p className="text-xs text-gray-500">Document ID: {doc.id}</p>
                       </div>
                     </div>
                     <a 
@@ -330,7 +283,7 @@ const SinistresDetails = () => {
                       className="flex items-center px-3 py-1 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700"
                     >
                       <Download className="h-4 w-4 mr-1" />
-                      Voir
+                      View
                     </a>
                   </div>
                 ))}
@@ -338,29 +291,70 @@ const SinistresDetails = () => {
             </div>
           )}
           
+          {/* Show message if no images or documents */}
+          {!hasImages && !hasDocuments && (
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+              <h3 className="text-lg font-medium mb-4">Supporting Materials</h3>
+              <p className="text-gray-500 italic">No documents or images attached to this claim.</p>
+            </div>
+          )}
         </div>
 
-        {/* Colonne droite - actions et statut */}
+        {/* Right column - actions and status */}
         <div className="space-y-6">
-          {/* Carte de statut */}
+          {/* Status card */}
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-            <h3 className="text-lg font-medium mb-4">Actions de statut</h3>
+            <h3 className="text-lg font-medium mb-4">Status Actions</h3>
             <div className="space-y-3">
               <button 
-                className="w-full py-2 px-4 rounded-md text-white font-medium bg-[#3a5c54] flex justify-center items-center"
-                onClick={generateAIDecision}
-                disabled={aiLoading}
+                className={`w-full py-2 px-4 rounded-md text-white font-medium ${
+                  claim.etat === 'ACCEPTED' 
+                    ? 'bg-gray-300 cursor-not-allowed' 
+                    : 'bg-green-600 hover:bg-green-700'
+                }`}
+                disabled={claim.etat === 'ACCEPTED' || processingAction}
+                onClick={() => handleStatusChange('ACCEPTED')}
               >
-                {aiLoading ? (
-                  <>
-                    <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-white mr-2"></div>
-                    Analyse en cours...
-                  </>
-                ) : (
-                  'Prendre décision'
-                )}
+                Accept Claim
+              </button>
+              <button 
+                className={`w-full py-2 px-4 rounded-md text-white font-medium ${
+                  claim.etat === 'UNDER_REVIEW' 
+                    ? 'bg-gray-300 cursor-not-allowed' 
+                    : 'bg-blue-600 hover:bg-blue-700'
+                }`}
+                disabled={claim.etat === 'UNDER_REVIEW' || processingAction}
+                onClick={() => handleStatusChange('UNDER_REVIEW')}
+              >
+                Mark as Under Review
+              </button>
+              <button 
+                className={`w-full py-2 px-4 rounded-md text-white font-medium ${
+                  claim.etat === 'REJECTED' 
+                    ? 'bg-gray-300 cursor-not-allowed' 
+                    : 'bg-red-600 hover:bg-red-700'
+                }`}
+                disabled={claim.etat === 'REJECTED' || processingAction}
+                onClick={() => handleStatusChange('REJECTED')}
+              >
+                Reject Claim
               </button>
             </div>
+          </div>
+
+          {/* Admin notes - placeholder for future implementation */}
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <h3 className="text-lg font-medium mb-4">Admin Notes</h3>
+            <textarea 
+              className="w-full border border-gray-300 rounded-md p-2"
+              rows="4"
+              placeholder="Add internal notes about this claim..."
+            ></textarea>
+            <button 
+              className="mt-2 px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700"
+            >
+              Save Notes
+            </button>
           </div>
         </div>
       </div>
