@@ -26,8 +26,10 @@ import NotificationDetail from "./Pages/NotificationDetail.jsx";
 import UsersTable from "./Pages/Admin/user managment/UsersTable.jsx";
 import UserDetails from "./Pages/Admin/user managment/userDetails.jsx";
 import FaqList from "./Components/FaqList.jsx";
+import UserSinistres from "./Pages/Admin/Sinistres/UserSinistres.jsx";
 import { FAQPage } from "./Components/FAQs/FAQPage.js";
-
+import SinistresTable from "./Pages/Admin/Sinistres/SinistresTable.jsx";
+import SinistresDetails from "./Pages/Admin/Sinistres/SinistresDetails.jsx";
 const DashboardLayout = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const role = localStorage.getItem("client_role");
@@ -67,6 +69,22 @@ function App() {
           element={
             <DashboardLayout>
               <Dashboard />
+            </DashboardLayout>
+          }
+        />
+        <Route
+          path="/admin/sinistre"
+          element={
+            <DashboardLayout>
+              <SinistresTable />
+            </DashboardLayout>
+          }
+        />
+        <Route
+          path="/admin/sinistre/details/:id"
+          element={
+            <DashboardLayout>
+              <SinistresDetails />
             </DashboardLayout>
           }
         />
