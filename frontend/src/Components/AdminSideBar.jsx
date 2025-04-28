@@ -60,7 +60,7 @@ const AdminSidebar = ({ isOpen, setIsOpen }) => {
         //{ title: 'Déposer réclamation', link: '/reclamations/deposer', icon: <Plus className="w-4 h-4" /> },
         {
           title: "Consulter réclamations",
-          link: "reclamations",
+          link: "/admin/reclamations",
           icon: <List className="w-4 h-4" />,
         },
       ],
@@ -74,15 +74,10 @@ const AdminSidebar = ({ isOpen, setIsOpen }) => {
       hasDropdown: true,
       submenu: [
         {
-          title: "Créer sinistre",
-          link: "/sinistres/creer",
-          icon: <Plus className="w-4 h-4" />,
-        },
-        {
-          title: "Consulter sinistres",
-          link: "/sinistres/consulter",
+          title: "Consulter Sinistres",
+          link: "/admin/sinistre",
           icon: <List className="w-4 h-4" />,
-        },
+        }
       ],
     },
     {
