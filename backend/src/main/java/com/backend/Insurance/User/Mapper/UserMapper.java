@@ -13,7 +13,6 @@ import java.util.List;
 public interface UserMapper {
 
     @Mapping(target = "profilePictureUrl" , source = "profilePicture.imageUrl" )
-    @Mapping(target = "active" ,source = "active")
     UserDTO toDto(User user);
 
     List<UserDTO> toDtoList(List<User> user);

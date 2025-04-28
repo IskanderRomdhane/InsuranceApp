@@ -12,5 +12,4 @@ public class UserDTO {
     private String lastname;
     private String adresse;
     private String profilePictureUrl;
-    private boolean active;
 }
