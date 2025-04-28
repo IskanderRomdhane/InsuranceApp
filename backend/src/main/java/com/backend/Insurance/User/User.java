@@ -1,5 +1,6 @@
 package com.backend.Insurance.User;
 
+import com.backend.Insurance.Image.Image;
 import com.backend.Insurance.Reclamation.Reclamation;
 import com.backend.Insurance.Sinistre.Sinistre;
 import com.backend.Insurance.notification.Notification;
@@ -46,6 +47,9 @@ public class User {
     @JsonManagedReference
     @JsonIgnore
     private List<Notification> notifications;
+
+    @OneToOne
+    private Image profilePicture;
 
     @Override
     public String toString() {
