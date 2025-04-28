@@ -145,9 +145,9 @@ public class SinistreService {
 
     public ResponseEntity<List<?>> getAutoMobileSinistres(String sinistre_type) {
         switch (sinistre_type.toLowerCase()){
-            case "automobile": return ResponseEntity.ok(sinistreRepository.findBySubclass(AutoMobile.class));
-            case "habilitation": return ResponseEntity.ok(sinistreRepository.findBySubclass(Habilitation.class));
-            case "sante": return ResponseEntity.ok(sinistreRepository.findBySubclass(Sante.class));
+            case "automobile": return ResponseEntity.ok(sinistreMapper.toDtoList(sinistreRepository.findBySubclass(AutoMobile.class)));
+            case "habilitation": return ResponseEntity.ok(sinistreMapper.toDtoList(sinistreRepository.findBySubclass(Habilitation.class)));
+            case "sante": return ResponseEntity.ok(sinistreMapper.toDtoList(sinistreRepository.findBySubclass(Sante.class)));
             default: return ResponseEntity.notFound().build();
         }
     }

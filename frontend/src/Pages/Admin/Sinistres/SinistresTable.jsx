@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Search, Calendar, FileText, ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Search, Calendar, FileText, ArrowRight, ChevronLeft, ChevronRight, ChevronDown } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import ClaimsModal from './ClaimsModal';
 
@@ -9,6 +9,7 @@ export default function SinistresTable() {
   const [error, setError] = useState(null);
   const [selectedClaim, setSelectedClaim] = useState(null);
   const [activeFilter, setActiveFilter] = useState('All');
+  const [dropdownOpen, setDropdownOpen] = useState(false);
   
   const [currentPage, setCurrentPage] = useState(1);
   const [claimsPerPage] = useState(10);
@@ -30,7 +31,6 @@ export default function SinistresTable() {
         const response = await fetch(url);
         if (!response.ok) throw new Error('Failed to fetch claims');
         setClaims(await response.json());
-        console.log(claims)
         setCurrentPage(1);
         setError(null);
       } catch (err) {
@@ -43,6 +43,11 @@ export default function SinistresTable() {
     
     fetchClaims();
   }, [activeFilter]);
+
+  const handleFilterSelect = (option) => {
+    setActiveFilter(option);
+    setDropdownOpen(false);
+  };
 
   const indexOfLastClaim = currentPage * claimsPerPage;
   const indexOfFirstClaim = indexOfLastClaim - claimsPerPage;
@@ -125,13 +130,6 @@ export default function SinistresTable() {
         </div>
         
         <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
-          <div>
-            <p className="text-sm text-gray-700">
-              Showing <span className="font-medium">{indexOfFirstClaim + 1}</span> to{' '}
-              <span className="font-medium">{Math.min(indexOfLastClaim, claims.length)}</span> of{' '}
-              <span className="font-medium">{claims.length}</span> claims
-            </p>
-          </div>
           
           <div>
             <nav className="isolate inline-flex -space-x-px rounded-md shadow-sm" aria-label="Pagination">
@@ -200,20 +198,38 @@ export default function SinistresTable() {
         {/* Filters and search */}
         <div className="bg-white rounded-lg shadow-sm mb-6 p-4">
           <div className="flex flex-col md:flex-row md:items-center justify-between">
-            <div className="flex space-x-2 mb-4 md:mb-0">
-              {filterOptions.map((option) => (
+            {/* Dropdown Filter */}
+            <div className="relative mb-4 md:mb-0">
+              <div className="relative">
                 <button
-                  key={option}
-                  className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-                    activeFilter === option
-                      ? 'bg-[#476f66] text-white'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                  }`}
-                  onClick={() => setActiveFilter(option)}
+                  type="button"
+                  className="flex items-center justify-between w-full md:w-48 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#476f66]"
+                  onClick={() => setDropdownOpen(!dropdownOpen)}
                 >
-                  {option}
+                  <span>{activeFilter}</span>
+                  <ChevronDown className="ml-2 h-4 w-4" />
                 </button>
-              ))}
+                
+                {dropdownOpen && (
+                  <div className="absolute z-10 w-full mt-1 bg-white shadow-lg rounded-md ring-1 ring-black ring-opacity-5 focus:outline-none">
+                    <div className="py-1">
+                      {filterOptions.map((option) => (
+                        <button
+                          key={option}
+                          className={`block w-full px-4 py-2 text-sm text-left ${
+                            activeFilter === option
+                              ? 'bg-[#476f66] text-white'
+                              : 'text-gray-700 hover:bg-gray-100'
+                          }`}
+                          onClick={() => handleFilterSelect(option)}
+                        >
+                          {option}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
             
             <div className="relative">
