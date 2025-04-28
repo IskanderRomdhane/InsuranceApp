@@ -34,7 +34,8 @@ public class User {
     private String lastname;
     private String role;
     @Column(nullable = false)
-    private boolean active = false;
+    private boolean active = true;
+    private String adresse;
     @OneToMany(mappedBy = "user")
     @JsonManagedReference("user-reclamations")
     private List<Reclamation> reclamation;
