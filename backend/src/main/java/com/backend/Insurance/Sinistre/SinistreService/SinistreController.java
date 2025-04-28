@@ -38,9 +38,9 @@ public class SinistreController {
     //@PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<String> ChangerStatus(
             @PathVariable Long sinistreId,
-            @RequestBody String etat
+            @RequestBody SinistreDTO sinistreDTO
     ){
-        return sinistreService.ChangerEtat(sinistreId, etat);
+        return sinistreService.ChangerEtat(sinistreId, sinistreDTO);
     }
     @GetMapping("/sinistres")
     //@PreAuthorize("hasRole('ADMIN')")

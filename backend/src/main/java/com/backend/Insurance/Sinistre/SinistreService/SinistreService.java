@@ -104,11 +104,11 @@ public class SinistreService {
         }
     }
 
-    public ResponseEntity<String> ChangerEtat(Long sinistreId , String etat) {
+    public ResponseEntity<String> ChangerEtat(Long sinistreId , SinistreDTO sinistreDTO) {
         Optional<Sinistre> sinistreOptional = sinistreRepository.findById(sinistreId);
         if(sinistreOptional.isPresent()){
             Sinistre sinistre = sinistreOptional.get();
-            sinistre.setEtat(Etat.valueOf(etat.toUpperCase()));
+            sinistre.setEtat(sinistreDTO.getEtat());
             sinistreRepository.save(sinistre);
             return ResponseEntity.ok("Etat changé avec succés");
         }else {
