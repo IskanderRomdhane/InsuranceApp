@@ -8,6 +8,7 @@ import com.backend.Insurance.Reclamation.DTOS.ReclamationDTO;
 import com.backend.Insurance.Reclamation.DTOS.ReclamationResponseDTO;
 import com.backend.Insurance.Reclamation.ENUMS.Status;
 import com.backend.Insurance.Reclamation.ENUMS.TypeReclamation;
+import com.backend.Insurance.Reclamation.Mapper.ReclamationMapper;
 import com.backend.Insurance.Reclamation.Reclamation;
 import com.backend.Insurance.Reclamation.ReclamationRepository;
 import com.backend.Insurance.User.User;
@@ -22,7 +23,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,8 +39,7 @@ public class ReclamationService {
     private final ImageRepository imageRepository;
     private final NotificationService notificationService;
     private final NotificationRepository notificationRepository;
-
-
+    private final ReclamationMapper reclamationMapper;
     public ResponseEntity<String> CreerReclamation(ReclamationDTO reclamationDTO , MultipartFile image) {
         Optional<User> userOptional = userRepository.findByEmail(reclamationDTO.getUserEmail());
         if (userOptional.isPresent()) {
@@ -182,5 +181,13 @@ public class ReclamationService {
         }else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
+    }
+
+    public ResponseEntity<List<ReclamationResponseDTO>> GetRelamationByStatus(String status) {
+        return ResponseEntity.ok(reclamationMapper.toDtoList(reclamationRepository.findByStatus(Status.valueOf(status.toUpperCase()))));
+    }
+
+    public ResponseEntity<List<ReclamationResponseDTO>> GetRelamationByType(String type) {
+        return ResponseEntity.ok(reclamationMapper.toDtoList(reclamationRepository.findBytypeReclamation(TypeReclamation.valueOf(type.toUpperCase()))));
     }
 }

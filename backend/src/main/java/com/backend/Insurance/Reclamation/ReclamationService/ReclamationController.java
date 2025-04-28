@@ -57,5 +57,17 @@ public class ReclamationController {
     ){
         return reclamationService.GetRelamation(reclamationId);
     }
+    @GetMapping("/getreclamation/status/{status}")
+    public ResponseEntity<List<ReclamationResponseDTO>> GetRelamationByStatus (
+            @PathVariable String status
+    ){
+        return reclamationService.GetRelamationByStatus(status);
+    }
+    @GetMapping("/getreclamation/type/{type}")
+    public ResponseEntity<List<ReclamationResponseDTO>> GetRelamationByType (
+            @PathVariable String type
+    ){
+        return reclamationService.GetRelamationByType(type);
+    }
 
 }
