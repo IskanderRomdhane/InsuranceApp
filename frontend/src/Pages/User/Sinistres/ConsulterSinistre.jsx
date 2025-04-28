@@ -55,10 +55,10 @@ export default function ClaimsPage() {
 
   const StatusBadge = ({ status }) => {
     const colors = {
-      "APPROVED": "bg-green-100 text-green-800",
+      "ACCEPTED": "bg-green-100 text-green-800",
       "PENDING": "bg-yellow-100 text-yellow-800",
-      "EXPIRED": "bg-red-100 text-red-800",
-      "IN_REVIEW": "bg-blue-100 text-blue-800"
+      "REJECTED": "bg-red-100 text-red-800",
+      "UNDER_REVIEW": "bg-blue-100 text-blue-800"
     };
     
     return (
@@ -229,10 +229,10 @@ export default function ClaimsPage() {
 
       {/* Column Headers */}
       <div className="grid grid-cols-4 bg-gray-50 px-6 py-3 border-b border-gray-200">
-        <div className="text-sm font-medium text-gray-500">Object</div>
+        <div className="text-sm font-medium text-gray-500">Objet</div>
         <div className="text-sm font-medium text-gray-500">Categorie</div>
-        <div className="text-sm font-medium text-gray-500">Status</div>
-        <div className="text-sm font-medium text-gray-500 text-right">Amount</div>
+        <div className="text-sm font-medium text-gray-500">Statut</div>
+        <div className="text-sm font-medium text-gray-500 text-right">Montant</div>
       </div>
 
       {/* Main Content */}
@@ -307,7 +307,7 @@ export default function ClaimsPage() {
           
           {/* Claims count info */}
           <div className="mt-4 text-sm text-gray-500 text-center">
-            Showing {indexOfFirstClaim + 1}-{Math.min(indexOfLastClaim, claims.length)} of {claims.length} claims
+             {indexOfFirstClaim + 1}-{Math.min(indexOfLastClaim, claims.length)} De {claims.length} Sinistres
           </div>
         </>
       )}
