@@ -1,63 +1,46 @@
-import React, { useState } from "react";
-import { NavLink } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { NavLink, useLocation } from "react-router-dom";
 import {
   ChevronLeft,
   ChevronRight,
   ChevronDown,
   LayoutDashboard,
-  Users,
-  FileText,
+  FileWarning,
+  UserCog,
   Settings,
-  Bell,
-  ShieldAlert,
-  BarChart3,
-  HelpCircle,
   User,
   Plus,
   List,
   Umbrella,
-  FileWarning,
-  UserCog,
 } from "lucide-react";
 import icon from "../assets/SiderBar/icon.jpg";
 
 const AdminSidebar = ({ isOpen, setIsOpen }) => {
-  const toggleSidebar = () => {
-    setIsOpen(!isOpen);
-  };
-
-  // State to track which dropdown menus are open
+  const location = useLocation();
+  const toggleSidebar = () => setIsOpen(!isOpen);
   const [openMenus, setOpenMenus] = useState({});
-
-  // Toggle dropdown menu open/closed
+  const [activeItem, setActiveItem] = useState("");
   const toggleMenu = (menuId, e) => {
     e.preventDefault();
-    setOpenMenus((prevState) => ({
+    setOpenMenus(prevState => ({
       ...prevState,
       [menuId]: !prevState[menuId],
     }));
   };
-
-  // Define the menu structure with dropdowns
   const menuItems = [
     {
       id: "dashboard",
       title: "Dashboard",
-      icon: (
-        <LayoutDashboard className="w-5 h-5 text-green-600 transition duration-75 group-hover:text-green-800" />
-      ),
+      icon: <LayoutDashboard className="w-5 h-5 text-green-600 transition duration-75 group-hover:text-green-800" />,
       link: "/admin",
       hasDropdown: false,
     },
     {
       id: "reclamations",
       title: "User Reclamations",
-      icon: (
-        <FileWarning className="w-5 h-5 text-green-600 transition duration-75 group-hover:text-green-800" />
-      ),
+      icon: <FileWarning className="w-5 h-5 text-green-600 transition duration-75 group-hover:text-green-800" />,
       hasDropdown: true,
       submenu: [
-        //{ title: 'Déposer réclamation', link: '/reclamations/deposer', icon: <Plus className="w-4 h-4" /> },
         {
           title: "Consulter réclamations",
           link: "/admin/reclamations",
@@ -68,9 +51,7 @@ const AdminSidebar = ({ isOpen, setIsOpen }) => {
     {
       id: "sinistres",
       title: "Users sinistres",
-      icon: (
-        <Umbrella className="w-5 h-5 text-green-600 transition duration-75 group-hover:text-green-800" />
-      ),
+      icon: <Umbrella className="w-5 h-5 text-green-600 transition duration-75 group-hover:text-green-800" />,
       hasDropdown: true,
       submenu: [
         {
@@ -81,11 +62,9 @@ const AdminSidebar = ({ isOpen, setIsOpen }) => {
       ],
     },
     {
-      id: "Gerer Utilisateurs",
+      id: "gererUtilisateurs",
       title: "Gerer Utilisateurs",
-      icon: (
-        <UserCog className="w-5 h-5 text-green-600 transition duration-75 group-hover:text-green-800" />
-      ),
+      icon: <UserCog className="w-5 h-5 text-green-600 transition duration-75 group-hover:text-green-800" />,
       hasDropdown: true,
       submenu: [
         {
@@ -101,23 +80,39 @@ const AdminSidebar = ({ isOpen, setIsOpen }) => {
     {
       id: "settings",
       title: "Settings",
-      icon: (
-        <Settings className="w-5 h-5 text-green-600 transition duration-75 group-hover:text-green-800" />
-      ),
+      icon: <Settings className="w-5 h-5 text-green-600 transition duration-75 group-hover:text-green-800" />,
       link: "/admin/settings",
       hasDropdown: false,
     },
     {
       id: "profile",
       title: "Admin Profile",
-      icon: (
-        <User className="w-5 h-5 text-green-600 transition duration-75 group-hover:text-green-800" />
-      ),
+      icon: <User className="w-5 h-5 text-green-600 transition duration-75 group-hover:text-green-800" />,
       link: "/admin/profile",
       hasDropdown: false,
     },
   ];
 
+  useEffect(() => {
+    const currentPath = location.pathname;
+    const mainItem = [...menuItems, ...supportItems].find(item => !item.hasDropdown && item.link === currentPath);
+    if (mainItem) {
+      setActiveItem(mainItem.id);
+      return;
+    }
+    for (const item of menuItems) {
+      if (item.hasDropdown && item.submenu) {
+        const subItem = item.submenu.find(sub => sub.link === currentPath);
+        if (subItem) {
+          setActiveItem(item.id);
+          setOpenMenus(prev => ({ ...prev, [item.id]: true }));
+          return;
+        }
+      }
+    }
+  }, [location.pathname]);
+  const isMenuActive = (itemId) => activeItem === itemId;
+  const isSubmenuItemActive = (link) => location.pathname === link;
   return (
     <>
       <button
@@ -126,11 +121,7 @@ const AdminSidebar = ({ isOpen, setIsOpen }) => {
         className="fixed top-4 left-4 z-50 inline-flex items-center p-2 text-sm text-green-800 rounded-lg sm:hidden hover:bg-green-100 focus:outline-none focus:ring-2 focus:ring-green-300"
       >
         <span className="sr-only">Toggle sidebar</span>
-        {isOpen ? (
-          <ChevronLeft className="w-6 h-6" />
-        ) : (
-          <ChevronRight className="w-6 h-6" />
-        )}
+        {isOpen ? <ChevronLeft className="w-6 h-6" /> : <ChevronRight className="w-6 h-6" />}
       </button>
 
       <aside
@@ -140,11 +131,7 @@ const AdminSidebar = ({ isOpen, setIsOpen }) => {
         aria-label="Sidebar"
       >
         <div className="flex-1 px-3 py-4 overflow-y-auto bg-white shadow-xl">
-          <div
-            className={`flex items-center ps-2 mb-5 ${
-              isOpen ? "justify-between" : "justify-center"
-            }`}
-          >
+          <div className={`flex items-center ps-2 mb-5 ${isOpen ? "justify-between" : "justify-center"}`}>
             {isOpen && (
               <>
                 <div className="flex items-center">
@@ -159,14 +146,12 @@ const AdminSidebar = ({ isOpen, setIsOpen }) => {
               </>
             )}
             {!isOpen && (
-              <>
-                <button
-                  onClick={toggleSidebar}
-                  className="hidden sm:block text-green-800 hover:bg-green-100 rounded-lg p-1 mt-4"
-                >
-                  <ChevronRight className="w-5 h-5" />
-                </button>
-              </>
+              <button
+                onClick={toggleSidebar}
+                className="hidden sm:block text-green-800 hover:bg-green-100 rounded-lg p-1 mt-4"
+              >
+                <ChevronRight className="w-5 h-5" />
+              </button>
             )}
           </div>
 
@@ -180,11 +165,7 @@ const AdminSidebar = ({ isOpen, setIsOpen }) => {
                       onClick={(e) => toggleMenu(item.id, e)}
                       className={`
                         flex items-center justify-between p-2 rounded-lg hover:bg-green-100 group
-                        ${
-                          openMenus[item.id]
-                            ? "bg-green-200 text-green-900"
-                            : "text-green-800"
-                        }
+                        ${isMenuActive(item.id) ? "bg-green-200 text-green-900" : "text-green-800"}
                       `}
                     >
                       <div className="flex items-center">
@@ -207,13 +188,9 @@ const AdminSidebar = ({ isOpen, setIsOpen }) => {
                           <li key={idx}>
                             <NavLink
                               to={subItem.link}
-                              className={({ isActive }) => `
+                              className={`
                                 flex items-center p-2 text-sm rounded-lg hover:bg-green-100 group
-                                ${
-                                  isActive
-                                    ? "bg-green-200 text-green-900"
-                                    : "text-green-800"
-                                }
+                                ${isSubmenuItemActive(subItem.link) ? "bg-green-200 text-green-900" : "text-green-800"}
                               `}
                             >
                               <span className="w-4 h-4 text-green-600 transition duration-75 group-hover:text-green-800 mr-2">
@@ -229,13 +206,9 @@ const AdminSidebar = ({ isOpen, setIsOpen }) => {
                 ) : (
                   <NavLink
                     to={item.link}
-                    className={({ isActive }) => `
+                    className={`
                       flex items-center p-2 rounded-lg hover:bg-green-100 group
-                      ${
-                        isActive
-                          ? "bg-green-200 text-green-900"
-                          : "text-green-800"
-                      }
+                      ${isSubmenuItemActive(item.link) ? "bg-green-200 text-green-900" : "text-green-800"}
                     `}
                   >
                     {item.icon}
@@ -260,9 +233,9 @@ const AdminSidebar = ({ isOpen, setIsOpen }) => {
               <li key={item.id}>
                 <NavLink
                   to={item.link}
-                  className={({ isActive }) => `
+                  className={`
                     flex items-center p-2 rounded-lg hover:bg-green-100 group text-green-700
-                    ${isActive ? "bg-green-200 text-green-900" : ""}
+                    ${isSubmenuItemActive(item.link) ? "bg-green-200 text-green-900" : ""}
                   `}
                 >
                   {item.icon}
