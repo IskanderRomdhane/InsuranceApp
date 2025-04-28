@@ -1,14 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, CheckCircle, XCircle, Clock, AlertCircle, FileText, Image as ImageIcon, Download } from 'lucide-react';
-
+import { ArrowLeft, FileText, Image as ImageIcon, Download } from 'lucide-react';
+import axios from 'axios';
 const SinistresDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [claim, setClaim] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [processingAction, setProcessingAction] = useState(false);
   const [activeImage, setActiveImage] = useState(null);
 
   useEffect(() => {
@@ -21,7 +20,6 @@ const SinistresDetails = () => {
         }
         const data = await response.json();
         setClaim(data);
-        // Set the first image as active by default if images exist
         if (data.images && data.images.length > 0) {
           setActiveImage(data.images[0].imageUrl);
         }
@@ -38,35 +36,27 @@ const SinistresDetails = () => {
     }
   }, [id]);
 
-  const handleStatusChange = async (newStatus) => {
-    setProcessingAction(true);
+  const handleStatusChange = async (status) => {
+    console.log(JSON.stringify(status));
     try {
-      // Using the correct API endpoint from the provided documentation
-      const response = await fetch(`http://localhost:8081/api/sinistre/changeretat/${id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(newStatus), // Send the status as a plain string as per the API's expectation
-      });
+      const url = `http://localhost:8081/api/sinistre/changeretat/${id}`;
+      await axios.put(
+        url,
+         {etat : status} ,
+        {
+          headers: { "Content-Type": "application/json" },
+        }
+      );
 
       if (!response.ok) {
         throw new Error('Failed to update status');
       }
-
-      // Update the local state to reflect the change
       setClaim(prev => ({
         ...prev,
         etat: newStatus
       }));
-      
-      // Show success message
-      alert(`Status successfully updated to ${newStatus}`);
     } catch (err) {
       console.error(err);
-      alert('Failed to update status. Please try again.');
-    } finally {
-      setProcessingAction(false);
     }
   };
 
@@ -131,7 +121,6 @@ const SinistresDetails = () => {
 
   return (
     <div className="max-w-4xl mx-auto p-4">
-      {/* Back button and title */}
       <div className="mb-6">
         <button 
           className="flex items-center text-gray-600 hover:text-gray-900"
@@ -142,8 +131,6 @@ const SinistresDetails = () => {
         </button>
         <h1 className="text-2xl font-bold mt-2">Claim Details</h1>
       </div>
-
-      {/* Claim header card */}
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
         <div className="flex justify-between">
           <div>
@@ -291,13 +278,6 @@ const SinistresDetails = () => {
             </div>
           )}
           
-          {/* Show message if no images or documents */}
-          {!hasImages && !hasDocuments && (
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-              <h3 className="text-lg font-medium mb-4">Supporting Materials</h3>
-              <p className="text-gray-500 italic">No documents or images attached to this claim.</p>
-            </div>
-          )}
         </div>
 
         {/* Right column - actions and status */}
@@ -312,7 +292,7 @@ const SinistresDetails = () => {
                     ? 'bg-gray-300 cursor-not-allowed' 
                     : 'bg-green-600 hover:bg-green-700'
                 }`}
-                disabled={claim.etat === 'ACCEPTED' || processingAction}
+                disabled={claim.etat === 'ACCEPTED'}
                 onClick={() => handleStatusChange('ACCEPTED')}
               >
                 Accept Claim
@@ -323,7 +303,7 @@ const SinistresDetails = () => {
                     ? 'bg-gray-300 cursor-not-allowed' 
                     : 'bg-blue-600 hover:bg-blue-700'
                 }`}
-                disabled={claim.etat === 'UNDER_REVIEW' || processingAction}
+                disabled={claim.etat === 'UNDER_REVIEW'}
                 onClick={() => handleStatusChange('UNDER_REVIEW')}
               >
                 Mark as Under Review
@@ -334,27 +314,12 @@ const SinistresDetails = () => {
                     ? 'bg-gray-300 cursor-not-allowed' 
                     : 'bg-red-600 hover:bg-red-700'
                 }`}
-                disabled={claim.etat === 'REJECTED' || processingAction}
+                disabled={claim.etat === 'REJECTED'}
                 onClick={() => handleStatusChange('REJECTED')}
               >
                 Reject Claim
               </button>
             </div>
-          </div>
-
-          {/* Admin notes - placeholder for future implementation */}
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-            <h3 className="text-lg font-medium mb-4">Admin Notes</h3>
-            <textarea 
-              className="w-full border border-gray-300 rounded-md p-2"
-              rows="4"
-              placeholder="Add internal notes about this claim..."
-            ></textarea>
-            <button 
-              className="mt-2 px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700"
-            >
-              Save Notes
-            </button>
           </div>
         </div>
       </div>
