@@ -24,7 +24,7 @@ const UserDetails = () => {
   useEffect(() => {
     const fetchUserDetails = async () => {
       try {
-        const url = `http://localhost:8081/api/user/${id}`;
+        const url = `http://localhost:8081/api/user/userid/${id}`;
         const response = await axios.get(url);
         setUser(response.data);
       } catch (error) {
