@@ -96,6 +96,7 @@ public class UserService {
                 user.setActive(active);
                 return ResponseEntity.ok(userRepository.save(user));
             } catch (Exception e) {
+                e.printStackTrace();
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
             }
         }).orElse(ResponseEntity.notFound().build());
