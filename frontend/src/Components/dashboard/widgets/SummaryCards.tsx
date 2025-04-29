@@ -6,6 +6,7 @@ import {
   AlertTriangleIcon,
   DollarSignIcon,
 } from "lucide-react";
+import { Link } from "react-router-dom";
 import HealthInsurance from "../../../assets/Insurance Types/HealthInsurance.jpg";
 import CarInsurance from "../../../assets/Insurance Types/CarInsurance.jpg";
 import House from "../../../assets/Insurance Types/House.jpg";
@@ -53,35 +54,52 @@ export const SummaryCards = () => {
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-      <SummaryCard
-        title="Assurance Sante"
-        value={santeCount} // Dynamic value from state
-        change=""
-        icon={<ShieldCheckIcon className="h-6 w-6 text-blue-600" />}
-        color="blue"
-        image={HealthInsurance}
-      />
-      <SummaryCard
-        title="Assurance Auto"
-        value={AutoCount}
-        change=""
-        icon={<FilesIcon className="h-6 w-6 text-indigo-600" />}
-        color="indigo"
-        image={CarInsurance}
-      />
-      <SummaryCard
-        title="Assurance Habitation"
-        value={HouseCount}
-        change=""
-        icon={<AlertTriangleIcon className="h-6 w-6 text-amber-600" />}
-        color="amber"
-        image={House}
-      />
+      <Link to="/sinistres/consulter" state={{ typeFiltre: "Sante" }}>
+        <SummaryCard
+          title="Assurance Sante"
+          value={santeCount}
+          change=""
+          icon={<ShieldCheckIcon className="h-6 w-6 text-blue-600" />}
+          color="blue"
+          image={HealthInsurance}
+          typeFiltre="Sante"
+        />
+      </Link>
+      <Link to="/sinistres/consulter" state={{ typeFiltre: "AutoMobile" }}>
+        <SummaryCard
+          title="Assurance Auto"
+          value={AutoCount}
+          change=""
+          icon={<FilesIcon className="h-6 w-6 text-indigo-600" />}
+          color="indigo"
+          image={CarInsurance}
+          typeFiltre="AutoMobile"
+        />
+      </Link>
+      <Link to="/sinistres/consulter" state={{ typeFiltre: "Habilitation" }}>
+        <SummaryCard
+          title="Assurance Habitation"
+          value={HouseCount}
+          change=""
+          icon={<AlertTriangleIcon className="h-6 w-6 text-amber-600" />}
+          color="amber"
+          image={House}
+          typeFiltre="Habilitation"
+        />
+      </Link>
     </div>
   );
 };
 
-const SummaryCard = ({ title, value, change, icon, color, image }) => {
+const SummaryCard = ({
+  title,
+  value,
+  change,
+  icon,
+  color,
+  image,
+  typeFiltre,
+}) => {
   const colorClasses = {
     blue: "bg-blue-50 text-blue-600",
     indigo: "bg-indigo-50 text-indigo-600",
