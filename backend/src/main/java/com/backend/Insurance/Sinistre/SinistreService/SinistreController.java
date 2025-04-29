@@ -68,4 +68,10 @@ public class SinistreController {
     ){
         return sinistreService.getAutoMobileSinistres(sinistre_type);
     }
+    @GetMapping("/getsinistre/statut/{sinistre_statut}")
+    public ResponseEntity<List<?>> GetSinistresByStatus(
+            @PathVariable String sinistre_statut
+    ){
+        return sinistreService.getSinistresByStatus(sinistre_statut);
+    }
 }
