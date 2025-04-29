@@ -151,4 +151,14 @@ public class SinistreService {
             default: return ResponseEntity.notFound().build();
         }
     }
+
+    public ResponseEntity<List<?>> getSinistresByStatus(String statut) {
+        switch (statut.toUpperCase()){
+            case "PENDING": return ResponseEntity.ok(sinistreMapper.toDtoList(sinistreRepository.findByEtat(Etat.PENDING)));
+            case "UNDER_REVIEW": return ResponseEntity.ok(sinistreMapper.toDtoList(sinistreRepository.findByEtat(Etat.UNDER_REVIEW)));
+            case "ACCEPTED": return ResponseEntity.ok(sinistreMapper.toDtoList(sinistreRepository.findByEtat(Etat.ACCEPTED)));
+            case "REJECTED": return ResponseEntity.ok(sinistreMapper.toDtoList(sinistreRepository.findByEtat(Etat.REJECTED)));
+            default: return ResponseEntity.notFound().build();
+        }
+    }
 }
