@@ -13,12 +13,11 @@ interface Sinistre {
 }
 
 export const SinistreList = () => {
-  const [sinistres, setSinistres] = useState<Sinistre[]>([]); // Specify the type of sinistres
+  const [sinistres, setSinistres] = useState<Sinistre[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Fetch sinistres from the API
     const fetchSinistres = async () => {
       try {
         const response = await fetch(
@@ -27,8 +26,8 @@ export const SinistreList = () => {
         if (!response.ok) {
           throw new Error("Failed to fetch sinistres");
         }
-        const data: Sinistre[] = await response.json(); // Type the data as Sinistre[]
-        setSinistres(data); // Set the sinistres state
+        const data: Sinistre[] = await response.json();
+        setSinistres(data.slice(0, 5));
       } catch (error: any) {
         setError(error.message);
       } finally {
@@ -38,8 +37,6 @@ export const SinistreList = () => {
 
     fetchSinistres();
   }, []);
-
-  // Helper function to format the date
   const formatDate = (date: string) => {
     const options: Intl.DateTimeFormatOptions = {
       day: "2-digit",
