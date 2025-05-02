@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import axios from "axios"; // Assuming you're using axios for API requests
 import {
   BarChart,
   Bar,
@@ -9,71 +10,92 @@ import {
   ResponsiveContainer,
   Legend,
 } from "recharts";
-export const RevenueChart = () => {
-  const data = [
-    {
-      month: "Jan",
-      revenue: 8500,
-      target: 8000,
-    },
-    {
-      month: "Feb",
-      revenue: 9200,
-      target: 8200,
-    },
-    {
-      month: "Mar",
-      revenue: 9800,
-      target: 8400,
-    },
-    {
-      month: "Apr",
-      revenue: 9600,
-      target: 8600,
-    },
-    {
-      month: "May",
-      revenue: 11000,
-      target: 8800,
-    },
-    {
-      month: "Jun",
-      revenue: 10800,
-      target: 9000,
-    },
-    {
-      month: "Jul",
-      revenue: 11700,
-      target: 9200,
-    },
-    {
-      month: "Aug",
-      revenue: 12400,
-      target: 9400,
-    },
-    {
-      month: "Sep",
-      revenue: 12100,
-      target: 9600,
-    },
-    {
-      month: "Oct",
-      revenue: 12900,
-      target: 9800,
-    },
-    {
-      month: "Nov",
-      revenue: 13400,
-      target: 10000,
-    },
-    {
-      month: "Dec",
-      revenue: 14200,
-      target: 10200,
-    },
-  ];
+
+// Define the type for the sinistre data
+interface SinistreData {
+  month: string;
+  count: number;
+}
+
+export const SinistreChart = () => {
+  const [data, setData] = useState<SinistreData[]>([]); // Set type of data to SinistreData[]
+
+  // Helper function to convert month number to month name
+  const getMonthName = (monthNumber: number): string => {
+    const months = [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec",
+    ];
+    return months[monthNumber - 1]; // Adjusting because months are 1-indexed (1 = Jan)
+  };
+
+  // Ensure all months are included (even if no data for some)
+  const fillMissingMonths = (data: any[]) => {
+    const allMonths = [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec",
+    ];
+
+    // Create a map of the data with month as the key
+    const dataMap = new Map();
+    data.forEach((item) => {
+      const month = getMonthName(item.month);
+      dataMap.set(month, item.count);
+    });
+
+    // Create a complete dataset with all months
+    const completeData = allMonths.map((month) => ({
+      month,
+      count: dataMap.get(month) || 0, // Use 0 if no data is available for this month
+    }));
+
+    return completeData;
+  };
+
+  // Fetch data from the backend when the component mounts
+  useEffect(() => {
+    axios
+      .get("http://localhost:8081/api/sinistre/sinistres/per-month")
+      .then((response) => {
+        console.log("Fetched data:", response.data); // Log to check the data
+        const sinistreData = response.data.map((item) => ({
+          month: item.month,
+          count: item.count,
+        }));
+
+        // Fill missing months
+        const completeData = fillMissingMonths(sinistreData);
+        setData(completeData);
+      })
+      .catch((error) => console.error("Error fetching sinistre data", error));
+  }, []);
+
+  // Log the data in the render part to see if it's populated
+  console.log("Chart data:", data);
+
   return (
     <div className="h-80">
+      {/* Ensure the chart container has enough height */}
       <ResponsiveContainer width="100%" height="100%">
         <BarChart
           data={data}
@@ -85,23 +107,17 @@ export const RevenueChart = () => {
           }}
         >
           <CartesianGrid strokeDasharray="3 3" vertical={false} />
-          <XAxis dataKey="month" />
-          <YAxis tickFormatter={(value) => `$${value / 1000}k`} width={60} />
+          <XAxis dataKey="month" /> {/* X-Axis uses the month name now */}
+          <YAxis tickFormatter={(value) => `${value}`} width={60} />
           <Tooltip
-            formatter={(value) => [`$${value.toLocaleString()}`, undefined]}
+            formatter={(value) => [value, undefined]}
             labelFormatter={(label) => `Month: ${label}`}
           />
           <Legend />
           <Bar
-            dataKey="revenue"
-            name="Revenue"
+            dataKey="count"
+            name="Sinistre Count"
             fill="#6366f1"
-            radius={[4, 4, 0, 0]}
-          />
-          <Bar
-            dataKey="target"
-            name="Target"
-            fill="#c7d2fe"
             radius={[4, 4, 0, 0]}
           />
         </BarChart>

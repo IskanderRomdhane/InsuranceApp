@@ -9,6 +9,7 @@ import com.backend.Insurance.Image.ImageRepository;
 import com.backend.Insurance.Image.ImageService;
 import com.backend.Insurance.Sinistre.AutoMobile.AutoMobile;
 import com.backend.Insurance.Sinistre.DTOS.SinistreDTO;
+import com.backend.Insurance.Sinistre.DTOS.SinistreMonthlyCountDTO;
 import com.backend.Insurance.Sinistre.Enums.Etat;
 import com.backend.Insurance.Sinistre.Habilitation.Habilitation;
 import com.backend.Insurance.Sinistre.Mapper.SinistreMapper;
@@ -26,9 +27,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -161,4 +160,21 @@ public class SinistreService {
             default: return ResponseEntity.notFound().build();
         }
     }
+
+    public List<SinistreMonthlyCountDTO> getSinistreCountPerMonth() {
+        List<Object[]> results = sinistreRepository.countSinistresPerMonth();
+        List<SinistreMonthlyCountDTO> response = new ArrayList<>();
+
+        for (Object[] row : results) {
+            Integer month = ((Number) row[0]).intValue();
+            Integer year = ((Number) row[1]).intValue();
+            Long count = ((Number) row[2]).longValue();
+
+            response.add(new SinistreMonthlyCountDTO(month, year, count));
+        }
+
+        return response;
+    }
+
+
 }

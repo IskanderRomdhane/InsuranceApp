@@ -2,7 +2,7 @@ import React from "react";
 import { StatCard } from "./StatCard";
 import { PolicyTable } from "./PolicyTable";
 import { RecentClaims } from "./RecentClaims";
-import { RevenueChart } from "./RevenueChart";
+import { SinistreChart } from "./RevenueChart";
 import { PolicyDistributionChart } from "./PolicyDistributionChart";
 import { ClaimsTrendChart } from "./ClaimsTrendChart";
 import {
@@ -49,7 +49,7 @@ export const MyDashboard = () => {
           <h2 className="text-lg font-semibold text-gray-900 mb-4">
             Revenue Overview
           </h2>
-          <RevenueChart />
+          <SinistreChart />
         </div>
         <div className="bg-white rounded-lg shadow p-6">
           <h2 className="text-lg font-semibold text-gray-900 mb-4">
