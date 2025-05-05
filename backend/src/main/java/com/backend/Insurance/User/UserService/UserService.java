@@ -127,4 +127,8 @@ public class UserService {
         return ResponseEntity.notFound().build();
     }
 
+    public Long getUserCount() {
+        return userRepository.count();
+    }
+
 }
