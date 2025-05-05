@@ -176,5 +176,9 @@ public class SinistreService {
         return response;
     }
 
+    public Long countSinistresByEtat(Etat etat) {
+        return sinistreRepository.countByEtat(etat);
+    }
+
 
 }

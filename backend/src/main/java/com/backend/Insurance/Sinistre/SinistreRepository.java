@@ -19,4 +19,5 @@ public interface SinistreRepository extends JpaRepository<Sinistre , Long> {
             "GROUP BY EXTRACT(YEAR FROM s.date), EXTRACT(MONTH FROM s.date) " +
             "ORDER BY year, month", nativeQuery = true)
     List<Object[]> countSinistresPerMonth();
+    Long countByEtat(Etat etat);
 }
