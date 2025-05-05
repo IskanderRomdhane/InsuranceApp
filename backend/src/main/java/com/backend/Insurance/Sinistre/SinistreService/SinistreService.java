@@ -161,4 +161,25 @@ public class SinistreService {
             default: return ResponseEntity.notFound().build();
         }
     }
+
+    public List<SinistreMonthlyCountDTO> getSinistreCountPerMonth() {
+        List<Object[]> results = sinistreRepository.countSinistresPerMonth();
+        List<SinistreMonthlyCountDTO> response = new ArrayList<>();
+
+        for (Object[] row : results) {
+            Integer month = ((Number) row[0]).intValue();
+            Integer year = ((Number) row[1]).intValue();
+            Long count = ((Number) row[2]).longValue();
+
+            response.add(new SinistreMonthlyCountDTO(month, year, count));
+        }
+
+        return response;
+    }
+
+    public Long countSinistresByEtat(Etat etat) {
+        return sinistreRepository.countByEtat(etat);
+    }
+
+
 }

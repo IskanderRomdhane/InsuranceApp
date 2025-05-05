@@ -44,4 +44,9 @@ public class UserController {
     ) throws IOException {
         return userservice.uploadProfilePicture(file , id);
     }
+
+    @GetMapping("/count")
+    public ResponseEntity<Long> getUserCount() {
+        return ResponseEntity.ok(userservice.getUserCount());
+    }
 }

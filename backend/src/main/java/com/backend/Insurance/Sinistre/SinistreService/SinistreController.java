@@ -4,6 +4,8 @@ import com.backend.Insurance.Reclamation.DTOS.ReclamationDTO;
 import com.backend.Insurance.Reclamation.DTOS.ReclamationResponseDTO;
 import com.backend.Insurance.Reclamation.Reclamation;
 import com.backend.Insurance.Sinistre.DTOS.SinistreDTO;
+import com.backend.Insurance.Sinistre.DTOS.SinistreMonthlyCountDTO;
+import com.backend.Insurance.Sinistre.Enums.Etat;
 import com.backend.Insurance.Sinistre.Sinistre;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -73,5 +75,20 @@ public class SinistreController {
             @PathVariable String sinistre_statut
     ){
         return sinistreService.getSinistresByStatus(sinistre_statut);
+    }
+
+    @GetMapping("/sinistres/per-month")
+    public ResponseEntity<List<SinistreMonthlyCountDTO>> getSinistresPerMonth() {
+        return ResponseEntity.ok(sinistreService.getSinistreCountPerMonth());
+    }
+
+    @GetMapping("/count/accepted")
+    public ResponseEntity<Long> getAcceptedSinistreCount() {
+        return ResponseEntity.ok(sinistreService.countSinistresByEtat(Etat.ACCEPTED));
+    }
+
+    @GetMapping("/count/pending")
+    public ResponseEntity<Long> getPendingSinistreCount() {
+        return ResponseEntity.ok(sinistreService.countSinistresByEtat(Etat.PENDING));
     }
 }

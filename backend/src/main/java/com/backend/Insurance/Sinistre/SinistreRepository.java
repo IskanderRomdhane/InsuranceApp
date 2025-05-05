@@ -14,4 +14,10 @@ public interface SinistreRepository extends JpaRepository<Sinistre , Long> {
 
     List<Sinistre> findByEtat(Etat etat);
 
+    @Query(value = "SELECT EXTRACT(YEAR FROM s.date) AS year, EXTRACT(MONTH FROM s.date) AS month, COUNT(*) AS count " +
+            "FROM sinistre s " +
+            "GROUP BY EXTRACT(YEAR FROM s.date), EXTRACT(MONTH FROM s.date) " +
+            "ORDER BY year, month", nativeQuery = true)
+    List<Object[]> countSinistresPerMonth();
+    Long countByEtat(Etat etat);
 }
