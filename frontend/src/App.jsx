@@ -34,12 +34,22 @@ import Profil from "./Pages/Profil/Profil.jsx";
 import {MyDashboardLayout} from "./Components/dashboard/DashboardLayout.tsx"
 const DashboardLayout = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
-  const role = localStorage.getItem("client_role");
+  const [role, setRole] = useState(null);
+
+  useEffect(() => {
+    const storedRole = localStorage.getItem("client_role");
+    setRole(storedRole);
+  }, []);
+
+  if (!role) return null; 
+
   const SidebarComponent = role === "client_admin" ? AdminSideBar : SideBar;
+  const Chatbot = role === "client_admin" ? null : ChatbotWidget;
 
   return (
     <div className="flex">
       <SidebarComponent isOpen={sidebarOpen} setIsOpen={setSidebarOpen} />
+      {Chatbot && <ChatbotWidget />}
       <div
         className={`flex flex-col flex-1 transition-all duration-300 ${
           sidebarOpen ? "ml-64" : "ml-16"
@@ -55,7 +65,7 @@ const DashboardLayout = ({ children }) => {
 function App() {
   return (
     <Router>
-      <ChatbotWidget />
+      
       <Routes>
         {/* Public routes */}
         <Route path="/" element={<Root />} />
