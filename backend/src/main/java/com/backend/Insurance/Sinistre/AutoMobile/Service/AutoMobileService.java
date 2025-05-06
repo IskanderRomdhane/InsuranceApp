@@ -56,6 +56,7 @@ public class AutoMobileService {
                     .amount(autoMobileDTO.getAmount())
                     .Matricule(autoMobileDTO.getMatricule())
                     .Location(autoMobileDTO.getLocation())
+                    .model(autoMobileDTO.getModel())
                     .build();
             autoMobileRepository.save(sinistre);
             try {

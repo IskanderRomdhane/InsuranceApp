@@ -11,4 +11,5 @@ public class AutoMobileDTO {
     private Float amount;
     private String Matricule;
     private String Location;
+    private String model;
 }
