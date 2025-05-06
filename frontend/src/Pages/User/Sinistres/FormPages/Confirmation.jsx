@@ -20,7 +20,7 @@ const Confirmation = ({ formData, setFormData, Verify }) => {
   };
   
   const handleViewClaim = () => {
-    navigate(`/sinistres/${formData.claimReference}`);
+    navigate(`/sinistres/consulter`);
   };
 
   useEffect(() => {
