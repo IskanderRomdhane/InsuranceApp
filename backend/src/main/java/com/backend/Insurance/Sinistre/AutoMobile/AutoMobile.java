@@ -16,4 +16,5 @@ import lombok.experimental.SuperBuilder;
 public class AutoMobile extends Sinistre {
     private String Matricule;
     private String Location;
+    private String model;
 }
