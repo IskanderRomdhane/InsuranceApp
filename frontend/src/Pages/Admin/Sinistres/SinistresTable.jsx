@@ -1,22 +1,23 @@
 import { useState, useEffect } from 'react';
-import { Search, Calendar, FileText, ArrowRight, ChevronLeft, ChevronRight, ChevronDown } from 'lucide-react';
+import { Search, Calendar, FileText, ArrowRight, ChevronLeft, ChevronRight, ChevronDown, Eye } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import ClaimsModal from './ClaimsModal';
+
 
 export default function SinistresTable() {
   const [claims, setClaims] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedClaim, setSelectedClaim] = useState(null);
-  const [activeFilter, setActiveFilter] = useState('All');
+  const [activeFilter, setActiveFilter] = useState('Tous');
   const [dropdownOpen, setDropdownOpen] = useState(false);
   
   const [currentPage, setCurrentPage] = useState(1);
   const [claimsPerPage] = useState(10);
   const navigate = useNavigate();
-  const filterOptions = ['All', 'Sante', 'AutoMobile', 'Habilitation'];
+  const filterOptions = ['Tous', 'Sante', 'AutoMobile', 'Habilitation'];
   
-  const viewDetails = (id) => {
+  const viewDetails = (e, id) => {
+    e.stopPropagation(); // Prevent triggering the row click
     navigate(`/admin/sinistre/details/${id}`);
   }
   
@@ -24,7 +25,7 @@ export default function SinistresTable() {
     const fetchClaims = async () => {
       setLoading(true);
       try {
-        const url = activeFilter === 'All' 
+        const url = activeFilter === 'Tous' 
           ? 'http://localhost:8081/api/sinistre/sinistres'
           : `http://localhost:8081/api/sinistre/getsinistre/type/${activeFilter}`;
         
@@ -187,6 +188,13 @@ export default function SinistresTable() {
     );
   };
 
+  // Utility class for card layout consistency
+  const cardLayoutStyles = {
+    actionColumn: "w-full md:w-auto flex items-center justify-between",
+    statusColumnWidth: "w-24",
+    amountColumnWidth: "w-32"
+  };
+
   return (
     <div className="bg-gray-100 min-h-screen p-6">
       <div className="max-w-7xl mx-auto">
@@ -239,7 +247,7 @@ export default function SinistresTable() {
               <input
                 type="text"
                 className="pl-10 pr-4 py-2 border border-gray-300 rounded-full focus:ring-[#476f66] focus:border-[#476f66] block w-full sm:text-sm"
-                placeholder="Search claims..."
+                placeholder="Rechercher Reclamation ..."
               />
             </div>
           </div>
@@ -265,10 +273,20 @@ export default function SinistresTable() {
           <div className="bg-white rounded-lg shadow-sm overflow-hidden">
             {/* Claims cards */}
             <div className="grid grid-cols-1 divide-y divide-gray-200">
+              {/* Table Header */}
+              <div className="hidden md:flex p-4 bg-gray-50 text-sm font-medium text-gray-600 border-b border-gray-200">
+                <div className="flex-1">Sinistre</div>
+                <div className="flex justify-end mr-10">
+                  <div className="w-32 text-center">Action</div>
+                  <div className={cardLayoutStyles.statusColumnWidth + " text-center"}>Statuts</div>
+                  <div className={cardLayoutStyles.amountColumnWidth + " text-right"}>Montant</div>
+                </div>
+              </div>
+              
               {currentClaims.map((claim) => (
                 <div key={claim.id} className="p-6 hover:bg-gray-50 cursor-pointer" onClick={() => setSelectedClaim(claim)}>
                   <div className="flex flex-col md:flex-row md:items-center justify-between">
-                    <div className="flex items-start space-x-4 mb-4 md:mb-0">
+                    <div className="flex items-start space-x-4 mb-4 md:mb-0 flex-1">
                       <div className={`w-2 h-12 rounded-full ${claim.etat === 'ACCEPTED' ? 'bg-green-500' : claim.etat === 'PENDING' ? 'bg-yellow-500' : claim.etat === 'REJECTED' ? 'bg-red-500' : 'bg-blue-500'}`}></div>
                       <div>
                         <h3 className="font-medium text-gray-800">{claim.objectSinistre}</h3>
@@ -283,11 +301,24 @@ export default function SinistresTable() {
                       </div>
                     </div>
                     
-                    <div className="flex items-center justify-between md:justify-end w-full md:w-auto">
-                      <div className="flex items-center mr-8">
+                    <div className="flex items-center justify-between md:justify-end gap-4 md:gap-4 w-full md:w-auto">
+                      <div className="w-32 flex justify-center">
+                        <button 
+                          className="transition-all duration-300 bg-[#476f66] hover:bg-[#3a5c54] text-white px-4 py-2 rounded-md shadow-sm flex items-center gap-2 transform hover:translate-y-px focus:outline-none focus:ring-2 focus:ring-[#476f66] focus:ring-opacity-50"
+                          onClick={(e) => viewDetails(e, claim.id)}
+                        >
+                          <Eye className="h-4 w-4" />
+                          <span>Consulter</span>
+                        </button>
+                      </div>
+                      
+                      <div className={cardLayoutStyles.statusColumnWidth + " flex items-center justify-center"}>
                         <StatusIndicator status={claim.etat} />
                       </div>
-                      <div className="text-lg font-bold text-[#476f66]">{claim.amount?.toFixed(2) || '0.00'} TND</div>
+                      
+                      <div className={cardLayoutStyles.amountColumnWidth + " text-lg font-bold text-[#476f66] text-right"}>
+                        {claim.amount?.toFixed(2) || '0.00'} TND
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -299,17 +330,6 @@ export default function SinistresTable() {
           </div>
         )}
       </div>
-      
-      {/* Modal for claim details */} 
-      {selectedClaim && (
-        <ClaimsModal 
-          claim={selectedClaim}
-          formatDate={formatDate}
-          StatusIndicator={StatusIndicator}
-          viewDetails={viewDetails}
-          onClose={() => setSelectedClaim(null)}
-        />
-      )}
     </div>
   );
 }
