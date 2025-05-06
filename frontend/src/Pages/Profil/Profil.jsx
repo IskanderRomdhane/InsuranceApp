@@ -14,7 +14,7 @@ const Profil = () => {
     const recupererDonneesUtilisateur = async () => {
       setChargement(true);
       try {
-        const url = "http://localhost:8081/api/user/userid/502";
+        const url = "http://localhost:8081/api/user/userid/302";
         const reponse = await fetch(url);
         if (!reponse.ok)
           throw new Error("Échec de la récupération des données utilisateur");
@@ -53,7 +53,7 @@ const Profil = () => {
     try {
       setUploadReussi(false);
       const reponse = await axios.put(
-        `http://localhost:8081/api/user/uploadImage/${donneesUtilisateur.id}`,
+        `http://localhost:8081/api/user/uploadImage/302`,
         formData,
         {
           headers: {
@@ -64,7 +64,7 @@ const Profil = () => {
 
       if (reponse.status === 200) {
         // Rafraîchir les données utilisateur pour obtenir la nouvelle URL de l'image
-        const url = `http://localhost:8081/api/user/userid/${donneesUtilisateur.id}`;
+        const url = `http://localhost:8081/api/user/userid/302`;
         const reponseDonneesMaj = await fetch(url);
         const donneesMaj = await reponseDonneesMaj.json();
         setDonneesUtilisateur(donneesMaj);
