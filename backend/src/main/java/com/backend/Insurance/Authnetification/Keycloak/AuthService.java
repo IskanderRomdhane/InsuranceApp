@@ -120,16 +120,16 @@ public class AuthService {
             UsersResource instance = KeycloakConfig.getInstance().realm(realm).users();
             Response response = instance.create(user);
             if (response.getStatus() == 201) {
-//                emailSenderService.sendEmail(userRep.getEmail(),
-//                        "Création de votre compte",
-//                        "Votre compte chez Wiqaya Insurance a été créé avec succès." +
-//                                "\n\nVoici vos informations de connexion :" +
-//                                "\nAdresse e-mail : " + userRep.getEmail() +
-//                                "\nNom d'utilisateur : " + userRep.getUsername() +
-//                                "\nMot de passe temporaire : " + password +
-//                                "\n\n⚠️ Ce mot de passe est à usage unique et temporaire." +
-//                                "\nVeuillez vous connecter dès que possible et le modifier pour sécuriser votre compte."
-//                );
+                emailSenderService.sendEmail(userRep.getEmail(),
+                        "Création de votre compte",
+                        "Votre compte chez Wiqaya Insurance a été créé avec succès." +
+                                "\n\nVoici vos informations de connexion :" +
+                                "\nAdresse e-mail : " + userRep.getEmail() +
+                                "\nNom d'utilisateur : " + userRep.getUsername() +
+                               "\nMot de passe temporaire : " + password +
+                               "\n\n⚠️ Ce mot de passe est à usage unique et temporaire." +
+                                "\nVeuillez vous connecter dès que possible et le modifier pour sécuriser votre compte."
+                );
                 return response.getStatus();
             } else {
                 throw new RuntimeException("Failed to create user: HTTP Status : " + response.getStatus());
