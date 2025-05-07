@@ -44,12 +44,11 @@ const DashboardLayout = ({ children }) => {
   if (!role) return null; 
 
   const SidebarComponent = role === "client_admin" ? AdminSideBar : SideBar;
-  const Chatbot = role === "client_admin" ? null : ChatbotWidget;
 
   return (
     <div className="flex">
       <SidebarComponent isOpen={sidebarOpen} setIsOpen={setSidebarOpen} />
-      {Chatbot && <ChatbotWidget />}
+      {role === "client_user" && <ChatbotWidget />}
       <div
         className={`flex flex-col flex-1 transition-all duration-300 ${
           sidebarOpen ? "ml-64" : "ml-16"
