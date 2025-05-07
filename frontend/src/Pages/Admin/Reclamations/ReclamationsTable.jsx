@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Calendar, FileText, RefreshCw, ChevronLeft, ChevronRight, Filter } from 'lucide-react';
+import { Search, Calendar, FileText, RefreshCw, Filter } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import Pagination from '@mui/material/Pagination';
+import Stack from '@mui/material/Stack';
 
 const ReclamationsTable = () => {
   const [reclamations, setReclamations] = useState([]);
@@ -32,11 +34,24 @@ const ReclamationsTable = () => {
     { value: 'POOR_SUPPORT', label: 'Support insuffisant' }
   ];
 
-  const configStatut = {
-    "PENDING": { color: "bg-yellow-500", label: "En attente" },
-    "UNDER_REVIEW": { color: "bg-blue-500", label: "En cours d'examen" },
-    "CANCELLED": { color: "bg-red-500", label: "Annulée" },
-    "FINISHED": { color: "bg-green-500", label: "Terminée" }
+  const getStatusBadgeColor = (status) => {
+    switch (status) {
+      case 'PENDING': return 'bg-yellow-500 text-white border-yellow-200';
+      case 'UNDER_REVIEW': return 'bg-blue-500 text-white border-blue-200';
+      case 'CANCELLED': return 'bg-red-500 text-white border-red-200';
+      case 'FINISHED': return 'bg-green-500 text-white border-green-200';
+      default: return 'bg-gray-100 text-white border-gray-200';
+    }
+  };
+
+  const getStatusInFrench = (status) => {
+    switch (status) {
+      case 'PENDING': return 'EN ATTENTE';
+      case 'UNDER_REVIEW': return 'EN COURS D\'EXAMEN';
+      case 'CANCELLED': return 'ANNULÉE';
+      case 'FINISHED': return 'TERMINÉE';
+      default: return status;
+    }
   };
 
   const chargerReclamations = async () => {
@@ -58,12 +73,10 @@ const ReclamationsTable = () => {
     }
   };
 
-  // Charger les données initiales
   useEffect(() => {
     chargerReclamations();
   }, []);
 
-  // Filtrer les reclamations basé sur le terme de recherche
   useEffect(() => {
     if (termeRecherche) {
       const resultatRecherche = reclamations.filter(reclamation => 
@@ -77,7 +90,6 @@ const ReclamationsTable = () => {
     }
   }, [termeRecherche, reclamations]);
 
-  // Fonction pour charger les réclamations filtrées par statut
   const filtrerParStatut = async (statut) => {
     if (statut === 'ALL') {
       if (filtreType === 'ALL') {
@@ -93,12 +105,10 @@ const ReclamationsTable = () => {
       const reponse = await axios.get(`http://localhost:8081/api/reclamation/getreclamation/status/${statut}`);
       let donnees = reponse.data;
       
-      // Si un filtre de type est également actif, filtrer davantage côté client
       if (filtreType !== 'ALL') {
         donnees = donnees.filter(reclamation => reclamation.type === filtreType);
       }
       
-      // Appliquer également le filtre de recherche si présent
       if (termeRecherche) {
         donnees = donnees.filter(reclamation => 
           reclamation.description?.toLowerCase().includes(termeRecherche.toLowerCase()) || 
@@ -117,7 +127,6 @@ const ReclamationsTable = () => {
     }
   };
 
-  // Fonction pour charger les réclamations filtrées par type
   const filtrerParType = async (type) => {
     if (type === 'ALL') {
       if (filtreStatut === 'ALL') {
@@ -133,12 +142,10 @@ const ReclamationsTable = () => {
       const reponse = await axios.get(`http://localhost:8081/api/reclamation/getreclamation/type/${type}`);
       let donnees = reponse.data;
       
-      // Si un filtre de statut est également actif, filtrer davantage côté client
       if (filtreStatut !== 'ALL') {
         donnees = donnees.filter(reclamation => reclamation.status === filtreStatut);
       }
       
-      // Appliquer également le filtre de recherche si présent
       if (termeRecherche) {
         donnees = donnees.filter(reclamation => 
           reclamation.description?.toLowerCase().includes(termeRecherche.toLowerCase()) || 
@@ -157,13 +164,11 @@ const ReclamationsTable = () => {
     }
   };
 
-  // Gestionnaire de changement de filtre statut
   const gererChangementStatut = (nouveauStatut) => {
     setFiltreStatut(nouveauStatut);
     filtrerParStatut(nouveauStatut);
   };
 
-  // Gestionnaire de changement de filtre type
   const gererChangementType = (nouveauType) => {
     setFiltreType(nouveauType);
     filtrerParType(nouveauType);
@@ -177,39 +182,25 @@ const ReclamationsTable = () => {
     });
   };
 
-  // Calcul de la pagination
   const indexDernierElement = pageCourante * reclamationsParPage;
   const indexPremierElement = indexDernierElement - reclamationsParPage;
   const reclamationsCourantes = reclamationsFiltrees.slice(indexPremierElement, indexDernierElement);
   const nombrePages = Math.ceil(reclamationsFiltrees.length / reclamationsParPage);
 
-  const allerALaPage = (numeroDePage) => {
-    if (numeroDePage > 0 && numeroDePage <= nombrePages) {
-      setPageCourante(numeroDePage);
-    }
-  };
-
-  const IndicateurStatut = ({ status }) => {
-    const config = configStatut[status] || { color: "bg-gray-500", label: status?.replace("_", " ") || "Inconnu" };
-    
-    return (
-      <div className="flex items-center">
-        <div className={`w-2 h-2 rounded-full ${config.color} mr-2`}></div>
-        <span className="text-sm">{config.label}</span>
-      </div>
-    );
+  const handlePageChange = (event, pageNumber) => {
+    setPageCourante(pageNumber);
   };
 
   const SelectFiltre = ({ options, valeur, onChange, icone }) => (
-    <div className="relative">
-      <div className="flex items-center border border-gray-300 rounded-lg overflow-hidden">
-        <span className="p-2 bg-gray-50">
+    <div className="relative w-full md:w-56">
+      <div className="flex items-center border border-gray-200 rounded-lg bg-white shadow-sm overflow-hidden">
+        <span className="p-3 bg-gray-50 border-r border-gray-200">
           {icone}
         </span>
         <select
           value={valeur}
           onChange={(e) => onChange(e.target.value)}
-          className="py-2 pl-2 pr-8 appearance-none bg-transparent border-0 focus:outline-none"
+          className="py-3 pl-3 pr-8 appearance-none bg-transparent border-0 focus:outline-none focus:ring-2 focus:ring-blue-600 w-full text-sm"
         >
           {options.map((option) => (
             <option key={option.value} value={option.value}>
@@ -217,7 +208,7 @@ const ReclamationsTable = () => {
             </option>
           ))}
         </select>
-        <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+        <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-600">
           <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
             <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
           </svg>
@@ -227,21 +218,21 @@ const ReclamationsTable = () => {
   );
 
   return (
-    <div className="bg-gray-100 min-h-screen p-6">
-      <div className="max-w-7xl mx-auto">
+    <div className="min-h-screen bg-gray-50 p-6">
+      <div className="max-w-6xl mx-auto">
         <div className="mb-8">
-          <h1 className="text-2xl font-bold text-gray-800">Réclamations</h1>
+          <h1 className="text-2xl font-bold text-gray-900">Réclamations</h1>
         </div>
         
-        <div className="bg-white rounded-lg shadow-sm mb-6 p-4">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 mb-6 p-6">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div className="relative w-full md:w-64">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <Search className="h-4 w-4 text-gray-400" />
+                <Search className="h-5 w-5 text-gray-400" />
               </div>
               <input
                 type="text"
-                className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-green-700 focus:border-green-700 block w-full sm:text-sm"
+                className="pl-10 pr-4 py-3 border border-gray-200 rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full text-sm shadow-sm"
                 placeholder="Rechercher des réclamations..."
                 value={termeRecherche}
                 onChange={(e) => setTermeRecherche(e.target.value)}
@@ -253,21 +244,21 @@ const ReclamationsTable = () => {
                 options={optionsStatut} 
                 valeur={filtreStatut} 
                 onChange={gererChangementStatut}
-                icone={<Filter className="w-4 h-4 text-gray-500" />}
+                icone={<Filter className="w-5 h-5 text-gray-600" />}
               />
               
               <SelectFiltre 
                 options={optionsType} 
                 valeur={filtreType} 
                 onChange={gererChangementType}
-                icone={<Filter className="w-4 h-4 text-gray-500" />}
+                icone={<Filter className="w-5 h-5 text-gray-600" />}
               />
               
               <button 
-                className="flex items-center justify-center bg-white text-gray-600 font-medium py-2 px-4 rounded-lg hover:bg-gray-100 transition-colors border border-gray-200"
+                className="flex items-center justify-center bg-blue-600 text-white font-medium py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors shadow-sm"
                 onClick={chargerReclamations}
               >
-                <RefreshCw className="w-4 h-4 mr-2" />
+                <RefreshCw className="w-5 h-5 mr-2" />
                 Actualiser
               </button>
             </div>
@@ -275,52 +266,56 @@ const ReclamationsTable = () => {
         </div>
         
         {erreur && (
-          <div className="bg-red-50 border border-red-200 text-red-700 px-6 py-4 rounded-lg shadow-sm mb-6">
-            <p>{erreur}</p>
+          <div className="bg-red-50 border border-red-200 text-red-700 px-6 py-4 rounded-xl shadow-sm mb-6">
+            <p className="font-semibold text-lg">Erreur</p>
+            <p className="text-sm mt-1">{erreur}</p>
           </div>
         )}
         
         {chargement ? (
-          <div className="bg-white rounded-lg shadow-sm p-12 flex justify-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-4 border-green-700 border-t-transparent"></div>
+          <div className="bg-white rounded-xl shadow-sm p-12 flex justify-center border border-gray-100">
+            <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-600 border-t-transparent"></div>
           </div>
         ) : reclamationsFiltrees.length === 0 ? (
-          <div className="bg-white rounded-lg shadow-sm p-12 text-center">
+          <div className="bg-white rounded-xl shadow-sm p-12 text-center border border-gray-100">
             <FileText className="h-16 w-16 text-gray-300 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-700 mb-2">Aucune réclamation trouvée</h3>
-            <p className="text-gray-500 max-w-md mx-auto">Aucune réclamation ne correspond à vos filtres. Essayez d'autres filtres ou revenez plus tard.</p>
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">Aucune réclamation trouvée</h3>
+            <p className="text-gray-600 max-w-md mx-auto">Aucune réclamation ne correspond à vos filtres. Essayez d'autres filtres ou revenez plus tard.</p>
           </div>
         ) : (
-          <div className="bg-white rounded-lg shadow-sm overflow-hidden">
-            <div className="grid grid-cols-1 divide-y divide-gray-200">
+          <div className="rounded-xl overflow-hidden">
+            <div className="grid gap-6 p-6">
               {reclamationsCourantes.map((reclamation) => (
                 <div 
                   key={reclamation.id} 
-                  className="p-6 hover:bg-gray-50 cursor-pointer" 
+                  className="p-6 bg-white hover:bg-gray-50 cursor-pointer transition-colors border border-gray-200 rounded-2xl shadow-sm hover:shadow-md" 
                   onClick={() => navigate(`/admin/reclamation/${reclamation.id}`)}
                 >
                   <div className="flex flex-col md:flex-row md:items-center justify-between">
                     <div className="flex items-start space-x-4 mb-4 md:mb-0">
-                      <div className={`w-2 h-12 rounded-full ${configStatut[reclamation.status]?.color || 'bg-gray-500'}`}></div>
+                      <div className="flex-shrink-0">
+                        <div className={`w-3 h-16 rounded-full ${getStatusBadgeColor(reclamation.status).split(' ')[0].replace('bg-', 'bg-')}`}></div>
+                      </div>
                       <div>
-                        <h3 className="font-medium text-gray-800">{reclamation.id} <span className='font-normal'> {reclamation.fullName || 'Utilisateur inconnu'}</span></h3>
-                        <div className="flex items-center mt-1 text-gray-500 text-sm">
-                          <span className="bg-gray-100 px-2 py-0.5 rounded-full">
+                        <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                          Réclamation #{reclamation.id} <span className="font-normal text-sm text-gray-700">{reclamation.fullName || 'Utilisateur inconnu'}</span>
+                        </h3>
+                        <div className="flex flex-wrap items-center mt-2 text-gray-600 text-sm space-x-4">
+                          <span className="bg-gray-100 px-3 py-1.5 rounded-full">
                             {reclamation.type?.replace(/_/g, ' ') || 'Type inconnu'}
                           </span>
-                          <span className="mx-2">•</span>
-                          <div className="flex items-center">
-                            <Calendar className="h-3 w-3 mr-1" />
+                          <div className="flex items-center mt-2 sm:mt-0">
+                            <Calendar className="h-4 w-4 mr-1" />
                             {formaterDate(reclamation.date)}
                           </div>
                         </div>
                       </div>
                     </div>
                     
-                    <div className="flex items-center justify-between md:justify-end w-full md:w-auto">
-                      <div className="flex items-center mr-8">
-                        <IndicateurStatut status={reclamation.status} />
-                      </div>
+                    <div className="flex items-center justify-between md:justify-end w-full md:w-auto mt-4 md:mt-0">
+                      <span className={`px-4 py-2 rounded-full font-semibold border ${getStatusBadgeColor(reclamation.status)}`}>
+                        {getStatusInFrench(reclamation.status)}
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -328,55 +323,31 @@ const ReclamationsTable = () => {
             </div>
             
             {nombrePages > 1 && (
-              <div className="flex items-center justify-center border-t border-gray-200 bg-white px-4 py-3">
-                <nav className="isolate inline-flex -space-x-px rounded-md shadow-sm" aria-label="Pagination">
-                  <button
-                    onClick={() => allerALaPage(pageCourante - 1)}
-                    disabled={pageCourante === 1}
-                    className={`relative inline-flex items-center rounded-l-md border px-2 py-2 ${
-                      pageCourante === 1 ? 'text-gray-300 cursor-not-allowed' : 'text-gray-500 hover:bg-gray-50'
-                    }`}
-                  >
-                    <ChevronLeft className="h-5 w-5" />
-                  </button>
-                  
-                  {Array.from({ length: Math.min(5, nombrePages) }, (_, i) => {
-                    let numeroDePage;
-                    if (nombrePages <= 5) {
-                      numeroDePage = i + 1;
-                    } else if (pageCourante <= 3) {
-                      numeroDePage = i + 1;
-                    } else if (pageCourante >= nombrePages - 2) {
-                      numeroDePage = nombrePages - 4 + i;
-                    } else {
-                      numeroDePage = pageCourante - 2 + i;
-                    }
-                    
-                    return (
-                      <button
-                        key={numeroDePage}
-                        onClick={() => allerALaPage(numeroDePage)}
-                        className={`relative inline-flex items-center border px-4 py-2 text-sm font-medium ${
-                          pageCourante === numeroDePage
-                            ? 'z-10 border-green-700 bg-green-700 text-white'
-                            : 'border-gray-300 bg-white text-gray-500 hover:bg-gray-50'
-                        }`}
-                      >
-                        {numeroDePage}
-                      </button>
-                    );
-                  })}
-                  
-                  <button
-                    onClick={() => allerALaPage(pageCourante + 1)}
-                    disabled={pageCourante === nombrePages}
-                    className={`relative inline-flex items-center rounded-r-md border px-2 py-2 ${
-                      pageCourante === nombrePages ? 'text-gray-300 cursor-not-allowed' : 'text-gray-500 hover:bg-gray-50'
-                    }`}
-                  >
-                    <ChevronRight className="h-5 w-5" />
-                  </button>
-                </nav>
+              <div className="flex items-center justify-center border-t border-gray-200 px-4 py-6">
+                <Stack spacing={2}>
+                  <Pagination
+                    count={nombrePages}
+                    page={pageCourante}
+                    onChange={handlePageChange}
+                    color="primary"
+                    sx={{
+                      '& .MuiPaginationItem-root': {
+                        color: '#476f66',
+                        fontWeight: 500,
+                        '&:hover': {
+                          backgroundColor: '#f1f5f5',
+                        },
+                        '&.Mui-selected': {
+                          backgroundColor: '#476f66',
+                          color: 'white',
+                          '&:hover': {
+                            backgroundColor: '#3a5c54',
+                          },
+                        },
+                      },
+                    }}
+                  />
+                </Stack>
               </div>
             )}
           </div>
