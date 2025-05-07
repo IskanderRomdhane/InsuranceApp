@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { NavLink } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { NavLink, useLocation } from "react-router-dom";
 import {
   ChevronLeft,
   ChevronRight,
@@ -13,14 +13,13 @@ import {
   Plus,
   List,
 } from "lucide-react";
-import icon from "../assets/SiderBar/icon.jpg";
+import icon from "../assets/SiderBar/iconV3.png";
 
 const SideBar = ({ isOpen, setIsOpen }) => {
-  const toggleSidebar = () => {
-    setIsOpen(!isOpen);
-  };
-
+  const location = useLocation();
+  const toggleSidebar = () => setIsOpen(!isOpen);
   const [openMenus, setOpenMenus] = useState({});
+  const [activeItem, setActiveItem] = useState("");
 
   const toggleMenu = (menuId, e) => {
     e.preventDefault();
@@ -34,50 +33,50 @@ const SideBar = ({ isOpen, setIsOpen }) => {
     {
       id: "dashboard",
       title: "Dashboard",
-      icon: <LayoutDashboard className="w-5 h-5 text-[#476f66] transition duration-75 group-hover:text-[#3e6159]" />,
+      icon: <LayoutDashboard className="w-5 h-5 text-orange-200 transition duration-200 group-hover:text-gray-200" />,
       link: "/dashboard",
       hasDropdown: false,
     },
     {
       id: "reclamations",
       title: "Mes Reclamations",
-      icon: <FileWarning className="w-5 h-5 text-[#476f66] transition duration-75 group-hover:text-[#3e6159]" />,
+      icon: <FileWarning className="w-5 h-5 text-orange-200 transition duration-200 group-hover:text-gray-200" />,
       hasDropdown: true,
       submenu: [
         {
           title: "Déposer réclamation",
           link: "/reclamations/deposer",
-          icon: <Plus className="w-4 h-4" />,
+          icon: <Plus className="w-4 h-4 text-orange-200 group-hover:text-gray-200" />,
         },
         {
           title: "Consulter réclamations",
           link: "/reclamations/consulter",
-          icon: <List className="w-4 h-4" />,
+          icon: <List className="w-4 h-4 text-orange-200 group-hover:text-gray-200" />,
         },
       ],
     },
     {
       id: "sinistres",
       title: "Mes sinistres",
-      icon: <Umbrella className="w-5 h-5 text-[#476f66] transition duration-75 group-hover:text-[#3e6159]" />,
+      icon: <Umbrella className="w-5 h-5 text-orange-200 transition duration-200 group-hover:text-gray-200" />,
       hasDropdown: true,
       submenu: [
         {
           title: "Créer sinistre",
           link: "/sinistres/creer",
-          icon: <Plus className="w-4 h-4" />,
+          icon: <Plus className="w-4 h-4 text-orange-200 group-hover:text-gray-200" />,
         },
         {
           title: "Consulter sinistres",
           link: "/sinistres/consulter",
-          icon: <List className="w-4 h-4" />,
+          icon: <List className="w-4 h-4 text-orange-200 group-hover:text-gray-200" />,
         },
       ],
     },
     {
       id: "agences",
       title: "Agences",
-      icon: <MapPin className="w-5 h-5 text-[#476f66] transition duration-75 group-hover:text-[#3e6159]" />,
+      icon: <MapPin className="w-5 h-5 text-orange-200 transition duration-200 group-hover:text-gray-200" />,
       link: "/agences",
       hasDropdown: false,
     },
@@ -87,23 +86,47 @@ const SideBar = ({ isOpen, setIsOpen }) => {
     {
       id: "faqs",
       title: "FAQs",
-      icon: <HelpCircle className="w-5 h-5 text-[#476f66] transition duration-75 group-hover:text-[#3e6159]" />,
+      icon: <HelpCircle className="w-5 h-5 text-orange-200 transition duration-200 group-hover:text-gray-200" />,
       link: "/faqs",
     },
     {
       id: "profile",
       title: "Profile",
-      icon: <User className="w-5 h-5 text-[#476f66] transition duration-75 group-hover:text-[#3e6159]" />,
+      icon: <User className="w-5 h-5 text-orange-200 transition duration-200 group-hover:text-gray-200" />,
       link: "/profil",
     },
   ];
+
+  useEffect(() => {
+    const currentPath = location.pathname;
+    const mainItem = [...menuItems, ...supportItems].find(
+      (item) => !item.hasDropdown && item.link === currentPath
+    );
+    if (mainItem) {
+      setActiveItem(mainItem.id);
+      return;
+    }
+    for (const item of menuItems) {
+      if (item.hasDropdown && item.submenu) {
+        const subItem = item.submenu.find((sub) => sub.link === currentPath);
+        if (subItem) {
+          setActiveItem(item.id);
+          setOpenMenus((prev) => ({ ...prev, [item.id]: true }));
+          return;
+        }
+      }
+    }
+  }, [location.pathname]);
+
+  const isMenuActive = (itemId) => activeItem === itemId;
+  const isSubmenuItemActive = (link) => location.pathname === link;
 
   return (
     <>
       <button
         onClick={toggleSidebar}
         type="button"
-        className="fixed top-4 left-4 z-50 inline-flex items-center p-2 text-sm text-[#3e6159] rounded-lg sm:hidden hover:bg-[#f5f8f7] focus:outline-none focus:ring-2 focus:ring-[#476f66]"
+        className="fixed top-4 left-4 z-50 inline-flex items-center p-2 text-sm text-white rounded-lg sm:hidden hover:bg-[#2e4a44]/50 focus:outline-none focus:ring-2 focus:ring-[#6b8e85]/50"
       >
         <span className="sr-only">Toggle sidebar</span>
         {isOpen ? <ChevronLeft className="w-6 h-6" /> : <ChevronRight className="w-6 h-6" />}
@@ -112,29 +135,34 @@ const SideBar = ({ isOpen, setIsOpen }) => {
       <aside
         className={`fixed top-0 left-0 z-40 h-screen transition-all duration-300 ${
           isOpen ? "w-64" : "w-16"
-        } sm:translate-x-0 flex flex-col bg-white shadow-xl`}
+        } sm:translate-x-0 flex flex-col bg-[#3a5c54] text-white shadow-lg rounded-r-2xl`}
         aria-label="Sidebar"
       >
         <div className="flex-1 px-3 py-4 overflow-y-auto">
           <div className={`flex items-center ps-2 mb-5 ${isOpen ? "justify-between" : "justify-center"}`}>
             {isOpen && (
               <>
-                <img src={icon} className="h-12" alt="Wiqaya Logo" />
+                <div className="flex items-center justify-center w-full">
+                  <img src={icon} className="h-26 rounded-full border-[#6b8e85]" alt="Wiqaya Logo" />
+                </div>
                 <button
                   onClick={toggleSidebar}
-                  className="hidden sm:block text-[#3e6159] hover:text-[#476f66] rounded-lg p-1"
+                  className="hidden sm:block text-white hover:bg-[#2e4a44]/50 rounded-lg p-1"
                 >
                   <ChevronLeft className="w-5 h-5" />
                 </button>
               </>
             )}
             {!isOpen && (
-              <button
-                onClick={toggleSidebar}
-                className="hidden sm:block text-[#3e6159] hover:bg-[#476f66] hover:text-white rounded-lg p-1 mt-4"
-              >
-                <ChevronRight className="w-5 h-5" />
-              </button>
+              <div className="flex flex-col items-center w-full">
+                <img src={icon} className="h-14 rounded-full border-[#6b8e85]" alt="Wiqaya Logo" />
+                <button
+                  onClick={toggleSidebar}
+                  className="hidden sm:block text-white hover:bg-[#2e4a44]/50 rounded-lg p-1 mt-2"
+                >
+                  <ChevronRight className="w-5 h-5" />
+                </button>
+              </div>
             )}
           </div>
 
@@ -142,21 +170,23 @@ const SideBar = ({ isOpen, setIsOpen }) => {
             {menuItems.map((item) => (
               <li key={item.id}>
                 {item.hasDropdown ? (
-                  <>
+                  <div>
                     <a
                       href="#"
                       onClick={(e) => toggleMenu(item.id, e)}
-                      className={`flex items-center justify-between p-2 rounded-lg hover:bg-[#f5f8f7] group ${
-                        openMenus[item.id] ? "bg-[#e8efed] text-[#3e6159]" : "text-[#3e6159]"
-                      }`}
+                      className={`
+                        flex items-center justify-between p-2 rounded-lg hover:bg-[#2e4a44]/50 group
+                        ${isMenuActive(item.id) ? "bg-[#2e4a44]/70 text-white" : "text-white"}
+                        transition-colors duration-200
+                      `}
                     >
                       <div className="flex items-center">
                         {item.icon}
-                        {isOpen && <span className="ms-3">{item.title}</span>}
+                        {isOpen && <span className="ms-3 drop-shadow-sm">{item.title}</span>}
                       </div>
                       {isOpen && (
                         <ChevronDown
-                          className={`w-4 h-4 transition-transform duration-200 ${
+                          className={`w-4 h-4 transition-transform duration-200 text-white group-hover:text-gray-200 ${
                             openMenus[item.id] ? "rotate-180" : ""
                           }`}
                         />
@@ -168,31 +198,31 @@ const SideBar = ({ isOpen, setIsOpen }) => {
                           <li key={idx}>
                             <NavLink
                               to={subItem.link}
-                              className={({ isActive }) =>
-                                `flex items-center p-2 text-sm rounded-lg hover:bg-[#f5f8f7] group ${
-                                  isActive ? "bg-[#e8efed] text-[#3e6159]" : "text-[#3e6159]"
-                                }`
-                              }
+                              className={`
+                                flex items-center p-2 text-sm rounded-lg hover:bg-[#2e4a44]/50 group
+                                ${isSubmenuItemActive(subItem.link) ? "bg-[#2e4a44]/70 text-white" : "text-white"}
+                                transition-colors duration-200
+                              `}
                             >
-                              <span className="w-4 h-4 text-[#476f66] mr-2">{subItem.icon}</span>
-                              <span>{subItem.title}</span>
+                              {subItem.icon}
+                              <span className="ms-2 drop-shadow-sm">{subItem.title}</span>
                             </NavLink>
                           </li>
                         ))}
                       </ul>
                     )}
-                  </>
+                  </div>
                 ) : (
                   <NavLink
                     to={item.link}
-                    className={({ isActive }) =>
-                      `flex items-center p-2 rounded-lg hover:bg-[#f5f8f7] group ${
-                        isActive ? "bg-[#e8efed] text-[#3e6159]" : "text-[#3e6159]"
-                      }`
-                    }
+                    className={`
+                      flex items-center p-2 rounded-lg hover:bg-[#2e4a44]/50 group
+                      ${isSubmenuItemActive(item.link) ? "bg-[#2e4a44]/70 text-white" : "text-white"}
+                      transition-colors duration-200
+                    `}
                   >
                     {item.icon}
-                    {isOpen && <span className="ms-3">{item.title}</span>}
+                    {isOpen && <span className="ms-3 drop-shadow-sm">{item.title}</span>}
                   </NavLink>
                 )}
               </li>
@@ -200,20 +230,23 @@ const SideBar = ({ isOpen, setIsOpen }) => {
           </ul>
         </div>
 
-        {/* Support Section */}
-        <div className="px-3 py-4 bg-white border-t border-gray-300">
+        <div className="px-3 py-4 bg-[#2e4a44]/20 border-t border-[#6b8e85]/30">
           {isOpen && (
-            <div className="mb-2 text-sm font-medium text-[#3e6159] px-2">Support & Account</div>
+            <div className="mb-2 text-sm font-medium text-white drop-shadow-sm px-2">Support & Account</div>
           )}
           <ul className="space-y-2 font-medium">
             {supportItems.map((item) => (
               <li key={item.id}>
                 <NavLink
                   to={item.link}
-                  className="flex items-center p-2 rounded-lg hover:bg-[#f5f8f7] group text-[#476f66]"
+                  className={`
+                    flex items-center p-2 rounded-lg hover:bg-[#2e4a44]/50 group
+                    ${isSubmenuItemActive(item.link) ? "bg-[#2e4a44]/70 text-white" : "text-white"}
+                    transition-colors duration-200
+                  `}
                 >
                   {item.icon}
-                  {isOpen && <span className="ms-3">{item.title}</span>}
+                  {isOpen && <span className="ms-3 drop-shadow-sm">{item.title}</span>}
                 </NavLink>
               </li>
             ))}

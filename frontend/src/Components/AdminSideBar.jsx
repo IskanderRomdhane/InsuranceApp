@@ -13,7 +13,7 @@ import {
   List,
   Umbrella,
 } from "lucide-react";
-import icon from "../assets/SiderBar/icon.jpg";
+import icon from "../assets/SiderBar/iconV3.png";
 
 const AdminSidebar = ({ isOpen, setIsOpen }) => {
   const location = useLocation();
@@ -33,46 +33,46 @@ const AdminSidebar = ({ isOpen, setIsOpen }) => {
     {
       id: "dashboard",
       title: "Dashboard",
-      icon: <LayoutDashboard className="w-5 h-5 text-white transition duration-200 group-hover:text-gray-200" />,
+      icon: <LayoutDashboard className="w-5 h-5 text-orange-200 transition duration-200 group-hover:text-gray-200" />,
       link: "/admin",
       hasDropdown: false,
     },
     {
       id: "reclamations",
       title: "User Reclamations",
-      icon: <FileWarning className="w-5 h-5 text-white transition duration-200 group-hover:text-gray-200" />,
+      icon: <FileWarning className="w-5 h-5 text-orange-200 transition duration-200 group-hover:text-gray-200" />,
       hasDropdown: true,
       submenu: [
         {
           title: "Consulter réclamations",
           link: "/admin/reclamations",
-          icon: <List className="w-4 h-4 text-white group-hover:text-gray-200" />,
+          icon: <List className="w-4 h-4 text-orange-200 group-hover:text-gray-200" />,
         },
       ],
     },
     {
       id: "sinistres",
       title: "Users sinistres",
-      icon: <Umbrella className="w-5 h-5 text-white transition duration-200 group-hover:text-gray-200" />,
+      icon: <Umbrella className="w-5 h-5 text-orange-200 transition duration-200 group-hover:text-gray-200" />,
       hasDropdown: true,
       submenu: [
         {
           title: "Consulter Sinistres",
           link: "/admin/sinistre",
-          icon: <List className="w-4 h-4 text-white group-hover:text-gray-200" />,
+          icon: <List className="w-4 h-4 text-orange-200 group-hover:text-gray-200" />,
         },
       ],
     },
     {
       id: "gererUtilisateurs",
       title: "Gerer Utilisateurs",
-      icon: <UserCog className="w-5 h-5 text-white transition duration-200 group-hover:text-gray-200" />,
+      icon: <UserCog className="w-5 h-5 text-orange-200 transition duration-200 group-hover:text-gray-200" />,
       hasDropdown: true,
       submenu: [
         {
           title: "Gerer Utilisateurs",
           link: "/admin/users",
-          icon: <Plus className="w-4 h-4 text-white group-hover:text-gray-200" />,
+          icon: <Plus className="w-4 h-4 text-orange-200 group-hover:text-gray-200" />,
         },
       ],
     },
@@ -82,14 +82,14 @@ const AdminSidebar = ({ isOpen, setIsOpen }) => {
     {
       id: "settings",
       title: "Settings",
-      icon: <Settings className="w-5 h-5 text-white transition duration-200 group-hover:text-gray-200" />,
+      icon: <Settings className="w-5 h-5 text-orange-200 transition duration-200 group-hover:text-gray-200" />,
       link: "/admin/settings",
       hasDropdown: false,
     },
     {
       id: "profile",
       title: "Admin Profile",
-      icon: <User className="w-5 h-5 text-white transition duration-200 group-hover:text-gray-200" />,
+      icon: <User className="w-5 h-5 text-orange-200 transition duration-200 group-hover:text-gray-200" />,
       link: "/profil",
       hasDropdown: false,
     },
@@ -140,8 +140,8 @@ const AdminSidebar = ({ isOpen, setIsOpen }) => {
           <div className={`flex items-center ps-2 mb-5 ${isOpen ? "justify-between" : "justify-center"}`}>
             {isOpen && (
               <>
-                <div className="flex items-center">
-                  <img src={icon} className="h-14 rounded-full border-2 border-[#6b8e85]" alt="Wiqaya Logo" />
+                <div className="flex items-center justify-center w-full">
+                  <img src={icon} className="h-26 rounded-full border-[#6b8e85]" alt="Wiqaya Logo" />
                 </div>
                 <button
                   onClick={toggleSidebar}
@@ -152,12 +152,15 @@ const AdminSidebar = ({ isOpen, setIsOpen }) => {
               </>
             )}
             {!isOpen && (
-              <button
-                onClick={toggleSidebar}
-                className="hidden sm:block text-white hover:bg-[#2e4a44]/50 rounded-lg p-1 mt-4"
-              >
-                <ChevronRight className="w-5 h-5" />
-              </button>
+              <div className="flex flex-col items-center w-full">
+                <img src={icon} className="h-14 rounded-full border-[#6b8e85]" alt="Wiqaya Logo" />
+                <button
+                  onClick={toggleSidebar}
+                  className="hidden sm:block text-white hover:bg-[#2e4a44]/50 rounded-lg p-1 mt-2"
+                >
+                  <ChevronRight className="w-5 h-5" />
+                </button>
+              </div>
             )}
           </div>
 
