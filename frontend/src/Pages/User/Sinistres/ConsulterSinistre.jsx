@@ -2,10 +2,10 @@ import { useState, useEffect } from "react";
 import {
   ChevronDown,
   ChevronUp,
-  ChevronLeft,
-  ChevronRight,
 } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
+import Pagination from '@mui/material/Pagination';
+import Stack from '@mui/material/Stack';
 
 export default function SinistresPage() {
   const [sinistres, setSinistres] = useState([]);
@@ -23,7 +23,6 @@ export default function SinistresPage() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Retrieve typeFiltre from location state on initial load
   useEffect(() => {
     if (location.state?.typeFiltre) {
       setTypeFiltre(location.state.typeFiltre);
@@ -43,24 +42,24 @@ export default function SinistresPage() {
 
   const statutCouleurs = {
     ACCEPTED: {
-      bg: "bg-green-100",
-      text: "text-green-800",
-      border: "border-green-300",
+      bg: "bg-green-500",
+      text: "text-white",
+      border: "border-green-700",
     },
     PENDING: {
-      bg: "bg-yellow-100",
-      text: "text-yellow-800",
-      border: "border-yellow-300",
+      bg: "bg-yellow-500",
+      text: "text-white",
+      border: "border-yellow-500",
     },
     REJECTED: {
-      bg: "bg-red-100",
-      text: "text-red-800",
-      border: "border-red-300",
+      bg: "bg-red-500",
+      text: "text-white",
+      border: "border-red-500",
     },
     UNDER_REVIEW: {
-      bg: "bg-blue-100",
-      text: "text-blue-800",
-      border: "border-blue-300",
+      bg: "bg-blue-500",
+      text: "text-white",
+      border: "border-blue-500",
     },
   };
 
@@ -116,11 +115,9 @@ export default function SinistresPage() {
   const sinistresCourants = sinistres.slice(premierIndex, dernierIndex);
   const totalPages = Math.ceil(sinistres.length / sinistreParPage);
 
-  const allerPage = (numero) => {
-    if (numero > 0 && numero <= totalPages) {
-      setPageCourante(numero);
-      setExpandedId(null);
-    }
+  const handlePageChange = (event, pageNumber) => {
+    setPageCourante(pageNumber);
+    setExpandedId(null);
   };
 
   const BadgeStatut = ({ status }) => {
@@ -229,86 +226,35 @@ export default function SinistresPage() {
     );
   };
 
-  const Pagination = () => {
+  const PaginationComponent = () => {
     if (totalPages <= 1) return null;
 
-    const pages = [];
-    const maxPages = 5;
-
-    let debut = Math.max(1, pageCourante - Math.floor(maxPages / 2));
-    let fin = Math.min(totalPages, debut + maxPages - 1);
-
-    if (fin - debut + 1 < maxPages) {
-      debut = Math.max(1, fin - maxPages + 1);
-    }
-
-    for (let i = debut; i <= fin; i++) {
-      pages.push(i);
-    }
-
     return (
-      <div className="flex items-center justify-center space-x-2 mt-6">
-        <button
-          onClick={() => allerPage(pageCourante - 1)}
-          disabled={pageCourante === 1}
-          className={`p-2 rounded-md ${
-            pageCourante === 1
-              ? "text-gray-400 cursor-not-allowed"
-              : "text-gray-700 hover:bg-gray-100"
-          }`}
-        >
-          <ChevronLeft className="h-5 w-5" />
-        </button>
-
-        {debut > 1 && (
-          <>
-            <button
-              onClick={() => allerPage(1)}
-              className="px-3 py-1 rounded-md hover:bg-gray-100"
-            >
-              1
-            </button>
-            {debut > 2 && <span className="px-1">...</span>}
-          </>
-        )}
-
-        {pages.map((num) => (
-          <button
-            key={num}
-            onClick={() => allerPage(num)}
-            className={`px-3 py-1 rounded-md ${
-              pageCourante === num
-                ? "bg-[#476f66] text-white"
-                : "hover:bg-gray-100"
-            }`}
-          >
-            {num}
-          </button>
-        ))}
-
-        {fin < totalPages && (
-          <>
-            {fin < totalPages - 1 && <span className="px-1">...</span>}
-            <button
-              onClick={() => allerPage(totalPages)}
-              className="px-3 py-1 rounded-md hover:bg-gray-100"
-            >
-              {totalPages}
-            </button>
-          </>
-        )}
-
-        <button
-          onClick={() => allerPage(pageCourante + 1)}
-          disabled={pageCourante === totalPages}
-          className={`p-2 rounded-md ${
-            pageCourante === totalPages
-              ? "text-gray-400 cursor-not-allowed"
-              : "text-gray-700 hover:bg-gray-100"
-          }`}
-        >
-          <ChevronRight className="h-5 w-5" />
-        </button>
+      <div className="flex items-center justify-center border-t border-gray-200 px-6 py-4 sm:px-8">
+        <Stack spacing={2}>
+          <Pagination
+            count={totalPages}
+            page={pageCourante}
+            onChange={handlePageChange}
+            color="primary"
+            sx={{
+              '& .MuiPaginationItem-root': {
+                color: '#476f66',
+                fontWeight: 500,
+                '&:hover': {
+                  backgroundColor: '#f1f5f5',
+                },
+                '&.Mui-selected': {
+                  backgroundColor: '#476f66',
+                  color: 'white',
+                  '&:hover': {
+                    backgroundColor: '#3a5c54',
+                  },
+                },
+              },
+            }}
+          />
+        </Stack>
       </div>
     );
   };
@@ -429,7 +375,7 @@ export default function SinistresPage() {
             })}
           </div>
 
-          <Pagination />
+          <PaginationComponent />
 
           <div className="mt-4 text-sm text-gray-500 text-center">
             {premierIndex + 1}-{Math.min(dernierIndex, sinistres.length)} de{" "}
