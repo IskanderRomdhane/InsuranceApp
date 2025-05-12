@@ -33,46 +33,60 @@ const AdminSidebar = ({ isOpen, setIsOpen }) => {
     {
       id: "dashboard",
       title: "Dashboard",
-      icon: <LayoutDashboard className="w-5 h-5 text-orange-200 transition duration-200 group-hover:text-gray-200" />,
-      link: "/admin",
+      icon: (
+        <LayoutDashboard className="w-5 h-5 text-orange-200 transition duration-200 group-hover:text-gray-200" />
+      ),
+      link: "/AdminDashboard",
       hasDropdown: false,
     },
     {
       id: "reclamations",
       title: "User Reclamations",
-      icon: <FileWarning className="w-5 h-5 text-orange-200 transition duration-200 group-hover:text-gray-200" />,
+      icon: (
+        <FileWarning className="w-5 h-5 text-orange-200 transition duration-200 group-hover:text-gray-200" />
+      ),
       hasDropdown: true,
       submenu: [
         {
           title: "Consulter réclamations",
           link: "/admin/reclamations",
-          icon: <List className="w-4 h-4 text-orange-200 group-hover:text-gray-200" />,
+          icon: (
+            <List className="w-4 h-4 text-orange-200 group-hover:text-gray-200" />
+          ),
         },
       ],
     },
     {
       id: "sinistres",
       title: "Users sinistres",
-      icon: <Umbrella className="w-5 h-5 text-orange-200 transition duration-200 group-hover:text-gray-200" />,
+      icon: (
+        <Umbrella className="w-5 h-5 text-orange-200 transition duration-200 group-hover:text-gray-200" />
+      ),
       hasDropdown: true,
       submenu: [
         {
           title: "Consulter Sinistres",
           link: "/admin/sinistre",
-          icon: <List className="w-4 h-4 text-orange-200 group-hover:text-gray-200" />,
+          icon: (
+            <List className="w-4 h-4 text-orange-200 group-hover:text-gray-200" />
+          ),
         },
       ],
     },
     {
       id: "gererUtilisateurs",
       title: "Gerer Utilisateurs",
-      icon: <UserCog className="w-5 h-5 text-orange-200 transition duration-200 group-hover:text-gray-200" />,
+      icon: (
+        <UserCog className="w-5 h-5 text-orange-200 transition duration-200 group-hover:text-gray-200" />
+      ),
       hasDropdown: true,
       submenu: [
         {
           title: "Gerer Utilisateurs",
           link: "/admin/users",
-          icon: <Plus className="w-4 h-4 text-orange-200 group-hover:text-gray-200" />,
+          icon: (
+            <Plus className="w-4 h-4 text-orange-200 group-hover:text-gray-200" />
+          ),
         },
       ],
     },
@@ -82,14 +96,18 @@ const AdminSidebar = ({ isOpen, setIsOpen }) => {
     {
       id: "settings",
       title: "Settings",
-      icon: <Settings className="w-5 h-5 text-orange-200 transition duration-200 group-hover:text-gray-200" />,
+      icon: (
+        <Settings className="w-5 h-5 text-orange-200 transition duration-200 group-hover:text-gray-200" />
+      ),
       link: "/admin/settings",
       hasDropdown: false,
     },
     {
       id: "profile",
       title: "Admin Profile",
-      icon: <User className="w-5 h-5 text-orange-200 transition duration-200 group-hover:text-gray-200" />,
+      icon: (
+        <User className="w-5 h-5 text-orange-200 transition duration-200 group-hover:text-gray-200" />
+      ),
       link: "/profil",
       hasDropdown: false,
     },
@@ -127,7 +145,11 @@ const AdminSidebar = ({ isOpen, setIsOpen }) => {
         className="fixed top-4 left-4 z-50 inline-flex items-center p-2 text-sm text-white rounded-lg sm:hidden hover:bg-[#2e4a44]/50 focus:outline-none focus:ring-2 focus:ring-[#6b8e85]/50"
       >
         <span className="sr-only">Toggle sidebar</span>
-        {isOpen ? <ChevronLeft className="w-6 h-6" /> : <ChevronRight className="w-6 h-6" />}
+        {isOpen ? (
+          <ChevronLeft className="w-6 h-6" />
+        ) : (
+          <ChevronRight className="w-6 h-6" />
+        )}
       </button>
 
       <aside
@@ -137,11 +159,19 @@ const AdminSidebar = ({ isOpen, setIsOpen }) => {
         aria-label="Sidebar"
       >
         <div className="flex-1 px-3 py-4 overflow-y-auto">
-          <div className={`flex items-center ps-2 mb-5 ${isOpen ? "justify-between" : "justify-center"}`}>
+          <div
+            className={`flex items-center ps-2 mb-5 ${
+              isOpen ? "justify-between" : "justify-center"
+            }`}
+          >
             {isOpen && (
               <>
                 <div className="flex items-center justify-center w-full">
-                  <img src={icon} className="h-26 rounded-full border-[#6b8e85]" alt="Wiqaya Logo" />
+                  <img
+                    src={icon}
+                    className="h-26 rounded-full border-[#6b8e85]"
+                    alt="Wiqaya Logo"
+                  />
                 </div>
                 <button
                   onClick={toggleSidebar}
@@ -153,7 +183,11 @@ const AdminSidebar = ({ isOpen, setIsOpen }) => {
             )}
             {!isOpen && (
               <div className="flex flex-col items-center w-full">
-                <img src={icon} className="h-14 rounded-full border-[#6b8e85]" alt="Wiqaya Logo" />
+                <img
+                  src={icon}
+                  className="h-14 rounded-full border-[#6b8e85]"
+                  alt="Wiqaya Logo"
+                />
                 <button
                   onClick={toggleSidebar}
                   className="hidden sm:block text-white hover:bg-[#2e4a44]/50 rounded-lg p-1 mt-2"
@@ -174,13 +208,21 @@ const AdminSidebar = ({ isOpen, setIsOpen }) => {
                       onClick={(e) => toggleMenu(item.id, e)}
                       className={`
                         flex items-center justify-between p-2 rounded-lg hover:bg-[#2e4a44]/50 group
-                        ${isMenuActive(item.id) ? "bg-[#2e4a44]/70 text-white" : "text-white"}
+                        ${
+                          isMenuActive(item.id)
+                            ? "bg-[#2e4a44]/70 text-white"
+                            : "text-white"
+                        }
                         transition-colors duration-200
                       `}
                     >
                       <div className="flex items-center">
                         {item.icon}
-                        {isOpen && <span className="ms-3 drop-shadow-sm">{item.title}</span>}
+                        {isOpen && (
+                          <span className="ms-3 drop-shadow-sm">
+                            {item.title}
+                          </span>
+                        )}
                       </div>
                       {isOpen && (
                         <ChevronDown
@@ -199,12 +241,18 @@ const AdminSidebar = ({ isOpen, setIsOpen }) => {
                               to={subItem.link}
                               className={`
                                 flex items-center p-2 text-sm rounded-lg hover:bg-[#2e4a44]/50 group
-                                ${isSubmenuItemActive(subItem.link) ? "bg-[#2e4a44]/70 text-white" : "text-white"}
+                                ${
+                                  isSubmenuItemActive(subItem.link)
+                                    ? "bg-[#2e4a44]/70 text-white"
+                                    : "text-white"
+                                }
                                 transition-colors duration-200
                               `}
                             >
                               {subItem.icon}
-                              <span className="ms-2 drop-shadow-sm">{subItem.title}</span>
+                              <span className="ms-2 drop-shadow-sm">
+                                {subItem.title}
+                              </span>
                             </NavLink>
                           </li>
                         ))}
@@ -216,12 +264,18 @@ const AdminSidebar = ({ isOpen, setIsOpen }) => {
                     to={item.link}
                     className={`
                       flex items-center p-2 rounded-lg hover:bg-[#2e4a44]/50 group
-                      ${isSubmenuItemActive(item.link) ? "bg-[#2e4a44]/70 text-white" : "text-white"}
+                      ${
+                        isSubmenuItemActive(item.link)
+                          ? "bg-[#2e4a44]/70 text-white"
+                          : "text-white"
+                      }
                       transition-colors duration-200
                     `}
                   >
                     {item.icon}
-                    {isOpen && <span className="ms-3 drop-shadow-sm">{item.title}</span>}
+                    {isOpen && (
+                      <span className="ms-3 drop-shadow-sm">{item.title}</span>
+                    )}
                   </NavLink>
                 )}
               </li>
@@ -231,7 +285,9 @@ const AdminSidebar = ({ isOpen, setIsOpen }) => {
 
         <div className="px-3 py-4 bg-[#2e4a44]/20 border-t border-[#6b8e85]/30">
           {isOpen && (
-            <div className="mb-2 text-sm font-medium text-white drop-shadow-sm px-2">Settings</div>
+            <div className="mb-2 text-sm font-medium text-white drop-shadow-sm px-2">
+              Settings
+            </div>
           )}
 
           <ul className="space-y-2 font-medium">
@@ -241,12 +297,18 @@ const AdminSidebar = ({ isOpen, setIsOpen }) => {
                   to={item.link}
                   className={`
                     flex items-center p-2 rounded-lg hover:bg-[#2e4a44]/50 group
-                    ${isSubmenuItemActive(item.link) ? "bg-[#2e4a44]/70 text-white" : "text-white"}
+                    ${
+                      isSubmenuItemActive(item.link)
+                        ? "bg-[#2e4a44]/70 text-white"
+                        : "text-white"
+                    }
                     transition-colors duration-200
                   `}
                 >
                   {item.icon}
-                  {isOpen && <span className="ms-3 drop-shadow-sm">{item.title}</span>}
+                  {isOpen && (
+                    <span className="ms-3 drop-shadow-sm">{item.title}</span>
+                  )}
                 </NavLink>
               </li>
             ))}
