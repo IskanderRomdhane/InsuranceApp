@@ -31,8 +31,8 @@ import { FAQPage } from "./Components/FAQs/FAQPage.js";
 import SinistresTable from "./Pages/Admin/Sinistres/SinistresTable.jsx";
 import SinistresDetails from "./Pages/Admin/Sinistres/SinistresDetails.jsx";
 import Profil from "./Pages/Profil/Profil.jsx";
-import { MyDashboardLayout } from "./Components/dashboard/DashboardLayout.tsx";
-import { MyDashboard } from "./Components/adminDashboard/dashboard/Dashboard.tsx";
+import { MyDashboardLayout } from "./Components/dashboard/DashboardLayout.jsx";
+import { MyDashboard } from "./Components/adminDashboard/dashboard/Dashboard.jsx";
 
 const DashboardLayout = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(true);

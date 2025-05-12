@@ -11,14 +11,8 @@ import {
   Legend,
 } from "recharts";
 
-// Interface for the status and values
-interface ReclamationData {
-  month: string;
-  status: string; // The status will be displayed on the chart
-}
-
 export const ClaimsTrendChart = () => {
-  const [reclamations, setReclamations] = useState<ReclamationData[]>([]);
+  const [reclamations, setReclamations] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -42,7 +36,7 @@ export const ClaimsTrendChart = () => {
   }
 
   // Map status to appropriate value
-  const statusMap: { [key: string]: string } = {
+  const statusMap = {
     PENDING: "Pending",
     UNDER_REVIEW: "Under Review",
     CANCELLED: "Cancelled",
@@ -50,7 +44,7 @@ export const ClaimsTrendChart = () => {
   };
 
   // Create a count of each status per month
-  const statusCounts = (status: string) => {
+  const statusCounts = (status) => {
     return reclamations.filter((reclamation) => reclamation.status === status)
       .length;
   };

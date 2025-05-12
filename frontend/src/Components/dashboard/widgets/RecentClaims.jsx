@@ -1,27 +1,25 @@
 import React, { useEffect, useState } from "react";
 import { ClockIcon, CheckCircleIcon } from "lucide-react";
 import { Link } from "react-router-dom";
+import { getusersrelamations } from "./dashboardManagment";
 
 export const RecentClaims = () => {
   const [claims, setClaims] = useState([]);
 
   useEffect(() => {
-    fetch("http://localhost:8081/api/reclamation/getusersrelamations")
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Échec de la récupération des réclamations");
-        }
-        return response.json();
-      })
-      .then((data) => {
+    const fetchClaims = async () => {
+      try {
+        const data = await getusersrelamations();
         setClaims(data);
-      })
-      .catch((error) => {
+      } catch (error) {
         console.error(
           "Erreur lors de la récupération des réclamations :",
           error
         );
-      });
+      }
+    };
+
+    fetchClaims();
   }, []);
 
   return (
@@ -41,7 +39,7 @@ export const RecentClaims = () => {
       </div>
       <div className="divide-y divide-gray-200">
         {claims.length > 0 ? (
-          claims.slice(0, 3).map((claim: any) => (
+          claims.slice(0, 3).map((claim) => (
             <div key={claim.id} className="px-6 py-4 hover:bg-gray-50">
               <div className="flex items-center justify-between">
                 <div className="flex items-start">

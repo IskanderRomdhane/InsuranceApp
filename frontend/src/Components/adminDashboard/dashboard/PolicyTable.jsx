@@ -1,32 +1,17 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
-
-// Define the type for SinistreDTO (or import it if it's defined elsewhere)
-interface SinistreDTO {
-  id: number;
-  userId: number;
-  objectSinistre: string;
-  descriptionSinistre: string;
-  categorie: string;
-  amount: number;
-  etat: string; // You can use enums here if necessary
-  date: string; // This is a string in ISO format from the API
-}
+import { sinistreTable } from "./DashboardManagment";
 
 export const PolicyTable = () => {
-  const [sinistres, setSinistres] = useState<SinistreDTO[]>([]); // Specify the type of sinistres
+  const [sinistres, setSinistres] = useState([]); // Removed the type annotation
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState(null); // Set the error to null instead of a string
 
   useEffect(() => {
     const fetchSinistres = async () => {
       try {
-        const response = await axios.get(
-          "http://localhost:8081/api/sinistre/sinistres"
-        );
-
-        console.log("Fetched Sinistres:", response.data);
-        setSinistres(response.data);
+        const data = await sinistreTable();
+        console.log("Fetched Sinistres:", data);
+        setSinistres(data);
         setLoading(false);
       } catch (error) {
         setError("Error fetching sinistres");
@@ -90,8 +75,7 @@ export const PolicyTable = () => {
                 CLM-{sinistre.id}
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                {sinistre.userId}{" "}
-                {/* Assuming 'userId' represents the customer */}
+                {sinistre.userId}
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                 {sinistre.categorie}
@@ -115,8 +99,7 @@ export const PolicyTable = () => {
                 </span>
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                {new Date(sinistre.date).toLocaleDateString()}{" "}
-                {/* Format the date */}
+                {new Date(sinistre.date).toLocaleDateString()}
               </td>
             </tr>
           ))}

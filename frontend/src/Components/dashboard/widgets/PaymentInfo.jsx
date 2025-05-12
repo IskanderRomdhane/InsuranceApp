@@ -30,7 +30,7 @@ export const PaymentInfo = () => {
           {/* Image advertisement */}
           <div className="w-full h-full relative">
             <img
-              src="src\assets\promo\promo.jpg"
+              src="src/assets/promo/promo.jpg"
               alt="Offre spéciale assurance"
               className="w-full h-full object-cover"
             />
@@ -57,7 +57,9 @@ export const PaymentInfo = () => {
   );
 };
 
-const TransactionItem = ({ date, description, amount, type }) => {
+const TransactionItem = (props) => {
+  const { date, description, amount, type } = props;
+
   return (
     <div className="flex items-center justify-between">
       <div className="flex items-center">

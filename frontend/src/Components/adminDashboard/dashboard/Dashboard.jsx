@@ -1,39 +1,39 @@
 import React, { useEffect, useState } from "react";
-import { StatCard } from "./StatCard";
-import { PolicyTable } from "./PolicyTable";
-import { RecentClaims } from "./RecentClaims";
-import { SinistreChart } from "./RevenueChart";
-import { PolicyDistributionChart } from "./PolicyDistributionChart";
-import { ClaimsTrendChart } from "./ClaimsTrendChart";
+import { StatCard } from "./StatCard.jsx";
+import { PolicyTable } from "./PolicyTable.jsx";
+import { RecentClaims } from "./RecentClaims.jsx";
+import { SinistreChart } from "./RevenueChart.jsx";
+import { PolicyDistributionChart } from "./PolicyDistributionChart.jsx";
+import { ClaimsTrendChart } from "./ClaimsTrendChart.jsx";
 import { UsersIcon, FileTextIcon, AlertCircleIcon } from "lucide-react";
 import axios from "axios";
+import {
+  totalUsers,
+  acceptedSinistre,
+  pendingSinistre,
+} from "./DashboardManagment";
 
 export const MyDashboard = () => {
-  const [userCount, setUserCount] = useState<number | null>(null);
-  const [acceptedSinistres, setAcceptedSinistres] = useState<number | null>(
-    null
-  );
-  const [pendingSinistres, setPendingSinistres] = useState<number | null>(null);
-  const [activeTab, setActiveTab] = useState<"policies" | "claims">("policies");
+  const [userCount, setUserCount] = useState(null);
+  const [acceptedSinistres, setAcceptedSinistres] = useState(null);
+  const [pendingSinistres, setPendingSinistres] = useState(null);
+  const [activeTab, setActiveTab] = useState("policies");
 
   useEffect(() => {
-    axios
-      .get("http://localhost:8081/api/user/count")
-      .then((res) => setUserCount(res.data))
+    totalUsers()
+      .then((data) => setUserCount(data)) // Set user count with the data
       .catch((err) =>
         console.error("Échec de la récupération du nombre d'utilisateurs", err)
       );
 
-    axios
-      .get("http://localhost:8081/api/sinistre/count/accepted")
-      .then((res) => setAcceptedSinistres(res.data))
+    acceptedSinistre()
+      .then((data) => setAcceptedSinistres(data)) // Set accepted sinistres count
       .catch((err) =>
         console.error("Échec de la récupération des sinistres acceptés", err)
       );
 
-    axios
-      .get("http://localhost:8081/api/sinistre/count/pending")
-      .then((res) => setPendingSinistres(res.data))
+    pendingSinistre()
+      .then((data) => setPendingSinistres(data)) // Set pending sinistres count
       .catch((err) =>
         console.error("Échec de la récupération des sinistres en attente", err)
       );

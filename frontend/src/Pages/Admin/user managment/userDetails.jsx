@@ -13,6 +13,7 @@ import {
   Loader2,
 } from "lucide-react";
 import axios from "axios";
+import { userManagement } from "./userManagement";
 
 const UserDetails = () => {
   const [user, setUser] = useState(null);
@@ -22,21 +23,19 @@ const UserDetails = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchUserDetails = async () => {
+    const fetchData = async () => {
       try {
-        const url = `http://localhost:8081/api/user/userid/${id}`;
-        const response = await axios.get(url);
-        setUser(response.data);
+        const data = await userManagement(id);
+        setUser(data);
       } catch (error) {
         setError("Impossible de récupérer les détails de l'utilisateur");
-        console.error(error);
       } finally {
         setLoading(false);
       }
     };
 
     if (id) {
-      fetchUserDetails();
+      fetchData();
     }
   }, [id]);
 
