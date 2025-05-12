@@ -21,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
@@ -189,5 +190,21 @@ public class ReclamationService {
 
     public ResponseEntity<List<ReclamationResponseDTO>> GetRelamationByType(String type) {
         return ResponseEntity.ok(reclamationMapper.toDtoList(reclamationRepository.findBytypeReclamation(TypeReclamation.valueOf(type.toUpperCase()))));
+    }
+
+    public ResponseEntity<List<Reclamation>> GetUserRelamationByType( String userEmail, String status) {
+        Optional<User> optionalUser = userRepository.findByEmail(userEmail);
+        if(optionalUser.isPresent()){
+            User foundUser = optionalUser.get();
+            List<Reclamation> reclamations = foundUser.getReclamation();
+            List<Reclamation> response = new ArrayList<>();
+            for (Reclamation claim: reclamations){
+                if (claim.getStatus().toString().equals(status.toUpperCase())){
+                    response.add(claim);
+                }
+            }
+            return ResponseEntity.ok(response);
+        }
+        return ResponseEntity.notFound().build();
     }
 }
