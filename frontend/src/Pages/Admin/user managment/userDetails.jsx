@@ -118,7 +118,7 @@ const UserDetails = () => {
               className="w-full py-2 px-4 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition-all duration-200 flex items-center justify-center"
             >
               <ChevronLeft className="w-4 h-4 mr-2" />
-              Retour à la liste des utilisateurs
+              Retour
             </button>
           </div>
         </div>
@@ -261,7 +261,7 @@ const UserDetails = () => {
               onClick={() => navigate(-1)}
               className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition-all duration-200"
             >
-              Retour à la liste des utilisateurs
+              Retour
             </button>
           </div>
         </div>
