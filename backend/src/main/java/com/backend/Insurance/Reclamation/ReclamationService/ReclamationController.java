@@ -69,5 +69,12 @@ public class ReclamationController {
     ){
         return reclamationService.GetRelamationByType(type);
     }
+    @GetMapping("/getuserreclamation")
+    public ResponseEntity<List<Reclamation>> GetUserRelamationByType (
+            @RequestParam String userEmail,
+            @RequestParam String status
+    ){
+        return reclamationService.GetUserRelamationByType(userEmail , status);
+    }
 
 }
