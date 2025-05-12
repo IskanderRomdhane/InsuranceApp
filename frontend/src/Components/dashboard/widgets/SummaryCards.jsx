@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios"; // Import axios for API calls
 import {
   ShieldCheckIcon,
   FilesIcon,
@@ -10,6 +9,11 @@ import { Link } from "react-router-dom";
 import HealthInsurance from "../../../assets/Insurance Types/HealthInsurance.jpg";
 import CarInsurance from "../../../assets/Insurance Types/CarInsurance.jpg";
 import House from "../../../assets/Insurance Types/House.jpg";
+import {
+  getHealthSinistres,
+  getCarSinistres,
+  getHouseSinistres,
+} from "./dashboardManagment";
 
 export const SummaryCards = () => {
   const [santeCount, setSanteCount] = useState(0); // State to store the count
@@ -17,39 +21,42 @@ export const SummaryCards = () => {
   const [HouseCount, setHouseCount] = useState(0);
 
   useEffect(() => {
-    // Fetch the count from the backend API
-    axios
-      .get("http://localhost:8081/api/sinistre/sante")
-      .then((response) => {
-        setSanteCount(response.data.length); // Assuming the response is an array
-      })
-      .catch((error) => {
+    const fetchHealthSinistres = async () => {
+      try {
+        const data = await getHealthSinistres();
+        setSanteCount(data.length); // Assuming the response is an array
+      } catch (error) {
         console.error("Error fetching data", error);
-      });
-  }, []); // Empty array means this effect runs only once after the initial render
+      }
+    };
 
-  useEffect(() => {
-    // Fetch the count from the backend API
-    axios
-      .get("http://localhost:8081/api/sinistre/automobile")
-      .then((response) => {
-        setAutoCount(response.data.length); // Assuming the response is an array
-      })
-      .catch((error) => {
-        console.error("Error fetching data", error);
-      });
+    fetchHealthSinistres();
   }, []);
 
   useEffect(() => {
-    // Fetch the count from the backend API
-    axios
-      .get("http://localhost:8081/api/sinistre/habilitation")
-      .then((response) => {
-        setHouseCount(response.data.length); // Assuming the response is an array
-      })
-      .catch((error) => {
+    const fetchCarSinistres = async () => {
+      try {
+        const data = await getCarSinistres();
+        setAutoCount(data.length); // Assuming response is an array
+      } catch (error) {
         console.error("Error fetching data", error);
-      });
+      }
+    };
+
+    fetchCarSinistres();
+  }, []);
+
+  useEffect(() => {
+    const fetchHouseSinistres = async () => {
+      try {
+        const data = await getHouseSinistres();
+        setHouseCount(data.length); // Assuming response is an array
+      } catch (error) {
+        console.error("Error fetching data", error);
+      }
+    };
+
+    fetchHouseSinistres();
   }, []);
 
   return (

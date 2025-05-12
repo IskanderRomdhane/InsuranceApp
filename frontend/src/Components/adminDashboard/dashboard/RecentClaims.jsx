@@ -1,29 +1,20 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import { reclamationTable } from "./DashboardManagment";
 
-interface Reclamation {
-  id: number;
-  Email: string;
-  fullName: string;
-  Description: string;
-  status: string;
-  type: string;
-  date: string;
-  imageUrl: string[];
-}
-
-export const RecentClaims: React.FC = () => {
-  const [claims, setClaims] = useState<Reclamation[]>([]);
+export const RecentClaims = () => {
+  const [claims, setClaims] = useState([]);
 
   useEffect(() => {
-    axios
-      .get("http://localhost:8081/api/reclamation/getusersrelamations")
-      .then((response) => {
-        setClaims(response.data);
-      })
-      .catch((error) => {
+    const fetchClaims = async () => {
+      try {
+        const data = await reclamationTable();
+        setClaims(data);
+      } catch (error) {
         console.error("Error fetching claims:", error);
-      });
+      }
+    };
+
+    fetchClaims();
   }, []);
 
   // Limit the claims to the first 5

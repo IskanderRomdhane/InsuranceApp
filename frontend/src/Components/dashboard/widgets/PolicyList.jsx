@@ -1,50 +1,35 @@
 import React, { useEffect, useState } from "react";
 import { CheckCircleIcon, ClockIcon } from "lucide-react";
 import { Link } from "react-router-dom";
-
-// Define the Sinistre type
-interface Sinistre {
-  id: string;
-  description: string;
-  objectSinistre: string;
-  etat: string;
-  amount: number;
-  date: string;
-}
+import { fetchSinistres } from "./dashboardManagment";
 
 export const SinistreList = () => {
-  const [sinistres, setSinistres] = useState<Sinistre[]>([]);
+  const [sinistres, setSinistres] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    const fetchSinistres = async () => {
+    const loadSinistres = async () => {
       try {
-        const response = await fetch(
-          "http://localhost:8081/api/sinistre/sinistres"
-        );
-        if (!response.ok) {
-          throw new Error("Failed to fetch sinistres");
-        }
-        const data: Sinistre[] = await response.json();
+        const data = await fetchSinistres();
         setSinistres(data.slice(0, 5));
-      } catch (error: any) {
-        setError(error.message);
+      } catch (error) {
+        setError(error.message || "Something went wrong");
       } finally {
         setLoading(false);
       }
     };
 
-    fetchSinistres();
+    loadSinistres();
   }, []);
-  const formatDate = (date: string) => {
-    const options: Intl.DateTimeFormatOptions = {
+
+  const formatDate = (date) => {
+    const options = {
       day: "2-digit",
       month: "2-digit",
       year: "numeric",
     };
-    const formattedDate = new Date(date).toLocaleDateString("en-GB", options); // 'en-GB' gives dd/mm/yyyy format
-    return formattedDate;
+    return new Date(date).toLocaleDateString("en-GB", options);
   };
 
   if (loading) {

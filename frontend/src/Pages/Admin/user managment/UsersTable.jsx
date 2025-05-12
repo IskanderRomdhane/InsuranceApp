@@ -3,6 +3,7 @@ import { ChevronDown, ChevronUp, RefreshCw, Eye, Search } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import Pagination from "@mui/material/Pagination";
 import Stack from "@mui/material/Stack";
+import { userTableManagement } from "./userManagement";
 
 export default function UsersTable() {
   const [users, setUsers] = useState([]);
@@ -20,10 +21,7 @@ export default function UsersTable() {
     setLoading(true);
     setError("");
     try {
-      const response = await fetch("http://localhost:8081/api/user");
-      if (!response.ok)
-        throw new Error("Échec de la récupération des utilisateurs");
-      const data = await response.json();
+      const data = await userTableManagement();
       setUsers(data);
       setFilteredUsers(data);
     } catch (err) {

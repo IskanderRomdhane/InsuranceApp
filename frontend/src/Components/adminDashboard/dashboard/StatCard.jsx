@@ -1,19 +1,7 @@
-import React, { ReactNode } from "react";
+import React from "react";
 import { TrendingUpIcon, TrendingDownIcon } from "lucide-react";
-interface StatCardProps {
-  title: string;
-  value: string;
-  change: string;
-  trend: "up" | "down";
-  icon?: ReactNode;
-}
-export const StatCard = ({
-  title,
-  value,
-  change,
-  trend,
-  icon,
-}: StatCardProps) => {
+
+export const StatCard = ({ title, value, change, trend, icon }) => {
   return (
     <div className="bg-white rounded-lg shadow p-6">
       <div className="flex items-center justify-between">

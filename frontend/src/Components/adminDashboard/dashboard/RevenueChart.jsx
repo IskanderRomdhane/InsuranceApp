@@ -10,18 +10,13 @@ import {
   ResponsiveContainer,
   Legend,
 } from "recharts";
-
-// Define the type for the sinistre data
-interface SinistreData {
-  month: string;
-  count: number;
-}
+import { sinistrePerMonth } from "./DashboardManagment";
 
 export const SinistreChart = () => {
-  const [data, setData] = useState<SinistreData[]>([]); // Set type of data to SinistreData[]
+  const [data, setData] = useState([]); // Set type of data to an empty array
 
   // Helper function to convert month number to month name
-  const getMonthName = (monthNumber: number): string => {
+  const getMonthName = (monthNumber) => {
     const months = [
       "Jan",
       "Feb",
@@ -40,7 +35,7 @@ export const SinistreChart = () => {
   };
 
   // Ensure all months are included (even if no data for some)
-  const fillMissingMonths = (data: any[]) => {
+  const fillMissingMonths = (data) => {
     const allMonths = [
       "Jan",
       "Feb",
@@ -74,20 +69,24 @@ export const SinistreChart = () => {
 
   // Fetch data from the backend when the component mounts
   useEffect(() => {
-    axios
-      .get("http://localhost:8081/api/sinistre/sinistres/per-month")
-      .then((response) => {
-        console.log("Fetched data:", response.data); // Log to check the data
-        const sinistreData = response.data.map((item) => ({
+    const fetchData = async () => {
+      try {
+        const result = await sinistrePerMonth();
+        console.log("Fetched data:", result);
+
+        const sinistreData = result.map((item) => ({
           month: item.month,
           count: item.count,
         }));
 
-        // Fill missing months
         const completeData = fillMissingMonths(sinistreData);
         setData(completeData);
-      })
-      .catch((error) => console.error("Error fetching sinistre data", error));
+      } catch (error) {
+        console.error("Error fetching sinistre data", error);
+      }
+    };
+
+    fetchData();
   }, []);
 
   // Log the data in the render part to see if it's populated
