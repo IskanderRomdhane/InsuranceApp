@@ -9,6 +9,7 @@ import com.backend.Insurance.Image.ImageRepository;
 import com.backend.Insurance.Image.ImageService;
 import com.backend.Insurance.Sinistre.AutoMobile.AutoMobile;
 import com.backend.Insurance.Sinistre.DTOS.SinistreDTO;
+import com.backend.Insurance.Sinistre.DTOS.SinistreMonthlyCountDTO;
 import com.backend.Insurance.Sinistre.Enums.Etat;
 import com.backend.Insurance.Sinistre.Habilitation.Habilitation;
 import com.backend.Insurance.Sinistre.Mapper.SinistreMapper;
