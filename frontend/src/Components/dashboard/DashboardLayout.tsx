@@ -1,8 +1,8 @@
 import React from "react";
-import { SummaryCards } from "./widgets/SummaryCards";
-import { SinistreList } from "./widgets/PolicyList";
-import { RecentClaims } from "./widgets/RecentClaims";
-import { PaymentInfo } from "./widgets/PaymentInfo";
+import { SummaryCards } from "./widgets/SummaryCards.jsx";
+import { SinistreList } from "./widgets/PolicyList.jsx";
+import { RecentClaims } from "./widgets/RecentClaims.jsx";
+import { PaymentInfo } from "./widgets/PaymentInfo.jsx";
 export const MyDashboardLayout = () => {
   return (
     <div className="flex w-full min-h-screen bg-gray-50">

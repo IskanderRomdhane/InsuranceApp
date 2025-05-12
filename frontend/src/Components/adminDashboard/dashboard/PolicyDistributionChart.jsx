@@ -7,44 +7,28 @@ import {
   Legend,
   Tooltip,
 } from "recharts";
-import axios from "axios";
-
-// Define the type of each data point
-type ChartData = {
-  name: string;
-  value: number;
-};
+import { sinistreDistribution } from "./DashboardManagment";
 
 export const PolicyDistributionChart = () => {
-  const [data, setData] = useState<ChartData[]>([]); // <- type annotation added
+  const [data, setData] = useState([]);
 
   const COLORS = ["#6366f1", "#8b5cf6", "#ec4899", "#f97316", "#14b8a6"];
 
   useEffect(() => {
     const fetchSinistres = async () => {
       try {
-        const response = await axios.get(
-          "http://localhost:8081/api/sinistre/sinistres"
-        );
-        const sinistres = response.data;
+        const sinistres = await sinistreDistribution();
 
-        console.log(sinistres);
+        const counts = sinistres.reduce((acc, curr) => {
+          const key = curr.categorie;
+          acc[key] = (acc[key] || 0) + 1;
+          return acc;
+        }, {});
 
-        const counts: Record<string, number> = sinistres.reduce(
-          (acc: Record<string, number>, curr: any) => {
-            const key = curr.categorie;
-            acc[key] = (acc[key] || 0) + 1;
-            return acc;
-          },
-          {}
-        );
-
-        const chartData: ChartData[] = Object.entries(counts).map(
-          ([name, value]) => ({
-            name,
-            value: Number(value),
-          })
-        );
+        const chartData = Object.entries(counts).map(([name, value]) => ({
+          name,
+          value: Number(value),
+        }));
 
         setData(chartData);
       } catch (error) {
