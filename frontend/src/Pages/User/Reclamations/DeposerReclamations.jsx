@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { jwtDecode } from 'jwt-decode';
-
+import {submitReclamation} from './ReclamationFunction.js'
 const DeposerReclamations = () => {
   const [email, setEmail] = useState("");
   const [formData, setFormData] = useState({
@@ -96,69 +96,29 @@ const DeposerReclamations = () => {
     setSubmitStatus(null);
 
     try {
-      // Create FormData for multipart upload
-      const formDataToSubmit = new FormData();
-
-      // Add file if exists
-      if (formData.file) {
-        formDataToSubmit.append('file', formData.file);
-      }
-
-      // Prepare claim data as JSON
-      const claimData = {
-        userEmail: email,
-        typeReclamation: formData.typeReclamation,
-        description: formData.description
-      };
-
-      // Add claim data as JSON string
-      formDataToSubmit.append('claim', JSON.stringify(claimData));
-
-      const response = await fetch('http://localhost:8081/api/reclamation/CreerReclamation', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem("access_token")}`
-        },
-        body: formDataToSubmit
+      // Use the imported function
+      const result = await submitReclamation(formData, email);
+      
+      setSubmitStatus({ 
+        type: 'success', 
+        message: 'Réclamation soumise avec succès!' 
       });
 
-      if (!response.ok) {
-        throw new Error(`Error: ${response.status}`);
-      }
-
-      // Check the content type to determine how to handle the response
-      const contentType = response.headers.get("content-type");
-      let responseData;
-
-      if (contentType && contentType.includes("application/json")) {
-        // If response is JSON, parse it
-        responseData = await response.json();
-        console.log('Success (JSON):', responseData);
-      } else {
-        // If response is text (or other format), get as text
-        responseData = await response.text();
-        console.log('Success (Text):', responseData);
-      }
-
-      setSubmitStatus({ type: 'success', message: 'Réclamation soumise avec succès!' });
-
       // Reset form
-      setFormData(prevState => ({
-        ...prevState,
+      setFormData({
+        userEmail: email,
         typeReclamation: "",
         description: "",
         file: null
-      }));
+      });
       setFilePreview(null);
-      // Reset file input
-      if (e.target.fileInput) {
-        e.target.fileInput.value = null;
-      }
+
     } catch (error) {
-      console.error('Error:', error);
+      console.error('Submission error:', error);
       setSubmitStatus({
         type: 'error',
-        message: 'Erreur lors de la soumission. Veuillez réessayer.'
+        message: error.response?.data?.message || 
+               'Erreur lors de la soumission. Veuillez réessayer.'
       });
     } finally {
       setIsSubmitting(false);
