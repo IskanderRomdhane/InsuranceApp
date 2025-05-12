@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Search, Calendar, Clock, AlertCircle, CheckCircle, FileText, RefreshCw, Filter } from 'lucide-react';
 import { jwtDecode } from 'jwt-decode';
 import ClaimDetailsModal from './ClaimDetailsModal';
-
+import {fetchClaimsByEmail} from './ReclamationFunction.js'
 const ClaimsDashboard = () => {
   const [claims, setClaims] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -15,58 +15,22 @@ const ClaimsDashboard = () => {
   const [showModal, setShowModal] = useState(false);
   
   useEffect(() => {
-    try {
-      const token = localStorage.getItem("access_token");
-      if (token) {
-        try {
-          const decoded = jwtDecode(token);
-          setEmail(decoded.email);
-        } catch (error) {
-          console.error('Error parsing auth token:', error);
-          setSubmitStatus({ 
-            type: 'error', 
-            message: 'Erreur d\'authentification. Veuillez vous reconnecter.' 
-          });
-        }
-      } else {
-        setSubmitStatus({ 
-          type: 'error', 
-          message: 'Vous devez être connecté pour soumettre une réclamation.' 
-        });
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const data = await fetchClaimsByEmail();
+        console.log('Fetched data:', data);
+        setClaims(data);
+      } catch (error) {
+        console.error('Fetch error:', error);
+        setError(error.message);
+      } finally {
+        setLoading(false);
       }
-    } catch (error) {
-      console.error('Error retrieving token:', error);
-    }
+    };
+
+    fetchData();
   }, []);
-  
-  const fetchClaims = async () => {
-    if (!email) return;
-    
-    setLoading(true);
-    try {
-      const encodedEmail = encodeURIComponent(email);
-      const response = await fetch(`http://localhost:8081/api/reclamation/getrelamations/${encodedEmail}`);
-      
-      if (!response.ok) {
-        throw new Error(`Failed to fetch claims: ${response.status} ${response.statusText}`);
-      }
-      
-      const data = await response.json();
-      setClaims(data);
-      setError(null);
-    } catch (err) {
-      setError(err.message);
-      setClaims([]);
-    } finally {
-      setLoading(false);
-    }
-  };
-  
-  useEffect(() => {
-    if (email) {
-      fetchClaims();
-    }
-  }, [email]);
   
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -192,7 +156,7 @@ const ClaimsDashboard = () => {
             </div>
             
             <button 
-              onClick={fetchClaims}
+              onClick={fetchClaimsByEmail}
               className="bg-green-600 text-white p-2 rounded-lg hover:bg-green-700 transition-colors flex items-center"
               disabled={!email}
             >
