@@ -1,6 +1,6 @@
-import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
 import axiosInstance from '../../../Hooks/TokenInterceptor';
+import { useParams } from 'react-router-dom';
 export const getEmailFromToken = () => {
   try {
     const token = localStorage.getItem("access_token");
@@ -14,19 +14,42 @@ export const getEmailFromToken = () => {
   return null;
 };
 
-export const fetchClaimsByEmail = async () => {
+export const fetchClaimsByEmail = async (filter = null) => {
   try {
     const email = getEmailFromToken();
+
     if (!email) {
       throw new Error("Missing email.");
     }
-    const response = await axiosInstance.get(`/api/reclamation/getrelamations/${email}`);
+
+    let response;
+
+    if (!filter || filter === 'ALL') {
+      response = await axiosInstance.get(`/api/reclamation/getrelamations/${email}`);
+    } else {
+      const request = {
+        userEmail: email,
+        status: filter,
+        description: "",
+        typeReclamation: ""
+      };
+      console.log(request)
+      response = await axiosInstance.get(`/api/reclamation/getuserreclamation`, {
+        params : {
+          userEmail: email,
+        status: filter,
+        }}
+      );
+    }
+
     return response.data;
   } catch (err) {
     console.error("Failed to fetch claims:", err);
     throw err;
   }
 };
+
+
 
 export const submitReclamation = async (formData, email) => {
   try {
