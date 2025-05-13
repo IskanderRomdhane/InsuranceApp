@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
-import {
-  ChevronDown,
-  ChevronUp,
-} from "lucide-react";
-import { useNavigate, useLocation } from "react-router-dom";
-import Pagination from '@mui/material/Pagination';
-import Stack from '@mui/material/Stack';
+import { useLocation } from "react-router-dom";
+import {FetchSinistres} from './SinistresFunction'
+
+import statutCouleurs from './statutCouleurs'
+import MenuFiltre from "../../../Components/SinistresTablePage/MenuFiltre";
+import PaginationComponent from "../../../Components/PaginationComponent";
+import SinistreFields from "../../../Components/SinistresTablePage/SinistreFields";
 
 export default function SinistresPage() {
   const [sinistres, setSinistres] = useState([]);
@@ -20,7 +20,6 @@ export default function SinistresPage() {
 
   const [pageCourante, setPageCourante] = useState(1);
   const [sinistreParPage] = useState(10);
-  const navigate = useNavigate();
   const location = useLocation();
 
   useEffect(() => {
@@ -30,234 +29,30 @@ export default function SinistresPage() {
   }, [location.state]);
 
   const typeFiltreOptions = ["Tous", "Sante", "AutoMobile", "Habilitation"];
-  const statutFiltreOptions = [
-    "Tous",
-    "PENDING",
-    "UNDER_REVIEW",
-    "ACCEPTED",
-    "REJECTED",
-  ];
-
-  const voirDetail = (id) => navigate(`/sinistres/sinistre/${id}`);
-
-  const statutCouleurs = {
-    ACCEPTED: {
-      bg: "bg-green-500",
-      text: "text-white",
-      border: "border-green-700",
-    },
-    PENDING: {
-      bg: "bg-yellow-500",
-      text: "text-white",
-      border: "border-yellow-500",
-    },
-    REJECTED: {
-      bg: "bg-red-500",
-      text: "text-white",
-      border: "border-red-500",
-    },
-    UNDER_REVIEW: {
-      bg: "bg-blue-500",
-      text: "text-white",
-      border: "border-blue-500",
-    },
-  };
+  const statutFiltreOptions = ["Tous","PENDING","UNDER_REVIEW","ACCEPTED","REJECTED"];
 
   useEffect(() => {
-    const getSinistres = async () => {
-      setLoading(true);
-      try {
-        let url = "http://localhost:8081/api/sinistre/sinistres";
-
-        if (typeFiltre !== "Tous") {
-          url = `http://localhost:8081/api/sinistre/getsinistre/type/${typeFiltre}`;
-        }
-
-        if (statutFiltre !== "Tous" && typeFiltre === "Tous") {
-          url = `http://localhost:8081/api/sinistre/getsinistre/statut/${statutFiltre}`;
-        }
-
-        const response = await fetch(url);
-        if (!response.ok)
-          throw new Error("Échec de récupération des sinistres");
-        let data = await response.json();
-
-        if (statutFiltre !== "Tous" && typeFiltre !== "Tous") {
-          data = data.filter((sinistre) => sinistre.etat === statutFiltre);
-        }
-
-        setSinistres(data);
-        setPageCourante(1);
-        setError(null);
-      } catch (err) {
-        setError(err.message);
-        setSinistres([]);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    getSinistres();
+    const FetchData = async () => {
+          try {
+            setLoading(true);
+            const data = await FetchSinistres(typeFiltre ,statutFiltre);
+            console.log('Fetched data:', data);
+            setSinistres(data);
+          } catch (error) {
+            console.error('Fetch error:', error);
+            setError(error.message);
+          } finally {
+            setLoading(false);
+          }
+        };
+    
+        FetchData();
   }, [typeFiltre, statutFiltre]);
-
-  useEffect(() => {
-    const handleClickOutside = () => {
-      setShowTypeMenu(false);
-      setShowStatutMenu(false);
-    };
-
-    document.addEventListener("click", handleClickOutside);
-    return () => document.removeEventListener("click", handleClickOutside);
-  }, []);
 
   const dernierIndex = pageCourante * sinistreParPage;
   const premierIndex = dernierIndex - sinistreParPage;
   const sinistresCourants = sinistres.slice(premierIndex, dernierIndex);
   const totalPages = Math.ceil(sinistres.length / sinistreParPage);
-
-  const handlePageChange = (event, pageNumber) => {
-    setPageCourante(pageNumber);
-    setExpandedId(null);
-  };
-
-  const BadgeStatut = ({ status }) => {
-    const couleur = statutCouleurs[status] || {
-      bg: "bg-gray-200",
-      text: "text-gray-700",
-    };
-    return (
-      <span
-        className={`px-2 py-1 rounded-md text-xs font-medium ${couleur.bg} ${couleur.text}`}
-      >
-        {status?.replace("_", " ")}
-      </span>
-    );
-  };
-
-  const ChampInfo = ({ label, value }) => (
-    <div>
-      <p className="text-xs text-gray-500">{label}</p>
-      <p className="text-sm font-medium">{value}</p>
-    </div>
-  );
-
-  const afficherDetails = (sinistre) => (
-    <div className="p-4 rounded-b-lg">
-      <div className="grid grid-cols-2 gap-4">
-        <div>
-          <h4 className="text-sm font-medium text-gray-500">
-            Détails du sinistre
-          </h4>
-          <div className="mt-3 space-y-3">
-            <ChampInfo label="ID Sinistre" value={sinistre.id} />
-            <ChampInfo
-              label="Date"
-              value={new Date(sinistre.date).toLocaleDateString()}
-            />
-            <div>
-              <p className="text-xs text-gray-500">Statut</p>
-              <BadgeStatut status={sinistre.etat} />
-            </div>
-          </div>
-        </div>
-        <div>
-          <h4 className="text-sm font-medium text-gray-500">Description</h4>
-          <p className="mt-1 text-sm">{sinistre.descriptionSinistre}</p>
-        </div>
-      </div>
-      <div className="mt-4 flex justify-end">
-        <button
-          className="px-4 py-2 bg-[#476f66] text-white text-sm font-medium rounded-md hover:bg-[#3e6159]"
-          onClick={() => voirDetail(sinistre.id)}
-        >
-          Voir détails
-        </button>
-      </div>
-    </div>
-  );
-
-  const MenuFiltre = ({
-    label,
-    options,
-    optionActive,
-    setOptionActive,
-    isOpen,
-    setIsOpen,
-  }) => {
-    const handleClick = (e) => {
-      e.stopPropagation();
-      setIsOpen(!isOpen);
-    };
-
-    const selectOption = (e, option) => {
-      e.stopPropagation();
-      setOptionActive(option);
-      setIsOpen(false);
-    };
-
-    return (
-      <div className="relative">
-        <button
-          onClick={handleClick}
-          className="flex items-center justify-between w-40 px-3 py-2 text-sm font-medium bg-white border border-gray-200 rounded-md shadow-sm hover:bg-gray-50"
-        >
-          <span>
-            {label}: {optionActive}
-          </span>
-          <ChevronDown className="w-4 h-4 ml-2" />
-        </button>
-
-        {isOpen && (
-          <div className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-md shadow-lg">
-            {options.map((option) => (
-              <button
-                key={option}
-                className={`block w-full px-4 py-2 text-left text-sm hover:bg-gray-100 ${
-                  optionActive === option ? "bg-gray-100 font-medium" : ""
-                }`}
-                onClick={(e) => selectOption(e, option)}
-              >
-                {option}
-              </button>
-            ))}
-          </div>
-        )}
-      </div>
-    );
-  };
-
-  const PaginationComponent = () => {
-    if (totalPages <= 1) return null;
-
-    return (
-      <div className="flex items-center justify-center border-t border-gray-200 px-6 py-4 sm:px-8">
-        <Stack spacing={2}>
-          <Pagination
-            count={totalPages}
-            page={pageCourante}
-            onChange={handlePageChange}
-            color="primary"
-            sx={{
-              '& .MuiPaginationItem-root': {
-                color: '#476f66',
-                fontWeight: 500,
-                '&:hover': {
-                  backgroundColor: '#f1f5f5',
-                },
-                '&.Mui-selected': {
-                  backgroundColor: '#476f66',
-                  color: 'white',
-                  '&:hover': {
-                    backgroundColor: '#3a5c54',
-                  },
-                },
-              },
-            }}
-          />
-        </Stack>
-      </div>
-    );
-  };
 
   return (
     <div className="max-w-4xl mx-auto p-4">
@@ -315,73 +110,34 @@ export default function SinistresPage() {
           </p>
         </div>
       ) : (
-        <>
-          <div className="space-y-2">
-            {sinistresCourants.map((sinistre) => {
-              const isExpanded = expandedId === sinistre.id;
-              const borderColor =
-                statutCouleurs[sinistre.etat]?.border || "border-gray-200";
+       <>
+  <div className="space-y-2">
+    {sinistresCourants.map((sinistre) => {
+      const isExpanded = expandedId === sinistre.id;
+      const borderColor = statutCouleurs[sinistre.etat]?.border || "border-gray-200";
 
-              return (
-                <div
-                  key={sinistre.id}
-                  className={`border ${borderColor} overflow-hidden rounded-md`}
-                >
-                  <div
-                    className={`grid grid-cols-4 items-center p-4 cursor-pointer transition-colors ${
-                      isExpanded
-                        ? "bg-[#476f66] text-white hover:bg-[#3e6159]"
-                        : "bg-white text-gray-800 hover:bg-gray-50"
-                    }`}
-                    onClick={() =>
-                      setExpandedId(isExpanded ? null : sinistre.id)
-                    }
-                  >
-                    <div className="flex items-center">
-                      {isExpanded ? (
-                        <ChevronUp className="h-5 w-5 mr-2" />
-                      ) : (
-                        <ChevronDown className="h-5 w-5 mr-2 text-gray-500" />
-                      )}
-                      <div>
-                        <h3 className="font-medium">
-                          {sinistre.objectSinistre}
-                        </h3>
-                        <p
-                          className={`text-sm ${
-                            isExpanded ? "text-gray-200" : "text-gray-500"
-                          }`}
-                        >
-                          {sinistre.sinistre_type || sinistre.categorie}{" "}
-                          sinistre
-                        </p>
-                      </div>
-                    </div>
-                    <div className="text-sm">
-                      {sinistre.sinistre_type || sinistre.categorie}
-                    </div>
-                    <div className="text-sm">
-                      <BadgeStatut status={sinistre.etat} />
-                    </div>
-                    <div className="text-right">
-                      <p className="font-bold">
-                        {sinistre.amount?.toFixed(2) || "0.00"} TND
-                      </p>
-                    </div>
-                  </div>
-                  {isExpanded && afficherDetails(sinistre)}
-                </div>
-              );
-            })}
-          </div>
+      return (
+        <SinistreFields 
+          key={sinistre.id}
+          sinistre={sinistre}
+          isExpanded={isExpanded}
+          borderColor={borderColor}
+          onExpandToggle={() => setExpandedId(isExpanded ? null : sinistre.id)}
+        />
+      );
+    })}
+  </div>
 
-          <PaginationComponent />
-
-          <div className="mt-4 text-sm text-gray-500 text-center">
-            {premierIndex + 1}-{Math.min(dernierIndex, sinistres.length)} de{" "}
-            {sinistres.length} Sinistres
-          </div>
-        </>
+  <PaginationComponent 
+    totalPages={totalPages}
+    pageCourante={pageCourante}
+    setPageCourante={setPageCourante}
+    setExpandedId={setExpandedId}
+    sinistres={sinistres}
+    premierIndex={premierIndex}
+    dernierIndex={dernierIndex}
+  />
+</>
       )}
     </div>
   );

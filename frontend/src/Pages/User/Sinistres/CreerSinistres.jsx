@@ -5,7 +5,7 @@ import GeneralInformation from "./FormPages/GeneralInformation"
 import UploadFiles from './FormPages/UploadFiles';
 import Review from './FormPages/Review';
 import Confirmation from './FormPages/Confirmation';
-
+import {CreerSinistre} from './SinistresFunction';
 const CreerSinistres = () => {
   const navigate = useNavigate();
   const [step, setStep] = useState(1);
@@ -133,95 +133,89 @@ const CreerSinistres = () => {
 
   const stepTitles = ["Type", "Information", "Documents", "Review", "Confirmation"];
 
-  const handleSubmit = async () => {
-    let isValid = true;
-    const requiredFields = ['type_sinistre', 'objectSinistre', 'descriptionSinistre'];
-    
-    if (formData.type_sinistre === 'automobile') {
-      requiredFields.push('Matricule', 'Location', 'amount');
-    } else if (formData.type_sinistre === 'sante') {
-      requiredFields.push('hospitalName', 'diagnosis', 'amount');
-    } else if (formData.type_sinistre === 'habilitation') {
-      requiredFields.push('propertyAddress', 'damageType');
-    }
-    for (const field of requiredFields) {
-      if (!formData[field]) {
-        const verifyField = field === 'type_sinistre' ? field : `${field}Ver`;
-        setVerify(prev => ({ ...prev, [verifyField]: true }));
-        isValid = false;
-      }
-    }
-    
-    if (!isValid) return;
+ const handleSubmit = async () => {
+  let isValid = true;
+  const requiredFields = ['type_sinistre', 'objectSinistre', 'descriptionSinistre'];
 
-    const reqData = new FormData();
-    
-    if (formData.image) reqData.append("image", formData.image);
-    if (formData.document) reqData.append("document", formData.document);
-    let sinistereData;
-    switch (formData.type_sinistre) {
-      case "automobile":
-        sinistereData = {
-          userId: formData.userId,
-          type_sinistre: formData.type_sinistre,
-          objectSinistre: formData.objectSinistre,
-          descriptionSinistre: formData.descriptionSinistre,
-          amount: formData.amount,
-          Matricule: formData.Matricule,
-          Location: formData.Location,
-        };
-        break;
-        
-      case "sante":
-        sinistereData = {
-          userId: formData.userId,
-          type_sinistre: formData.type_sinistre,
-          objectSinistre: formData.objectSinistre,
-          descriptionSinistre: formData.descriptionSinistre,
-          hospitalName: formData.hospitalName,
-          isCashless: formData.isCashless,
-          diagnosis: formData.diagnosis,
-          amount: formData.amount,
-        };
-        break;
-        
-      case "habilitation":
-        sinistereData = {
-          userId: formData.userId,
-          type_sinistre: formData.type_sinistre,
-          objectSinistre: formData.objectSinistre,
-          descriptionSinistre: formData.descriptionSinistre,
-          propertyAddress: formData.propertyAddress,
-          damageType: formData.damageType,
-        };
-        break;
-        
-      default:
-        console.error("Type de sinistre non reconnu");
-        return;
+  if (formData.type_sinistre === 'automobile') {
+    requiredFields.push('Matricule', 'Location', 'amount');
+  } else if (formData.type_sinistre === 'sante') {
+    requiredFields.push('hospitalName', 'diagnosis', 'amount');
+  } else if (formData.type_sinistre === 'habilitation') {
+    requiredFields.push('propertyAddress', 'damageType');
+  }
+  for (const field of requiredFields) {
+    if (!formData[field]) {
+      const verifyField = field === 'type_sinistre' ? field : `${field}Ver`;
+      setVerify(prev => ({ ...prev, [verifyField]: true }));
+      isValid = false;
     }
-    
-    reqData.append("sinistre", JSON.stringify(sinistereData));
+  }
+  
+  if (!isValid) return;
 
-    try {
-      let endpoint = "http://localhost:8081/api/sinistre";
-      endpoint += `/${formData.type_sinistre}/creersinistre`;
+  const reqData = new FormData();
+  
+  if (formData.image) reqData.append("image", formData.image);
+  if (formData.document) reqData.append("document", formData.document);
 
-      const response = await fetch(endpoint, {
-        method: "POST",
-        body: reqData,
-      });
+  let sinistereData;
+  switch (formData.type_sinistre) {
+    case "automobile":
+      sinistereData = {
+        userId: formData.userId,
+        type_sinistre: formData.type_sinistre,
+        objectSinistre: formData.objectSinistre,
+        descriptionSinistre: formData.descriptionSinistre,
+        amount: formData.amount,
+        Matricule: formData.Matricule,
+        Location: formData.Location,
+      };
+      break;
+      
+    case "sante":
+      sinistereData = {
+        userId: formData.userId,
+        type_sinistre: formData.type_sinistre,
+        objectSinistre: formData.objectSinistre,
+        descriptionSinistre: formData.descriptionSinistre,
+        hospitalName: formData.hospitalName,
+        isCashless: formData.isCashless || false,
+        diagnosis: formData.diagnosis,
+        amount: formData.amount,
+      };
+      break;
+      
+    case "habilitation":
+      sinistereData = {
+        userId: formData.userId,
+        type_sinistre: formData.type_sinistre,
+        objectSinistre: formData.objectSinistre,
+        descriptionSinistre: formData.descriptionSinistre,
+        propertyAddress: formData.propertyAddress,
+        damageType: formData.damageType,
+      };
+      break;
+      
+    default:
+      console.error("Type de sinistre non reconnu");
+      return;
+  }
+  
+  reqData.append("sinistre", JSON.stringify(sinistereData));
 
-      if (response.ok) {
-        console.log("Succès :", await response.text());
-        setStep(5);
-      } else {
-        console.error("Erreur lors de l'envoi :", response.status);
-      }
-    } catch (error) {
-      console.error("Erreur réseau :", error);
+  try {
+    const response = await CreerSinistre(reqData, formData.type_sinistre);
+    if (response.status >= 200 && response.status < 300) {
+      console.log("Succès :", response.data);
+      setStep(5);
+    } else {
+      console.error("Erreur lors de l'envoi :", response.status);
     }
-  };
+  } catch (error) {
+    console.error("Erreur réseau :", error);
+  }
+};
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center">
