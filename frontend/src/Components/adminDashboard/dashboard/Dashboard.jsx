@@ -108,7 +108,7 @@ export const MyDashboard = () => {
                   : "bg-gray-100 text-gray-700"
               }`}
             >
-              Sinistres récentes
+              Sinistres
             </button>
             <button
               type="button"
@@ -119,7 +119,7 @@ export const MyDashboard = () => {
                   : "bg-gray-100 text-gray-700"
               }`}
             >
-              Reclamations récents
+              Reclamations
             </button>
           </div>
         </div>

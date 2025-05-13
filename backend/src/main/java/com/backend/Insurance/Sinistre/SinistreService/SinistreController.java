@@ -91,4 +91,9 @@ public class SinistreController {
     public ResponseEntity<Long> getPendingSinistreCount() {
         return ResponseEntity.ok(sinistreService.countSinistresByEtat(Etat.PENDING));
     }
+
+    @GetMapping("/sinistres/accepted")
+    public ResponseEntity<List<SinistreDTO>> getAcceptedSinistres() {
+        return sinistreService.getSinistresByEtat(Etat.ACCEPTED);
+    }
 }
