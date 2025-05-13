@@ -7,7 +7,8 @@ export const RecentClaims = () => {
   useEffect(() => {
     const fetchClaims = async () => {
       try {
-        const data = await reclamationTable();
+        const data = await reclamationTable("FINISHED");
+        console.log("my FINISHED reclamation", data);
         setClaims(data);
       } catch (error) {
         console.error("Error fetching claims:", error);
@@ -46,10 +47,10 @@ export const RecentClaims = () => {
           {limitedClaims.map((claim) => (
             <tr key={claim.id} className="hover:bg-gray-50">
               <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-indigo-600">
-                {claim.id}
+                REC-{claim.id}
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                {claim.fullName}
+                {claim.userId}
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                 {claim.type}
@@ -61,7 +62,7 @@ export const RecentClaims = () => {
                       ? "bg-green-100 text-green-800"
                       : claim.status.toLowerCase() === "pending"
                       ? "bg-blue-100 text-blue-800"
-                      : "bg-red-100 text-red-800"
+                      : "bg-green-100 text-green-800"
                   }`}
                 >
                   {claim.status}
