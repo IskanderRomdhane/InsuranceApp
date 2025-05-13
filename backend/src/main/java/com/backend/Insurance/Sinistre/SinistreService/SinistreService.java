@@ -180,5 +180,11 @@ public class SinistreService {
         return sinistreRepository.countByEtat(etat);
     }
 
+    public ResponseEntity<List<SinistreDTO>> getSinistresByEtat(Etat etat) {
+        List<Sinistre> sinistres = sinistreRepository.findByEtat(etat);
+        List<SinistreDTO> dtos = sinistreMapper.toDtoList(sinistres);
+        return ResponseEntity.ok(dtos);
+    }
+
 
 }

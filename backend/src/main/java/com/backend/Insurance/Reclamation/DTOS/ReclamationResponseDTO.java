@@ -17,4 +17,5 @@ public class ReclamationResponseDTO {
     private String type;
     private LocalDateTime date;
     private List<String> imageUrl;
+    private Long userId;
 }

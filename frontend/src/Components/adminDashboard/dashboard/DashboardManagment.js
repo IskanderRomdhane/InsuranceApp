@@ -14,7 +14,9 @@ export const sinistrePerMonth = async () => {
 
 export const sinistreTable = async () => {
   try {
-    const response = await axiosInstance.get("/api/sinistre/sinistres");
+    const response = await axiosInstance.get(
+      "/api/sinistre/sinistres/accepted"
+    );
     return response.data;
   } catch (error) {
     console.error("Error fetching dashboard data:", error);
@@ -22,14 +24,14 @@ export const sinistreTable = async () => {
   }
 };
 
-export const reclamationTable = async () => {
+export const reclamationTable = async (status) => {
   try {
     const response = await axiosInstance.get(
-      "/api/reclamation/getusersrelamations"
+      `/api/reclamation/getreclamation/status/${status}`
     );
     return response.data;
   } catch (error) {
-    console.error("Error fetching dashboard data:", error);
+    console.error("Error fetching reclamation by status:", error);
     throw error;
   }
 };
