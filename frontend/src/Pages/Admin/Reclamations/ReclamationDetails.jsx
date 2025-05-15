@@ -1,101 +1,31 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import {
-  Calendar, ChevronLeft, AlertCircle, Mail,
-  User, Tag, Check, Clock3, XCircle, CheckCircle
-} from "lucide-react";
-import axios from "axios";
-
+import {Calendar, ChevronLeft, AlertCircle, Mail, User, Tag, Check} from "lucide-react";
+import { useReclamationDetails } from './ReclamationFunctionAdmin';
+import LoadingSpinner from '../../../Components/LoadingSpinner';
+import {getStatusStyle , formatDate , getStatusIcon} from './ReclamationDetailsProp'
 const ReclamationDetails = () => {
-  const [reclamation, setReclamation] = useState(null);
-  const [statut, setStatut] = useState("EN_ATTENTE");
-  const [chargement, setChargement] = useState(true);
-  const [erreur, setErreur] = useState("");
-  const [imageActive, setImageActive] = useState(null);
   const { id } = useParams();
-  const naviguer = useNavigate();
+  const navigate = useNavigate();
 
-  useEffect(() => {
-    const chargerDetailsReclamation = async () => {
-      try {
-        const reponse = await axios.get(`http://localhost:8081/api/reclamation/getreclamation/${id}`);
-        const donnees = reponse.data;
-        setReclamation(donnees);
-        setStatut(donnees.status);
-        if (donnees.imageUrl?.length > 0) {
-          setImageActive(donnees.imageUrl[0]);
-        }
-      } catch (erreur) {
-        setErreur("Impossible de récupérer les détails de la réclamation");
-        console.error(erreur);
-      } finally {
-        setChargement(false);
-      }
-    };
+  const {
+    reclamation,
+    statut,
+    isLoading,
+    error,
+    activeImage,
+    setActiveImage,
+    setStatut,
+    updateStatus
+  } = useReclamationDetails(id);
 
-    if (id) chargerDetailsReclamation();
-  }, [id]);
-
-  const mettreAJourStatut = async () => {
-    try {
-      setChargement(true);
-      await axios.put(
-        `http://localhost:8081/api/reclamation/changerstatus/${id}`,
-        { status: statut },
-        { headers: { "Content-Type": "application/json" } }
-      );
-      setReclamation(prev => ({ ...prev, status: statut }));
-    } catch (erreur) {
-      setErreur("Échec de la mise à jour du statut");
-      console.error(erreur);
-    } finally {
-      setChargement(false);
-    }
-  };
-
-  const getIconeStatut = (statut) => {
-    switch (statut) {
-      case "EN_ATTENTE": return <Clock3 className="w-5 h-5" />;
-      case "EN_COURS": return <AlertCircle className="w-5 h-5" />;
-      case "ANNULEE": return <XCircle className="w-5 h-5" />;
-      case "TERMINEE": return <CheckCircle className="w-5 h-5" />;
-      default: return <Clock3 className="w-5 h-5" />;
-    }
-  };
-
-  const getStyleStatut = (statut) => {
-    const styles = {
-      EN_ATTENTE: { text: "text-yellow-600", bg: "bg-yellow-50", border: "border-yellow-200" },
-      EN_COURS: { text: "text-blue-600", bg: "bg-blue-50", border: "border-blue-200" },
-      ANNULEE: { text: "text-red-600", bg: "bg-red-50", border: "border-red-200" },
-      TERMINEE: { text: "text-green-600", bg: "bg-green-50", border: "border-green-200" }
-    };
-    return styles[statut] || styles["EN_ATTENTE"];
-  };
-
-  const formaterDate = (dateString) => {
-    if (!dateString) return "Non disponible";
-    return new Date(dateString).toLocaleDateString("fr-FR", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit"
-    });
-  };
-
-  if (chargement) {
+  if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-gray-700"></div>
-          <p className="mt-4 text-gray-600">Chargement en cours...</p>
-        </div>
-      </div>
+      <LoadingSpinner />
     );
   }
 
-  if (erreur) {
+  if (error) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center p-6">
         <div className="bg-white shadow-xl rounded-lg p-8 max-w-md w-full">
@@ -103,9 +33,9 @@ const ReclamationDetails = () => {
             <AlertCircle className="w-10 h-10 mr-3" />
             <h3 className="text-2xl font-bold">Erreur</h3>
           </div>
-          <p className="text-gray-600 mb-6 text-lg">{erreur}</p>
+          <p className="text-gray-600 mb-6 text-lg">{error}</p>
           <button
-            onClick={() => naviguer(-1)}
+            onClick={() => navigate(-1)}
             className="w-full py-3 bg-gray-700 text-white rounded-lg hover:bg-gray-800 transition-all flex items-center justify-center"
           >
             <ChevronLeft className="w-5 h-5 mr-2" />
@@ -116,17 +46,27 @@ const ReclamationDetails = () => {
     );
   }
 
-  const styleStatut = getStyleStatut(reclamation.status);
+  if (!reclamation) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-gray-600">Aucune réclamation trouvée</p>
+        </div>
+      </div>
+    );
+  }
+
+  const statusStyle = getStatusStyle(reclamation.status);
 
   return (
     <main className="min-h-screen bg-gray-50 py-8 px-4">
       <div className="max-w-5xl mx-auto">
-        {/* En-tête */}
+        {/* Header */}
         <header className="bg-white shadow-sm rounded-lg p-6 mb-6">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-center">
               <button
-                onClick={() => naviguer(-1)}
+                onClick={() => navigate(-1)}
                 className="mr-4 p-2 rounded-full hover:bg-gray-100"
                 aria-label="Retour"
               >
@@ -134,24 +74,24 @@ const ReclamationDetails = () => {
               </button>
               <div>
                 <h1 className="text-2xl font-bold text-gray-800">Réclamation #{reclamation.id}</h1>
-                <p className="text-sm text-gray-500">Soumise le {formaterDate(reclamation.date)}</p>
+                <p className="text-sm text-gray-500">Soumise le {formatDate(reclamation.date)}</p>
               </div>
             </div>
             
-            <div className={`mt-4 sm:mt-0 flex items-center px-4 py-2 rounded-full ${styleStatut.bg} ${styleStatut.border}`}>
-              <span className={`mr-2 ${styleStatut.text}`}>
-                {getIconeStatut(reclamation.status)}
+            <div className={`mt-4 sm:mt-0 flex items-center px-4 py-2 rounded-full ${statusStyle.bg} ${statusStyle.border}`}>
+              <span className={`mr-2 ${statusStyle.text}`}>
+                {getStatusIcon(reclamation.status)}
               </span>
-              <span className={`font-medium ${styleStatut.text}`}>
+              <span className={`font-medium ${statusStyle.text}`}>
                 {reclamation.status.replace("_", " ")}
               </span>
             </div>
           </div>
         </header>
 
-        {/* Contenu principal */}
+        {/* Main content */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Colonne gauche - Informations client */}
+          {/* Left column - Client info */}
           <section className="lg:col-span-1">
             <div className="bg-white shadow-sm rounded-lg overflow-hidden">
               <div className="p-6 border-b border-gray-100">
@@ -187,13 +127,13 @@ const ReclamationDetails = () => {
                   <Calendar className="w-5 h-5 text-gray-400 mt-0.5 mr-3" />
                   <div>
                     <p className="text-sm font-medium text-gray-500">Date de soumission</p>
-                    <p className="text-gray-800">{formaterDate(reclamation.date)}</p>
+                    <p className="text-gray-800">{formatDate(reclamation.date)}</p>
                   </div>
                 </div>
               </div>
             </div>
             
-            {/* Section mise à jour statut */}
+            {/* Status update section */}
             <div className="bg-white shadow-sm rounded-lg overflow-hidden mt-6">
               <div className="p-6 border-b border-gray-100">
                 <h2 className="text-lg font-semibold">Mettre à jour le statut</h2>
@@ -213,11 +153,11 @@ const ReclamationDetails = () => {
                   </select>
                   
                   <button
-                    onClick={mettreAJourStatut}
-                    disabled={chargement}
+                    onClick={() => updateStatus(statut)}
+                    disabled={isLoading}
                     className="w-full py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-blue-300 flex items-center justify-center"
                   >
-                    {chargement ? "Mise à jour..." : (
+                    {isLoading ? "Mise à jour..." : (
                       <>
                         <Check className="w-5 h-5 mr-2" />
                         Mettre à jour
@@ -229,7 +169,7 @@ const ReclamationDetails = () => {
             </div>
           </section>
           
-          {/* Colonne droite - Description et images */}
+          {/* Right column - Description and images */}
           <section className="lg:col-span-2 space-y-6">
             {/* Description */}
             <div className="bg-white shadow-sm rounded-lg overflow-hidden">
@@ -254,7 +194,7 @@ const ReclamationDetails = () => {
                 <div className="p-6">
                   <div className="mb-4 bg-gray-100 rounded-lg overflow-hidden">
                     <img 
-                      src={imageActive} 
+                      src={activeImage} 
                       alt="Pièce jointe" 
                       className="w-full h-auto max-h-96 object-contain mx-auto"
                     />
@@ -265,9 +205,9 @@ const ReclamationDetails = () => {
                       {reclamation.imageUrl.map((img, index) => (
                         <button
                           key={index}
-                          onClick={() => setImageActive(img)}
+                          onClick={() => setActiveImage(img)}
                           className={`rounded-lg overflow-hidden border-2 ${
-                            imageActive === img ? 'border-blue-500' : 'border-transparent'
+                            activeImage === img ? 'border-blue-500' : 'border-transparent'
                           }`}
                         >
                           <img 
