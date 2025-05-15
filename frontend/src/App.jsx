@@ -211,8 +211,22 @@ function App() {
             </DashboardLayout>
           }
         />
-        <Route path="/notifications" element={<NotificationsPage />} />
-        <Route path="/notifications/:id" element={<NotificationDetail />} />
+        <Route
+          path="/notifications"
+          element={
+            <DashboardLayout>
+              <NotificationsPage />
+            </DashboardLayout>
+          }
+        />
+        <Route
+          path="/notifications/:id"
+          element={
+            <DashboardLayout>
+              <NotificationDetail />
+            </DashboardLayout>
+          }
+        />
       </Routes>
     </Router>
   );

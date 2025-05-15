@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { FileTextIcon, DownloadIcon, ExternalLinkIcon } from "lucide-react";
-
+import { fetchDocuments } from "./FAQsManagement";
 interface Document {
   id: number;
   title: string;
@@ -15,10 +15,16 @@ export const DocumentsContent = () => {
   const [documents, setDocuments] = useState<Document[]>([]);
 
   useEffect(() => {
-    axios
-      .get("http://localhost:8081/api/documents") // update port if needed
-      .then((res) => setDocuments(res.data))
-      .catch((err) => console.error("Failed to fetch documents", err));
+    const getDocuments = async () => {
+      try {
+        const data = await fetchDocuments();
+        setDocuments(data);
+      } catch (error) {
+        console.error("Failed to fetch documents", error);
+      }
+    };
+
+    getDocuments();
   }, []);
 
   const handleDownload = (id: number) => {

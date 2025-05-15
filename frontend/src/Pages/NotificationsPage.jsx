@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { jwtDecode } from "jwt-decode";
 import { useNavigate } from "react-router-dom";
+import {
+  fetchUserNotifications,
+  markNotificationAsRead,
+} from "../Components/NavbarManagment";
 
 const NotificationsPage = () => {
   const [notifications, setNotifications] = useState([]);
@@ -12,8 +16,7 @@ const NotificationsPage = () => {
       const decoded = jwtDecode(token);
       const userEmail = decoded.email;
 
-      fetch(`http://localhost:8081/api/notifications/user/${userEmail}`)
-        .then((res) => res.json())
+      fetchUserNotifications(userEmail)
         .then((data) => setNotifications(data))
         .catch((err) => console.error("Error fetching notifications:", err));
     }
@@ -21,9 +24,7 @@ const NotificationsPage = () => {
 
   const handleNotificationClick = async (id) => {
     try {
-      await fetch(`http://localhost:8081/api/notifications/${id}/read`, {
-        method: "PUT",
-      });
+      await markNotificationAsRead(id);
       navigate(`/notifications/${id}`);
     } catch (error) {
       console.error("Error marking notification as read:", error);

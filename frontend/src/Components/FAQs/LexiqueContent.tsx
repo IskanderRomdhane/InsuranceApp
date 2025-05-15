@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { SearchIcon } from "lucide-react";
-
+import { fetchLexiques } from "./FAQsManagement";
 interface Term {
   id: number;
   term: string;
@@ -14,18 +14,19 @@ export const LexiqueContent = () => {
   const [terms, setTerms] = useState<Term[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Fetch glossary terms from backend
   useEffect(() => {
-    fetch("http://localhost:8081/api/glossary")
-      .then((res) => res.json())
-      .then((data) => {
+    const loadLexiques = async () => {
+      try {
+        const data = await fetchLexiques();
         setTerms(data);
-        setLoading(false);
-      })
-      .catch((err) => {
+      } catch (err) {
         console.error("Error fetching glossary terms:", err);
+      } finally {
         setLoading(false);
-      });
+      }
+    };
+
+    loadLexiques();
   }, []);
 
   const categories = [
