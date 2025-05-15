@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { jwtDecode } from "jwt-decode"; // Correct named import
 import Default_pfp from "/src/assets/NavBar/Default_pfp.jpg";
 import { useNavigate } from "react-router-dom";
+import { fetchUserNotifications } from "./NavbarManagment";
 
 const Navbar = () => {
   const navigate = useNavigate();
@@ -29,17 +30,10 @@ const Navbar = () => {
   // Fetch notifications for the user
   const fetchNotifications = async (userEmail) => {
     try {
-      const response = await fetch(
-        `http://localhost:8081/api/notifications/user/${userEmail}`
-      );
-      if (response.ok) {
-        const data = await response.json();
-        setNotifications(data);
-      } else {
-        console.error("Error fetching notifications: ", response.statusText);
-      }
+      const data = await fetchUserNotifications(userEmail);
+      setNotifications(data);
     } catch (error) {
-      console.error("Error fetching notifications: ", error);
+      console.error("Error fetching notifications:", error);
     }
   };
 

@@ -1,34 +1,28 @@
 // src/pages/NotificationDetail.jsx
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import { fetchUserNotification } from "./NotificationService";
 
 const NotificationDetail = () => {
   const { id } = useParams();
   const [notification, setNotification] = useState(null);
 
   useEffect(() => {
-    const fetchNotification = async () => {
+    const fetchData = async () => {
       try {
         const token = localStorage.getItem("access_token");
         const decoded = JSON.parse(atob(token.split(".")[1]));
         const userEmail = decoded.email;
 
-        const response = await fetch(
-          `http://localhost:8081/api/notifications/user/${userEmail}`
-        );
-        if (response.ok) {
-          const data = await response.json();
-          const found = data.find((n) => n.id.toString() === id);
-          setNotification(found);
-        } else {
-          console.error("Failed to fetch notifications.");
-        }
+        const data = await fetchUserNotification(userEmail);
+        const found = data.find((n) => n.id.toString() === id);
+        setNotification(found);
       } catch (error) {
         console.error("Error fetching notification:", error);
       }
     };
 
-    fetchNotification();
+    fetchData();
   }, [id]);
 
   if (!notification) {
