@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { ChevronDownIcon, ChevronUpIcon } from "lucide-react";
 import axios from "axios";
+import { fetchFaqs } from "./FAQsManagement";
 
 interface FAQItem {
   id: number;
@@ -16,18 +17,16 @@ export const FAQContent = () => {
   const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
-    const fetchFaqs = async () => {
+    const getFaqs = async () => {
       try {
-        const response = await axios.get<FAQItem[]>(
-          "http://localhost:8081/api/faqs"
-        );
-        setFaqs(response.data);
+        const data = await fetchFaqs(); // ✅ use the imported function
+        setFaqs(data);
       } catch (error) {
         console.error("Erreur lors de la récupération des FAQ :", error);
       }
     };
 
-    fetchFaqs();
+    getFaqs();
   }, []);
 
   const toggleItem = (index: number) => {
