@@ -44,6 +44,12 @@ public class UserController {
     ) throws IOException {
         return userservice.uploadProfilePicture(file , id);
     }
+    @GetMapping("/getprofilpictureurl/{id}")
+    public ResponseEntity<String> getProfilePictureUrl(
+            @PathVariable String id
+    ) throws IOException {
+        return userservice.getProfilePictureUrl(id);
+    }
 
     @GetMapping("/count")
     public ResponseEntity<Long> getUserCount() {
