@@ -34,48 +34,44 @@ public class CustomSecurityFilter implements Filter {
     }
 
     @Override
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+            throws IOException, ServletException {
 
         try {
+            HttpServletRequest httpRequest = (HttpServletRequest) request;
+            String authorizationHeader = httpRequest.getHeader("Authorization");
 
-            String authorizationHeader = ((HttpServletRequest) request).getHeader("Authorization");
-            String token = authorizationHeader.substring(7);
+            if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+                String token = authorizationHeader.substring(7);
+                DecodedJWT decodedJWT = JWT.decode(token);
 
-            DecodedJWT decodedJWT = JWT.decode(token);
+                Jwk jwk = jwkProvider.get(decodedJWT.getKeyId());
+                Algorithm algorithm = Algorithm.RSA256((RSAPublicKey) jwk.getPublicKey(), null);
 
-            // start verification process
-            Jwk jwk = jwkProvider.get(decodedJWT.getKeyId());
+                JWTVerifier verifier = JWT.require(algorithm)
+                        .withIssuer("http://localhost:8080/realms/InsuranceApp")
+                        .build();
+                verifier.verify(decodedJWT);
 
-            Algorithm algorithm = Algorithm.RSA256((RSAPublicKey) jwk.getPublicKey(), null);
+                Map<String, Object> resourceAccess = decodedJWT.getClaim("resource_access").asMap();
+                Map<String, Object> insurance = (Map<String, Object>) resourceAccess.get("Insurance");
+                List<String> roles = (List<String>) insurance.get("roles");
 
-            JWTVerifier verifier = JWT.require(algorithm)
-                    .withIssuer("http://localhost:8080/realms/InsuranceApp")
-                    .build();
-            verifier.verify(decodedJWT);
-            Map<String, Object> resourceAccess = decodedJWT.getClaim("resource_access").asMap();
-            Map<String, Object> insurance = (Map<String, Object>) resourceAccess.get("Insurance");
-            List<String> roles = (List<String>) insurance.get("roles");
+                SimpleGrantedAuthority auths = new SimpleGrantedAuthority(roles.get(0));
+                UsernamePasswordAuthenticationToken authToken =
+                        new UsernamePasswordAuthenticationToken(decodedJWT.getSubject(), null, List.of(auths));
 
-            SimpleGrantedAuthority auths = new SimpleGrantedAuthority(roles.get(0));
-            UsernamePasswordAuthenticationToken authToken =
-                    new UsernamePasswordAuthenticationToken(decodedJWT.getSubject(), null, List.of(auths));
+                SecurityContextHolder.getContext().setAuthentication(authToken);
+            }
 
-            SecurityContextHolder.getContext().setAuthentication(authToken);
-
-
-
-
-        } catch (JWTVerificationException jwtVerificationException){
+        } catch (JWTVerificationException jwtVerificationException) {
             logger.error("Verification Exception", jwtVerificationException);
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             logger.error("Exception", e);
         }
 
-
         chain.doFilter(request, response);
-
         SecurityContextHolder.clearContext();
-
     }
+
 }
