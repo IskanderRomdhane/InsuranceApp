@@ -24,6 +24,10 @@ export const StatusIndicator = ({ status }) => {
       "UNDER_REVIEW": {
         color: "bg-blue-500",
         label: "Under Review"
+      },
+      "FINISHED":{
+        color: "bg-blue-500",
+        label: "FINISHED"
       }
     };
     

@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Search, RefreshCw, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Search, RefreshCw, ChevronLeft, ChevronRight, Calendar, Eye } from 'lucide-react';
 import ClaimDetailsModal from './ClaimDetailsModal';
 import { fetchClaimsByEmail } from './ReclamationFunction.js';
-import { formatDate, getStatusColor, getModalBg, getTypeIcon } from './ReclamationProp';
-import ReclamationFields from '../../../Components/ReclamationTablePage/ReclamationFields.jsx';
-
+import { formatDate, StatusIndicator } from '../../Admin/Sinistres/SinistreTableProp.jsx';
+import PaginationComponent from "../../../Components/PaginationComponent";
+import {getStatusColor, getModalBg, getTypeIcon } from './ReclamationProp';
 const ClaimsDashboard = () => {
   const [claims, setClaims] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -22,6 +22,7 @@ const ClaimsDashboard = () => {
     try {
       setLoading(true);
       let data = await fetchClaimsByEmail(currentFilter === 'ALL' ? null : currentFilter);
+      console.log(data);
       setClaims(data);
       setError(null);
     } catch (error) {
@@ -43,6 +44,7 @@ const ClaimsDashboard = () => {
   const totalPages = Math.ceil(claims.length / claimsPerPage);
 
   const handleViewDetails = (claim) => {
+    console.log(claim);
     setSelectedClaim(claim);
     setShowModal(true);
   };
@@ -61,8 +63,6 @@ const ClaimsDashboard = () => {
     setFilter(newFilter);
     setCurrentPage(1);
   };
-
-  const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
   return (
     <div className="bg-gray-100 min-h-screen p-8">
@@ -138,84 +138,82 @@ const ClaimsDashboard = () => {
             <h3 className="text-xl font-medium text-gray-700 mb-3">Aucune réclamation trouvée</h3>
           </div>
         ) : (
-            <div className="space-y-6">
-              <div className="hidden md:grid grid-cols-12 items-center px-6 text-sm font-semibold text-gray-500">
-                <div className="col-span-4">Objet</div>
-                <div className="col-span-2">Type</div>
-                <div className="col-span-2">Statut</div>
-                <div className="col-span-2 text-right pr-6">Action</div>
-              </div>
+          <div className="space-y-6">
+            <div className="hidden md:grid grid-cols-12 items-center px-6 text-sm font-semibold text-gray-500">
+              <div className="col-span-4">Objet</div>
+              <div className="col-span-2">Type</div>
+              <div className="col-span-2">Statut</div>
+              <div className="col-span-2">Date</div>
+              <div className="col-span-2 text-right pr-6">Action</div>
+            </div>
 
-              {currentClaims.map((claim) => (
-                <div
-                  key={claim.id}
-                  onClick={() => {}}
-                  className="bg-white rounded-2xl shadow-md p-6 hover:shadow-lg transition-shadow cursor-pointer"
-                >
-                  <div className="hidden md:grid grid-cols-12 items-center">
-                    {/* Objet */}
-                    <div className="col-span-4">
-                      <h3 className="font-semibold text-gray-800">{claim.description}</h3>
-                      <div className="text-sm text-gray-500 mt-1 flex items-center">
-                        <Calendar className="h-4 w-4 mr-1" />
-                        <span>{formatDate(claim.date)}</span>
-                      </div>
-                    </div>
-
-                    {/* Catégorie */}
-                    <div className="col-span-2">
-                      <span className="bg-gray-100 px-3 py-1 rounded-full text-sm">
-                        {claim.type}
-                      </span>
-                    </div>
-
-                    {/* Statut */}
-                    <div className="col-span-2">
-                      <StatusIndicator status={claim.status} />
-                    </div>
-
-                    {/* Action */}
-                    <div className="col-span-2 text-right">
-                      <button
-                        onClick={(e) => viewDetails(e, claim.id)}
-                        className="bg-[#476f66] hover:bg-[#3a5c54] text-white text-sm px-4 py-2 rounded-lg shadow-sm inline-flex items-center gap-1"
-                      >
-                        <Eye className="h-4 w-4" />
-                        <span>Voir</span>
-                      </button>
-                    </div>
+            {currentClaims.map((claim) => (
+              <div
+                key={claim.id}
+                className="bg-white rounded-2xl shadow-md p-6 hover:shadow-lg transition-shadow"
+              >
+                <div className="hidden md:grid grid-cols-12 items-center">
+                  {/* Objet */}
+                  <div className="col-span-4">
+                    <h3 className="font-semibold text-gray-800">{claim.description}</h3>
                   </div>
 
-                  {/* Mobile view (unchanged) */}
-                  <div className="md:hidden flex flex-col gap-4">
-                    <div className="flex justify-between">
-                      <h3 className="font-semibold text-lg text-gray-800">{claim.objectSinistre}</h3>
-                      <StatusIndicator status={claim.etat} />
-                    </div>
-                    <div className="text-sm text-gray-500 flex gap-3">
-                      <span className="bg-gray-100 px-3 py-1 rounded-full">{claim.sinistre_type || claim.categorie}</span>
-                      <span className="text-gray-300">•</span>
-                      <div className="flex items-center">
-                        <Calendar className="h-4 w-4 mr-1" />
-                        <span>{formatDate(claim.date)}</span>
-                      </div>
-                    </div>
-                    <div className="flex justify-between items-center mt-2">
-                      <div className="text-[#476f66] font-bold text-lg">
-                        {claim.amount?.toFixed(2) || '000'} TND
-                      </div>
-                      <button
-                        onClick={(e) => viewDetails(e, claim.id)}
-                        className="bg-[#476f66] hover:bg-[#3a5c54] text-white text-sm px-4 py-2 rounded-lg shadow-sm inline-flex items-center gap-1"
-                      >
-                        <Eye className="h-4 w-4" />
-                        <span>Voir</span>
-                      </button>
-                    </div>
+                  {/* Type */}
+                  <div className="col-span-2">
+                    <span className="bg-gray-100 px-3 py-1 rounded-full text-sm">
+                      {claim.typeReclamation}
+                    </span>
+                  </div>
+
+                  {/* Statut */}
+                  <div className="col-span-2">
+                    <StatusIndicator status={claim.status} />
+                  </div>
+
+                  {/* Date */}
+                  <div className="col-span-2 text-sm text-gray-500 flex items-center">
+                    <Calendar className="h-4 w-4 mr-1" />
+                    <span>{formatDate(claim.date)}</span>
+                  </div>
+
+                  {/* Action */}
+                  <div className="col-span-2 text-right">
+                    <button
+                      onClick={(e) => handleViewDetails(claim)}
+                      className="bg-[#476f66] hover:bg-[#3a5c54] text-white text-sm px-4 py-2 rounded-lg shadow-sm inline-flex items-center gap-1"
+                    >
+                      <Eye className="h-4 w-4" />
+                      <span>Voir</span>
+                    </button>
                   </div>
                 </div>
-              ))}
 
+                {/* Mobile view */}
+                <div className="md:hidden flex flex-col gap-4">
+                  <div className="flex justify-between">
+                    <h3 className="font-semibold text-lg text-gray-800">{claim.description}</h3>
+                    <StatusIndicator status={claim.status} />
+                  </div>
+                  <div className="text-sm text-gray-500 flex gap-3">
+                    <span className="bg-gray-100 px-3 py-1 rounded-full">{claim.typeReclamation}</span>
+                    <span className="text-gray-300">•</span>
+                    <div className="flex items-center">
+                      <Calendar className="h-4 w-4 mr-1" />
+                      <span>{formatDate(claim.date)}</span>
+                    </div>
+                  </div>
+                  <div className="flex justify-end items-center mt-2">
+                    <button
+                      onClick={(e) => handleViewDetails (claim)}
+                      className="bg-[#476f66] hover:bg-[#3a5c54] text-white text-sm px-4 py-2 rounded-lg shadow-sm inline-flex items-center gap-1"
+                    >
+                      <Eye className="h-4 w-4" />
+                      <span>Voir</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
 
             <PaginationComponent
               totalPages={totalPages}
@@ -223,10 +221,22 @@ const ClaimsDashboard = () => {
               setPageCourante={setCurrentPage}
               setExpandedId={() => null}
               sinistres={claims}
-              premierIndex={firstIndex}
-              dernierIndex={lastIndex}
+              premierIndex={indexOfFirstClaim}
+              dernierIndex={indexOfLastClaim}
             />
           </div>
+        )}
+
+        {/* Claim Details Modal */}
+        {showModal && selectedClaim && (
+          <ClaimDetailsModal 
+            claim={selectedClaim}
+            formatDate={formatDate}
+            onClose={handleCloseModal}
+            getStatusColor = {getStatusColor}
+            getModalBg = {getModalBg}
+            getTypeIcon = {getTypeIcon}
+          />
         )}
       </div>
     </div>

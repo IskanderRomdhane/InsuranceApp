@@ -53,7 +53,7 @@ export default function SinistresTable() {
                   setStatusFilter(filter);
                   setCurrentPage(1);
                 }}
-                filterOptions={['Tous', 'En cours', 'Traité', 'Rejeté']}
+                filterOptions={['Tous', 'En cours', 'Traité', 'Rejeté', 'Accepté']}
               />
             </div>
           </div>  
