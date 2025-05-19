@@ -35,7 +35,7 @@ public class AutoMobileController {
     }
     @GetMapping("/getusersinistres/{userId}")
     private ResponseEntity<?> RetriveUserAutoMobileSinistres(
-            @PathVariable Long userId){
+            @PathVariable String userId){
         return autoMobileService.GetUserAutoMobileSinistres(userId);
     }
 }

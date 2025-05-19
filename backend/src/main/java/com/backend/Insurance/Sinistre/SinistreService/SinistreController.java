@@ -10,12 +10,13 @@ import com.backend.Insurance.Sinistre.Sinistre;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.ws.rs.Path;
 import java.util.List;
-
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/sinistre")
@@ -44,8 +45,8 @@ public class SinistreController {
     ){
         return sinistreService.ChangerEtat(sinistreId, sinistreDTO);
     }
+    //@PreAuthorize("hasRole('client_admin')")
     @GetMapping("/sinistres")
-    //@PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<SinistreDTO>> getSinistres(){
         return  sinistreService.getSinistres();
     }
@@ -54,7 +55,7 @@ public class SinistreController {
     @GetMapping("/getusersinistres/{userId}")
     //@PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<Sinistre>> GetUserSinistre (
-            @PathVariable Long userId
+            @PathVariable String userId
     ){
         return sinistreService.GetUserSinistres(userId);
     }

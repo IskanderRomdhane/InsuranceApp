@@ -43,13 +43,13 @@ export const CreerSinistre = async (formData, sinistreType) => {
       formData,
       {
         headers: {
-          'Content-Type': 'multipart/form-data' // Changed to multipart/form-data for file uploads
+          'Content-Type': 'multipart/form-data'
         }
       }
     );
     return response;
   } catch (err) {
     console.error("Error creating sinistre:", err);
-    throw err; // Re-throw the error to handle it in the calling function
+    throw err; 
   }
 };

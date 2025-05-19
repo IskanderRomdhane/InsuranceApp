@@ -106,7 +106,7 @@ public class HabilitationService {
         return ResponseEntity.ok(sinistres);
     }
 
-    public ResponseEntity<?> GetHabilitationSinistres(Long userId) {
+    public ResponseEntity<?> GetHabilitationSinistres(String userId) {
         Optional<User> optionalUser = userRepository.findById(userId);
         if (optionalUser.isPresent()){
             List<Habilitation> habilitationsList = habilitationRepository.findByUserId(userId);

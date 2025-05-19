@@ -27,19 +27,19 @@ public class UserController {
     }
 
     @GetMapping("/userid/{id}")
-    public ResponseEntity<UserDTO> getUserById(@PathVariable Long id) {
+    public ResponseEntity<UserDTO> getUserById(@PathVariable String id) {
         return userservice.getUserById(id);
     }
 
     @PutMapping("/{id}/status")
     public ResponseEntity<User> updateUserStatus(
-            @PathVariable Long id,
+            @PathVariable String id,
             @RequestParam boolean active) {
         return userservice.updateUserStatus(id, active);
     }
     @PutMapping("/uploadImage/{id}")
     public ResponseEntity<String> uploadProfilePicture(
-            @PathVariable Long id,
+            @PathVariable String id,
             @RequestParam("file") MultipartFile file
     ) throws IOException {
         return userservice.uploadProfilePicture(file , id);

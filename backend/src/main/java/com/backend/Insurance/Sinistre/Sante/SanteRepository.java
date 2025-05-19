@@ -8,5 +8,5 @@ import org.springframework.http.ResponseEntity;
 import java.util.List;
 
 public interface SanteRepository extends JpaRepository<Sante, Long> {
-    List<Sante> findByUserId(Long id);
+    List<Sante> findByUserId(String id);
 }

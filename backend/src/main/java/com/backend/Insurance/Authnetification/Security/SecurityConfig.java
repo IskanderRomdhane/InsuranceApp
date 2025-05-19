@@ -19,7 +19,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
                                 "/api/auth/**",
-                                "/ws/**"
+                                "/ws/**",
+                                "/api/user/**"
                         )
                         .permitAll()  // Allow login endpoint
                         .anyRequest()
