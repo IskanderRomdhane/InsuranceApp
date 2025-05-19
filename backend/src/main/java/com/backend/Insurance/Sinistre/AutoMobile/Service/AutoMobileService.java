@@ -54,8 +54,8 @@ public class AutoMobileService {
                     .user(foundUser)
                     .date(LocalDateTime.now())
                     .amount(autoMobileDTO.getAmount())
-                    .Matricule(autoMobileDTO.getMatricule())
-                    .Location(autoMobileDTO.getLocation())
+                    .matricule(autoMobileDTO.getMatricule())
+                    .location(autoMobileDTO.getLocation())
                     .model(autoMobileDTO.getModel())
                     .build();
             autoMobileRepository.save(sinistre);

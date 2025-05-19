@@ -9,7 +9,7 @@ import org.mapstruct.*;
 @Mapper(componentModel = "spring")
 public interface SinistreMapper {
     @Mapping(target = "id" , source = "id")
-    @Mapping(target = "userId", source = "user.id")
+    @Mapping(target = "userId", expression = "java(sinistre.getUser().getId())")
     @Mapping(target = "etat" , source = "etat")
     @Mapping(target = "objectSinistre", source = "object")
     @Mapping(target = "descriptionSinistre", source = "description")

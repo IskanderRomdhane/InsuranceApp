@@ -14,7 +14,7 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @DiscriminatorValue("AutoMobile")
 public class AutoMobile extends Sinistre {
-    private String Matricule;
-    private String Location;
+    private String matricule;
+    private String location;
     private String model;
 }
