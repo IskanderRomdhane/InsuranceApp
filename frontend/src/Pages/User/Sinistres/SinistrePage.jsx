@@ -56,12 +56,12 @@ const SinistrePage = () => {
 
   return (
     <div className="max-w-6xl mx-auto p-6">
-      <h1 className="text-3xl font-bold mb-6 text-gray-800">Claim Details</h1>
+      <h1 className="text-3xl font-bold mb-6 text-gray-800">Detaille du Sinistre</h1>
       
       <div className="bg-white rounded-lg shadow-lg overflow-hidden">
         <div className="bg-[#476f66] p-4 text-white">
           <h2 className="text-xl font-semibold">
-            Claim #{sinistre.id} - {sinistre.object}
+            Sinistre - {sinistre.object}
           </h2>
         </div>
         
