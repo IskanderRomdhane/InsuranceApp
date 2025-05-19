@@ -1,8 +1,7 @@
-package com.backend.Insurance.AiModel;
+package com.backend.Insurance.AiModel.controller;
 
 
-import com.backend.Insurance.Sinistre.DTOS.SinistreDTO;
-import com.fasterxml.jackson.core.JsonProcessingException;
+import com.backend.Insurance.AiModel.service.ModelService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
