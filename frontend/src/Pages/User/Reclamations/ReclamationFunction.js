@@ -17,7 +17,7 @@ export const getEmailFromToken = () => {
 export const fetchClaimsByEmail = async (filter = null) => {
   try {
     const email = getEmailFromToken();
-
+    const userId = localStorage.getItem("userId");
     if (!email) {
       throw new Error("Missing email.");
     }
