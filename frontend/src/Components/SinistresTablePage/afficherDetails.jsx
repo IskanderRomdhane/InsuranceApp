@@ -22,7 +22,7 @@ const DetailsComponent = ({ sinistre }) => {
                         Détails du sinistre
                     </h4>
                     <div className="mt-3 space-y-3">
-                        <ChampInfo label="ID Sinistre" value={sinistre.id} />
+                       
                         <ChampInfo
                             label="Date"
                             value={new Date(sinistre.date).toLocaleDateString()}

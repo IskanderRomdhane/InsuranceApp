@@ -71,7 +71,7 @@ export const useReclamations = () => {
   const [typeFilter, setTypeFilter] = useState('ALL');
   const [error, setError] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
+  const itemsPerPage = 3;
 
   const fetchReclamations = async (status = 'ALL', type = 'ALL') => {
     setLoading(true);
