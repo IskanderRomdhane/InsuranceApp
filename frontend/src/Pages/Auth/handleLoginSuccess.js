@@ -5,9 +5,11 @@ export const handleLoginSuccess = (data, getUserRole, navigate = null) => {
   const refreshToken = data.refresh_token;
 
   let clientRoles = [];
+  let userId = ""
   try {
     const decoded = jwtDecode(accessToken);
     clientRoles = decoded.resource_access?.Insurance?.roles || [];
+    userId = decoded.sub || null;
     console.log(decoded);
   } catch (error) {
     console.error("Error parsing auth token:", error);
@@ -16,6 +18,9 @@ export const handleLoginSuccess = (data, getUserRole, navigate = null) => {
   localStorage.setItem("client_role", clientRoles);
   localStorage.setItem("access_token", accessToken);
   localStorage.setItem("refresh_token", refreshToken);
+  localStorage.setItem("userId" , userId)
+  
+  console.log(userId)
   console.log(clientRoles);
   getUserRole();
 

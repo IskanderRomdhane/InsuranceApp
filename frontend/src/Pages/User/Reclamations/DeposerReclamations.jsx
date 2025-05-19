@@ -17,6 +17,8 @@ const DeposerReclamations = () => {
   useEffect(() => {
     try {
       const token = localStorage.getItem("access_token");
+      const userId = localStorage.getItem("userId");
+      console.log(userId)
       if (token) {
         try {
           const decoded = jwtDecode(token);
