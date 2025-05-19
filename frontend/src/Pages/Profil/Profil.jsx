@@ -1,81 +1,29 @@
 import React, { useEffect, useState, useRef } from "react";
 import Default_pfp from "../../assets/Profile/Default_pfp.jpg";
 import axios from "axios";
-
+import { useProfile } from "./ProfilFunction";
 const Profil = () => {
-  const [donneesUtilisateur, setDonneesUtilisateur] = useState(null);
-  const [chargement, setChargement] = useState(true);
-  const [erreur, setErreur] = useState(null);
-  const [fichierSelectionne, setFichierSelectionne] = useState(null);
-  const [uploadReussi, setUploadReussi] = useState(false);
-  const refInputFichier = useRef(null);
-
+  const {
+    donneesUtilisateur,
+    chargement,
+    erreur,
+    fichierSelectionne,
+    uploadReussi,
+    refInputFichier,
+    fetchUserData,
+    uploadFile,
+    handleFileChange,
+    triggerFileInput,
+  } = useProfile();
+  console.log(donneesUtilisateur)
   useEffect(() => {
-    const recupererDonneesUtilisateur = async () => {
-      setChargement(true);
-      try {
-        const url = "http://localhost:8081/api/user/userid/502";
-        const reponse = await fetch(url);
-        if (!reponse.ok)
-          throw new Error("Échec de la récupération des données utilisateur");
-        const donnees = await reponse.json();
-        setDonneesUtilisateur(donnees);
-        console.log(donnees);
-        setChargement(false);
-      } catch (error) {
-        console.error(
-          "Erreur lors de la récupération des données utilisateur:",
-          error
-        );
-        setErreur("Échec du chargement du profil utilisateur");
-        setChargement(false);
-      }
-    };
-
-    recupererDonneesUtilisateur();
+    fetchUserData();
   }, []);
 
-  const handleClicBoutonFichier = () => {
-    refInputFichier.current.click();
-  };
-
   const handleChangementFichier = (event) => {
-    setFichierSelectionne(event.target.files[0]);
-    handleUpload(event.target.files[0]);
-  };
-
-  const handleUpload = async (fichier) => {
-    if (!fichier || !donneesUtilisateur) return;
-
-    const formData = new FormData();
-    formData.append("file", fichier);
-
-    try {
-      setUploadReussi(false);
-      const reponse = await axios.put(
-        `http://localhost:8081/api/user/uploadImage/${donneesUtilisateur.id}`,
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
-
-      if (reponse.status === 200) {
-        // Rafraîchir les données utilisateur pour obtenir la nouvelle URL de l'image
-        const url = `http://localhost:8081/api/user/userid/${donneesUtilisateur.id}`;
-        const reponseDonneesMaj = await fetch(url);
-        const donneesMaj = await reponseDonneesMaj.json();
-        setDonneesUtilisateur(donneesMaj);
-        setUploadReussi(true);
-        setTimeout(() => {
-          setUploadReussi(false);
-        }, 3000);
-      }
-    } catch (error) {
-      console.error("Erreur lors du téléversement de l'image:", error);
-      setErreur("Échec du téléversement de l'image");
+    const file = handleFileChange(event);
+    if (file) {
+      uploadFile(file);
     }
   };
 
@@ -120,7 +68,7 @@ const Profil = () => {
 
               {/* Bouton de téléversement - maintenant positionné en dehors de la bordure */}
               <button
-                onClick={handleClicBoutonFichier}
+                onClick={triggerFileInput}
                 className="absolute bottom-3 right-0 bg-green-600 hover:bg-green-700 text-white rounded-full p-2 shadow-lg transition-colors duration-200 ease-in-out border-2 border-white"
                 title="Changer la photo de profil"
                 style={{ zIndex: 50 }}
@@ -233,20 +181,13 @@ const Profil = () => {
                     <p className="text-gray-900">Actif</p>
                   </div>
                 </div>
-                <div>
-                  <span className="text-sm font-medium text-gray-500">
-                    ID utilisateur
-                  </span>
-                  <p className="mt-1 text-gray-900">{donneesUtilisateur?.id}</p>
-                </div>
+               
               </div>
             </div>
           </div>
           <div className="mt-8 border-t border-gray-200 pt-6">
             <div className="flex flex-col sm:flex-row sm:space-x-4">
-              <button className="inline-flex justify-center items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
-                Changer le mot de passe
-              </button>
+
             </div>
           </div>
         </div>
