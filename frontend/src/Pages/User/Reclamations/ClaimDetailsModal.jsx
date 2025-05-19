@@ -35,7 +35,7 @@ const ClaimDetailsModal = ({ claim, formatDate, getStatusColor, getTypeIcon, onC
         <div ref={modalRef} className="bg-white rounded-lg shadow-xl w-full max-w-3xl max-h-[90vh] overflow-hidden flex flex-col">
           {/* Modal Header */}
           <div className= {` ${getModalBg(claim.status)} px-6 py-4 flex justify-between items-center`}>
-            <h3 className="text-xl font-bold">Claim #{claim.id} Details</h3>
+            <h3 className="text-xl font-bold">Detaille Reclamation</h3>
             <button onClick={onClose} className="text-white hover:text-green-200">
               <X className="w-6 h-6" />
             </button>
@@ -66,7 +66,7 @@ const ClaimDetailsModal = ({ claim, formatDate, getStatusColor, getTypeIcon, onC
 
             {/* Claim Type Information */}
             <div className="mb-6 pb-6 border-b border-gray-200">
-              <h4 className="text-lg font-semibold text-gray-800 mb-2">Claim Information</h4>
+              <h4 className="text-lg font-semibold text-gray-800 mb-2">Information sur la Reclamation</h4>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <p className="text-gray-500 text-sm">Type</p>
@@ -77,21 +77,18 @@ const ClaimDetailsModal = ({ claim, formatDate, getStatusColor, getTypeIcon, onC
                   <p className="font-medium">{claim.status}</p>
                 </div>
                 <div>
-                  <p className="text-gray-500 text-sm">Created Date</p>
+                  <p className="text-gray-500 text-sm">Date De Creation</p>
                   <p className="font-medium">{formatDate(claim.date)}</p>
                 </div>
-                <div>
-                  <p className="text-gray-500 text-sm">Claim ID</p>
-                  <p className="font-medium">#{claim.id}</p>
-                </div>
+
               </div>
             </div>
 
             {/* Image Display */}
             {imageUrls && imageUrls.length > 0 && (
                 <div className="mb-6 pb-6 border-b border-gray-200">
-                  <h4 className="text-lg font-semibold text-gray-800 mb-4">Attached Image</h4>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <h4 className="text-lg font-semibold text-gray-800 mb-4">Image Attaché</h4>
+                  <div className="flex justify-center md:grid-cols-2 gap-4">
                     {imageUrls.map((imageUrl, index) => (
                         <div key={index} className="relative group">
                           <img
