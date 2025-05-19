@@ -48,7 +48,7 @@ export const PolicyDistributionChart = () => {
             cx="50%"
             cy="50%"
             innerRadius={60}
-            outerRadius={90}
+            outerRadius={80}
             paddingAngle={2}
             dataKey="value"
             label={({ name, percent }) =>
