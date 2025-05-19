@@ -79,7 +79,7 @@ export default function UsersTable() {
       </span>
     </div>
   );
-
+  console.log("statusFilter value (render):", statusFilter);
   return (
     <div className="bg-gray-100 min-h-screen p-8">
       <div className="max-w-7xl mx-auto">
@@ -100,15 +100,18 @@ export default function UsersTable() {
               <Search className="absolute left-3 top-2.5 text-gray-400 w-5 h-5" />
             </div>
 
-            <select
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-              className="w-full md:w-1/4 px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#476f66] focus:outline-none"
-            >
-              <option value="all">Tous</option>
-              <option value="active">Actif</option>
-              <option value="inactive">Inactif</option>
-            </select>
+            <div className="flex items-center space-x-2">
+              <label>Status:</label>
+              <select
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+                className="min-w-[150px] px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#476f66] focus:outline-none text-gray-800"
+              >
+                <option value="all">Tous</option>
+                <option value="active">Actif</option>
+                <option value="inactive">Inactif</option>
+              </select>
+            </div>
 
             <button
               onClick={fetchUsers}
@@ -175,9 +178,6 @@ export default function UsersTable() {
                             Nom d'utilisateur:
                           </span>{" "}
                           {user.username}
-                        </div>
-                        <div>
-                          <span className="font-medium">ID:</span> {user.id}
                         </div>
                       </div>
                       <div className="mt-4 flex justify-end">

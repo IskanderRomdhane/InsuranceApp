@@ -50,7 +50,7 @@ export const MyDashboard = () => {
           }
           change="+12.5%"
           trend="up"
-          icon={<UsersIcon className="h-6 w-6 text-blue-600" />}
+          icon={<UsersIcon className="h-6 w-6 text-green-600" />}
         />
         <StatCard
           title="Sinistres actifs"
@@ -72,7 +72,7 @@ export const MyDashboard = () => {
           }
           change="-3.1%"
           trend="down"
-          icon={<AlertCircleIcon className="h-6 w-6 text-amber-600" />}
+          icon={<AlertCircleIcon className="h-6 w-6 text-green-600" />}
         />
       </div>
 
@@ -104,7 +104,7 @@ export const MyDashboard = () => {
               onClick={() => setActiveTab("policies")}
               className={`px-4 py-2 rounded ${
                 activeTab === "policies"
-                  ? "bg-blue-500 text-white"
+                  ? "bg-[#3c5d55] text-white"
                   : "bg-gray-100 text-gray-700"
               }`}
             >
@@ -115,7 +115,7 @@ export const MyDashboard = () => {
               onClick={() => setActiveTab("claims")}
               className={`px-4 py-2 rounded ${
                 activeTab === "claims"
-                  ? "bg-blue-500 text-white"
+                  ? "bg-[#3c5d55] text-white"
                   : "bg-gray-100 text-gray-700"
               }`}
             >
