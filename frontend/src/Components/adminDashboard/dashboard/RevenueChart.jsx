@@ -116,7 +116,7 @@ export const SinistreChart = () => {
           <Bar
             dataKey="count"
             name="Sinistre Count"
-            fill="#3c5d55"
+            fill="#97c0ae"
             radius={[4, 4, 0, 0]}
           />
         </BarChart>
