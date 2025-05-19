@@ -1,4 +1,5 @@
 import axiosInstance from "../../../Hooks/TokenInterceptor";
+import { jwtDecode } from "jwt-decode";
 
 export const fetchSinistres = async () => {
   try {
@@ -50,4 +51,24 @@ export const getHouseSinistres = async () => {
     console.error("Error fetching dashboard data:", error);
     throw error;
   }
+};
+
+export const getUserIDFromToken = () => {
+  const accessToken = data.access_token;
+  const refreshToken = data.refresh_token;
+
+  let userId = "";
+  try {
+    const decoded = jwtDecode(accessToken);
+    userId = decoded.sub || null;
+    console.log(decoded);
+    return userId;
+    // if (token) {
+    //   const decoded = jwtDecode(token);
+    //   return decoded.sub;
+    // }
+  } catch (error) {
+    console.error("Error decoding token:", error);
+  }
+  return null;
 };

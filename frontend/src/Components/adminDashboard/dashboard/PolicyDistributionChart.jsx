@@ -12,7 +12,7 @@ import { sinistreDistribution } from "./DashboardManagment";
 export const PolicyDistributionChart = () => {
   const [data, setData] = useState([]);
 
-  const COLORS = ["#6366f1", "#8b5cf6", "#ec4899", "#f97316", "#14b8a6"];
+  const COLORS = ["#428e86", "#d98a6c", "#97c0ae", "#99953b", "#14b8a6"];
 
   useEffect(() => {
     const fetchSinistres = async () => {
