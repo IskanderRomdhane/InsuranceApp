@@ -1,10 +1,7 @@
 package com.backend.Insurance.Reclamation.Mapper;
 
-import com.backend.Insurance.Reclamation.DTOS.ReclamationDTO;
 import com.backend.Insurance.Reclamation.DTOS.ReclamationResponseDTO;
-import com.backend.Insurance.Reclamation.Reclamation;
-import com.backend.Insurance.Sinistre.DTOS.SinistreDTO;
-import com.backend.Insurance.Sinistre.Sinistre;
+import com.backend.Insurance.Reclamation.Entity.Reclamation;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 

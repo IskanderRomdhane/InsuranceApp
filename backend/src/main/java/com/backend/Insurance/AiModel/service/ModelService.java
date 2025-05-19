@@ -2,10 +2,8 @@ package com.backend.Insurance.AiModel.service;
 
 import com.backend.Insurance.AiModel.DTOS.GeneratorRequest;
 import com.backend.Insurance.AiModel.DTOS.ImageCheckerResponse;
-import com.backend.Insurance.Sinistre.AutoMobile.AutoMobile;
-import com.backend.Insurance.Sinistre.DTOS.SinistreDTO;
-import com.backend.Insurance.Sinistre.Sinistre;
-import com.backend.Insurance.Sinistre.SinistreRepository;
+import com.backend.Insurance.Sinistre.Entity.Sinistre;
+import com.backend.Insurance.Sinistre.Repositroy.SinistreRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
