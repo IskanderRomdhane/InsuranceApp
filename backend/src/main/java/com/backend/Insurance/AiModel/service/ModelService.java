@@ -1,7 +1,8 @@
-package com.backend.Insurance.AiModel;
+package com.backend.Insurance.AiModel.service;
 
 import com.backend.Insurance.AiModel.DTOS.GeneratorRequest;
 import com.backend.Insurance.AiModel.DTOS.ImageCheckerResponse;
+import com.backend.Insurance.Sinistre.AutoMobile.AutoMobile;
 import com.backend.Insurance.Sinistre.DTOS.SinistreDTO;
 import com.backend.Insurance.Sinistre.Sinistre;
 import com.backend.Insurance.Sinistre.SinistreRepository;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -25,7 +27,7 @@ public class ModelService {
         Optional<Sinistre> sinistreOptional = sinistreRepository.findById(sinistreId);
         if(sinistreOptional.isPresent()) {
             Sinistre foundSinistre = sinistreOptional.get();
-            ResponseEntity<String> check_image_response = check_image(foundSinistre.getImages().get(0).getImageUrl(),foundSinistre.getObject());
+            ResponseEntity<String> check_image_response = check_image(foundSinistre.getImages().get(0).getImageUrl(), foundSinistre.getObject());
             if (check_image_response.getStatusCode().value() == 200){
                 try {
                     ObjectMapper mapper = new ObjectMapper();
@@ -33,28 +35,32 @@ public class ModelService {
                     String imageAnalysis = "";
                     if (resultDto.getResult().equals("NO")){
                         imageAnalysis = "Image and claim description match";
-                    }else {
+                    } else {
                         imageAnalysis = "Image and claim description doesn't match";
                     }
+
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+                    String formattedDate = foundSinistre.getDate().format(formatter);
+
                     GeneratorRequest generatorRequest = GeneratorRequest.builder()
                             .id(String.valueOf(foundSinistre.getId()))
                             .client(foundSinistre.getUser().getFullName())
                             .Claim_Description(foundSinistre.getDescription())
                             .Flagged(resultDto.getResult())
                             .Estimated_Repair_Cost(String.valueOf(foundSinistre.getAmount()))
-                            .Date_of_Incident(String.valueOf(foundSinistre.getDate()))
+                            .Date_of_Incident(formattedDate)
                             .Image_Analysis(imageAnalysis)
-                            .Vehicle("TOYOTA")
+                            .Vehicle("Kia Rio")
                             .build();
-                    ResponseEntity<String> generated_report =  generate_report(generatorRequest);
-                    return ResponseEntity.ok(generated_report.getBody());
-                }catch (JsonProcessingException e){
-                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("failed parsin the response");
-                }
-            }else{
-                return ResponseEntity.status(check_image_response.getStatusCode()).body("an error has occured within the AI model");
-            }
 
+                    ResponseEntity<String> generated_report = generate_report(generatorRequest);
+                    return ResponseEntity.ok(generated_report.getBody());
+                } catch (JsonProcessingException e) {
+                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("failed parsing the response");
+                }
+            } else {
+                return ResponseEntity.status(check_image_response.getStatusCode()).body("an error has occurred within the AI model");
+            }
         }
         return ResponseEntity.ok("");
     }
