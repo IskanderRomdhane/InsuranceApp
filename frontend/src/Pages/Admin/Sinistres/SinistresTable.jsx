@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Calendar, FileText, Eye } from 'lucide-react';
 import PaginationComponent from '../../../Components/PaginationComponent';
 import { useSinistres } from './useSinistreApi';
-import { formatDate, StatusIndicator, cardLayoutStyles } from './SinistreTableProp';
+import { formatDate, StatusIndicator, cardLayoutStyles, Categorie } from './SinistreTableProp';
 import SinistreFilterDropdown from './SinistreFilterDropdown';
 
 export default function SinistresTable() {
@@ -102,11 +102,8 @@ export default function SinistresTable() {
                     </div>
 
                     {/* Catégorie */}
-                    <div className="col-span-2">
-                      <span className="bg-gray-100 px-3 py-1 rounded-full text-sm">
-                        {claim.sinistre_type || claim.categorie}
-                      </span>
-                    </div>
+                    <Categorie claim={claim} />
+
 
                     {/* Statut */}
                     <div className="col-span-2">
