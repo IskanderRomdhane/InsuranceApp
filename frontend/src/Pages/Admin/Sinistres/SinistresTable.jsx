@@ -9,9 +9,11 @@ import SinistreFilterDropdown from './SinistreFilterDropdown';
 export default function SinistresTable() {
   const [activeFilter, setActiveFilter] = useState('Tous');
   const [currentPage, setCurrentPage] = useState(1);
+  const [typeFilter, setTypeFilter] = useState('Tous');
+  const [statusFilter, setStatusFilter] = useState('Tous');
   const claimsPerPage = 10;
 
-  const { claims, loading, error } = useSinistres(activeFilter);
+  const { claims, loading, error } = useSinistres(typeFilter ,statusFilter);
   const navigate = useNavigate();
 
   const viewDetails = (e, id) => {
@@ -30,20 +32,33 @@ export default function SinistresTable() {
         <h1 className="text-3xl font-bold text-gray-800 mb-8">Users Sinistres</h1>
 
         <div className="bg-white rounded-xl shadow-sm mb-8 p-6">
-  <div className="flex flex-col md:flex-row md:items-center md:gap-4">
-    <h2 className="text-lg font-semibold text-gray-800">Type de Sinistre :</h2>
+          <div className="flex flex-col md:flex-row md:items-center md:gap-4">
+            <h3 className="text-lg font-semibold text-gray-800">Type de Sinistre : </h3>
+            <div className="w-full md:w-auto">
+              <SinistreFilterDropdown
+                activeFilter={typeFilter}
+                setActiveFilter={(filter) => {
+                  setTypeFilter(filter);
+                  setCurrentPage(1);
+                }}
+                filterOptions={['Tous', 'Sante', 'AutoMobile', 'Habilitation']}
+              />
+            </div>
 
-    <div className="w-full md:w-auto">
-      <SinistreFilterDropdown
-        activeFilter={activeFilter}
-        setActiveFilter={(filter) => {
-          setActiveFilter(filter);
-          setCurrentPage(1);
-        }}
-      />
-    </div>
-  </div>
-</div>
+            <h3 className="text-lg font-semibold text-gray-800">Statut de Sinistre : </h3>
+            <div className="w-full md:w-auto">
+              <SinistreFilterDropdown
+                activeFilter={statusFilter}
+                setActiveFilter={(filter) => {
+                  setStatusFilter(filter);
+                  setCurrentPage(1);
+                }}
+                filterOptions={['Tous', 'En cours', 'Traité', 'Rejeté']}
+              />
+            </div>
+          </div>  
+        </div>
+        
 
 
         {loading ? (
@@ -58,7 +73,7 @@ export default function SinistresTable() {
         ) : claims.length === 0 ? (
           <div className="bg-white rounded-xl shadow-sm p-16 text-center">
             <FileText className="h-20 w-20 text-gray-300 mx-auto mb-6" />
-            <h3 className="text-xl font-medium text-gray-700 mb-3">Aucune réclamation trouvée</h3>
+            <h3 className="text-xl font-medium text-gray-700 mb-3">Aucune Sinistre trouvée</h3>
           </div>
         ) : (
             <div className="space-y-6">

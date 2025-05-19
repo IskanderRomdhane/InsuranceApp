@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
 import { 
   ArrowLeft, 
   FileText, 
@@ -13,68 +12,18 @@ import {
   MapPin, 
   Cpu 
 } from 'lucide-react';
-import axios from 'axios';
 import ReportModal from './ReportModal';
-
+import { useParams, useNavigate } from 'react-router-dom';
+import { useSinistresDetails } from './useSinistreDetails';
 const SinistresDetails = () => {
-  const { id } = useParams();
-  const navigate = useNavigate();
-  const [claim, setClaim] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-  const [activeImage, setActiveImage] = useState(null);
-  const [showModal, setShowModal] = useState(false);
-  const [aiReport, setAiReport] = useState('');
-  const [aiLoading, setAiLoading] = useState(false);
-
+  const{
+    claim, loading, error , activeImage, showModal , aiReport , aiLoading ,setShowModal, fetchClaimDetails , handleStatusChange , generateAIDecision
+  } = useSinistresDetails() ;
   useEffect(() => {
-    const fetchClaimDetails = async () => {
-      setLoading(true);
-      try {
-        const response = await fetch(`http://localhost:8081/api/sinistre/getsinistre/id/${id}`);
-        if (!response.ok) throw new Error('Failed to fetch claim details');
-        const data = await response.json();
-        setClaim(data);
-        if (data.images && data.images.length > 0) setActiveImage(data.images[0].imageUrl);
-      } catch (err) {
-        setError('Unable to load claim details. Please try again later.');
-      } finally {
-        setLoading(false);
-      }
-    };
-    if (id) fetchClaimDetails();
-  }, [id]);
-
-  const handleStatusChange = async (status) => {
-    try {
-      const response = await axios.put(
-        `http://localhost:8081/api/sinistre/changeretat/${id}`,
-        { etat: status },
-        { headers: { "Content-Type": "application/json" } }
-      );
-      if (response.status === 200) {
-        setClaim(prev => ({ ...prev, etat: status }));
-        setShowModal(false);
-      }
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-  const generateAIDecision = async () => {
-    setAiLoading(true);
-    try {
-      const response = await axios.get(`http://localhost:8081/api/model/generate-response/${claim.id}`);
-      if (response.status === 200) {
-        setAiReport(response.data.response || JSON.stringify(response.data, null, 2));
-        setShowModal(true);
-      }
-    } catch (err) {
-      setAiReport("An error occurred while generating the report.");
-    } finally {
-      setAiLoading(false);
-    }
-  };
+    fetchClaimDetails()
+    console.log(claim)
+  },[])
+  const navigate = useNavigate();
 
   const getStatusBadgeColor = (status) => {
     switch (status) {
@@ -151,7 +100,6 @@ const SinistresDetails = () => {
               <AlertTriangle className="h-8 w-8 text-white mr-3" />
               <div>
                 <h2 className="text-2xl font-bold text-white">{claim.object || claim.objectSinistre}</h2>
-                <p className="text-sm text-white">ID: {claim.id}</p>
               </div>
             </div>
             <span className={`px-4 py-1.5 rounded-full text-sm font-medium border ${getStatusBadgeColor(claim.etat)}`}>
