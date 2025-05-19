@@ -57,9 +57,9 @@ export const SinistreList = () => {
         <table className="w-full">
           <thead>
             <tr className="bg-gray-50">
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              {/* <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 ID
-              </th>
+              </th> */}
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Objet
               </th>
@@ -77,16 +77,14 @@ export const SinistreList = () => {
           <tbody className="divide-y divide-gray-200">
             {sinistres.map((sinistre) => (
               <tr key={sinistre.id} className="hover:bg-gray-50">
-                <td className="px-6 py-4 whitespace-nowrap">
+                {/* <td className="px-6 py-4 whitespace-nowrap">
                   <div className="text-sm font-medium text-gray-900">
                     {sinistre.description}
                   </div>
                   <div className="text-xs text-gray-500">{sinistre.id}</div>
-                </td>
+                </td> */}
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm text-gray-900">
-                    {sinistre.objectSinistre}
-                  </div>
+                  <div className="text-sm text-gray-900">{sinistre.object}</div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">

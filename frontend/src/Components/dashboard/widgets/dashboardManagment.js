@@ -3,10 +3,21 @@ import { jwtDecode } from "jwt-decode";
 
 export const fetchSinistres = async () => {
   try {
-    const response = await axiosInstance.get("/api/sinistre/sinistres");
+    const userId = getUserIDFromToken(); // Step 1: get user ID from token
+    if (!userId) {
+      throw new Error("User ID not found in token");
+    }
+
+    const response = await axiosInstance.get(
+      `/api/sinistre/getusersinistres/${userId}`
+    );
+    console.log("/**************************/");
+    console.log(response.data);
+    console.log("/**************************/");
+
     return response.data;
   } catch (error) {
-    console.error("Error fetching dashboard data:", error);
+    console.error("Error fetching sinistres data:", error);
     throw error;
   }
 };
