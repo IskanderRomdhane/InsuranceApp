@@ -3,13 +3,13 @@ import { jwtDecode } from "jwt-decode"; // Correct named import
 import Default_pfp from "/src/assets/NavBar/Default_pfp.jpg";
 import { useNavigate } from "react-router-dom";
 import { fetchUserNotifications } from "./NavbarManagment";
-
+import { retrievePfp } from "./NavbarManagment";
 const Navbar = () => {
   const navigate = useNavigate();
   const [showNotifications, setShowNotifications] = useState(false);
   const [notifications, setNotifications] = useState([]);
   const notificationRef = useRef(null);
-
+  const [profilePictureUrl , setProfilePictureUrl] = useState("");
   // Handle clicks outside notification dropdown
   useEffect(() => {
     function handleClickOutside(event) {
@@ -30,6 +30,15 @@ const Navbar = () => {
   // Fetch notifications for the user
   const fetchNotifications = async (userEmail) => {
     try {
+      const response = await retrievePfp();
+      setProfilePictureUrl(response.data);
+    } catch (error) {
+      console.error("Error fetching notifications:", error);
+    }
+  };
+
+  const fetchProfilePictureUrl = async () => {
+    try {
       const data = await fetchUserNotifications(userEmail);
       setNotifications(data);
     } catch (error) {
@@ -45,6 +54,7 @@ const Navbar = () => {
       const userEmail = decoded.email;
       fetchNotifications(userEmail);
     }
+    
   }, []);
 
   // Handle profile click
@@ -169,7 +179,7 @@ const Navbar = () => {
         <div>
           <button onClick={handleProfileClick} className="focus:outline-none">
             <img
-              src={Default_pfp}
+              src={profilePictureUrl === "" ? {Default_pfp} : profilePictureUrl}
               alt="Profile"
               className="h-10 w-10 rounded-full object-cover border-2 border-gray-200 hover:border-blue-500 transition-colors"
             />
