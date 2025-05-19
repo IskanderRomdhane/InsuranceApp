@@ -1,5 +1,6 @@
 // src/components/Reclamations/ReclamationsTable.jsx
-import React from 'react';
+import { useState, useEffect } from 'react';
+
 import { useNavigate } from 'react-router-dom';
 import { Calendar, FileText, RefreshCw, Search, Filter } from 'lucide-react';
 import { getStatusBadgeColor, getStatusInFrench, optionsStatut, optionsType } from './ReclamationDetailsProp';
@@ -8,13 +9,13 @@ import PaginationComponent from '../../../Components/PaginationComponent';
 import { useReclamations } from './ReclamationFunctionAdmin';
 
 const ReclamationsTable = () => {
+  const itemsPerPage = 10;
+  const [currentPage, setCurrentPage] = useState(1);
+  
   const {
     filteredReclamations,
     loading,
     error,
-    currentPage,
-    setCurrentPage,
-    itemsPerPage,
     searchTerm,
     setSearchTerm,
     statusFilter,
@@ -65,7 +66,7 @@ const ReclamationsTable = () => {
               <SelectFiltre options={optionsStatut} value={statusFilter} onChange={setStatusFilter} icon={<Filter />} />
               <SelectFiltre options={optionsType} value={typeFilter} onChange={setTypeFilter} icon={<Filter />} />
               <button
-                onClick={fetchReclamations}
+                onClick={() => fetchReclamations()}
                 className="bg-blue-600 text-white py-3 px-4 rounded-lg shadow-sm hover:bg-blue-700 flex items-center"
               >
                 <RefreshCw className="mr-2 w-5 h-5" />
