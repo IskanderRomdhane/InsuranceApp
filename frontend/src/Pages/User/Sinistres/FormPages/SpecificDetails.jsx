@@ -15,40 +15,31 @@ const SpecificDetails = ({ formData, setFormData, Verify }) => {
                 type="text"
                 id="matricule"
                 name="matricule"
-                value={formData.Matricule}
-                onChange={(e) => setFormData({...formData, Matricule: e.target.value})}
+                value={formData.matricule}
+                onChange={(e) => setFormData({...formData, matricule: e.target.value})}
                 className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                 placeholder="***-TUN-***"
               />
-              {Verify.MatriculeVer && (
+              {Verify.matriculeVer && (
                 <p className="text-red-500 text-sm">Veuillez entrer le numéro d'immatriculation</p>
               )}
             </div>
-            
-            <div className="space-y-2">
-              <label htmlFor="damageType" className="block text-sm font-medium text-gray-700">
-                Type de dommage
-              </label>
-              <select
-                id="damageType"
-                name="damageType"
-                value={formData.damageType}
-                onChange={(e) => setFormData({...formData, damageType: e.target.value})}
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-              >
-                <option value="">Sélectionnez</option>
-                <option value="Collision avec un autre véhicule">Collision avec un autre véhicule</option>
-                <option value="Accident sans tiers">Accident sans tiers</option>
-                <option value="Véhicule volé">Véhicule volé</option>
-                <option value="Incendie véhicule">Incendie du véhicule</option>
-                <option value="Vandalisme">Vandalisme</option>
-                <option value="Bris de glace (pare-brise, vitres)">Bris de glace (pare-brise, vitres)</option>
-                <option value="Catastrophe naturelle (inondation, tempête...)">Catastrophe naturelle (inondation, tempête...)</option>
-                <option value="Autre">Autre</option>
 
-              </select>
-              {Verify.damageTypeVer && (
-                <p className="text-red-500 text-sm">Veuillez sélectionner le type de dommage</p>
+            <div className="space-y-2">
+              <label htmlFor="location" className="block text-sm font-medium text-gray-700">
+                Modèle de véhicule
+              </label>
+              <input
+                type="text"
+                id="model"
+                name="model"
+                value={formData.model}
+                onChange={(e) => setFormData({...formData, model: e.target.value})}
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                placeholder=""
+              />
+              {Verify.model && (
+                <p className="text-red-500 text-sm">Veuillez entrer le modèle du voiture</p>
               )}
             </div>
 
@@ -60,12 +51,12 @@ const SpecificDetails = ({ formData, setFormData, Verify }) => {
                 type="text"
                 id="matricule"
                 name="matricule"
-                value={formData.Location}
-                onChange={(e) => setFormData({...formData, Location: e.target.value})}
+                value={formData.location}
+                onChange={(e) => setFormData({...formData, location: e.target.value})}
                 className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                 placeholder=""
               />
-              {Verify.MatriculeVer && (
+              {Verify.matriculeVer && (
                 <p className="text-red-500 text-sm">Veuillez entrer le Lieu de l'Accident</p>
               )}
             </div>

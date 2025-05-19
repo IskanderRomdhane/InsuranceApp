@@ -93,7 +93,7 @@ const AdminSidebar = ({ isOpen, setIsOpen }) => {
   ];
 
   const supportItems = [
-    {
+    /*{
       id: "settings",
       title: "Settings",
       icon: (
@@ -101,7 +101,7 @@ const AdminSidebar = ({ isOpen, setIsOpen }) => {
       ),
       link: "/admin/settings",
       hasDropdown: false,
-    },
+    },*/
     {
       id: "profile",
       title: "Admin Profile",
