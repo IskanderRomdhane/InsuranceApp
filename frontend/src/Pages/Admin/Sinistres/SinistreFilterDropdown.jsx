@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import { ChevronDown } from 'lucide-react';
 
-const filterOptions = ['Tous', 'Sante', 'AutoMobile', 'Habilitation'];
-
-export default function SinistreFilterDropdown({ activeFilter, setActiveFilter }) {
+export default function SinistreFilterDropdown({ 
+  activeFilter, 
+  setActiveFilter,
+  filterOptions 
+}) {
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
   const handleSelect = (option) => {
