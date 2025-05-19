@@ -4,7 +4,7 @@ import lombok.Data;
 
 @Data
 public class SanteDTO {
-    private Long userId;
+    private String userId;
     private String objectSinistre;
     private String descriptionSinistre;
     private Float amount;

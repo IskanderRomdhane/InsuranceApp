@@ -123,7 +123,7 @@ public class SinistreService {
         return ResponseEntity.ok(sinistreDTOS);
     }
 
-    public ResponseEntity<List<Sinistre>> GetUserSinistres(Long userId) {
+    public ResponseEntity<List<Sinistre>> GetUserSinistres(String userId) {
         Optional<User> optionalUser = userRepository.findById(userId);
         if(optionalUser.isPresent()){
             User user = optionalUser.get();

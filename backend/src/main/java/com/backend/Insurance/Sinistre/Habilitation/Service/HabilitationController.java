@@ -35,7 +35,7 @@ public class HabilitationController {
     }
     @GetMapping("/getusersinistres/{userId}")
     private ResponseEntity<?> RetriveUserHabilitationSinistres(
-            @PathVariable Long userId){
+            @PathVariable String userId){
         return habilitationService.GetHabilitationSinistres(userId);
     }
 }

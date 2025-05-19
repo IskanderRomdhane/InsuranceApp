@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface ReclamationRepository extends JpaRepository<Reclamation , Long> {
-    List<Reclamation> findByUserId(Long id);
+    List<Reclamation> findByUserId(String id);
     List<Reclamation> findByStatus(Status status);
     List<Reclamation> findBytypeReclamation(TypeReclamation typeReclamation);
 }

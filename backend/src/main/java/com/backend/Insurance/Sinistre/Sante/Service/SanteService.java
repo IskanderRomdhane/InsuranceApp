@@ -107,7 +107,7 @@ public class SanteService {
         return ResponseEntity.ok(sinistres);
     }
 
-    public ResponseEntity<?> GetSanteSinistres(Long userId) {
+    public ResponseEntity<?> GetSanteSinistres(String userId) {
         Optional<User> optionalUser = userRepository.findById(userId);
         if (optionalUser.isPresent()){
             List<Sante> santeList = santeRepository.findByUserId(userId);

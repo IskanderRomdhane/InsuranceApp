@@ -99,38 +99,46 @@ public class AuthService {
         }
     }
 
-    public Integer register(User userRep) {
+    public String register(User userRep) {
         try {
             UserRepresentation user = new UserRepresentation();
             user.setUsername(userRep.getUsername());
             user.setFirstName(userRep.getFirstname());
             user.setLastName(userRep.getLastname());
             user.setEmail(userRep.getEmail());
+
             String password = generateRandomPassword(12);
-            List<CredentialRepresentation> credentials = Collections.singletonList(Credentials.createPasswordCredentials(password));
-            user.setCredentials(credentials);
+            user.setCredentials(Collections.singletonList(Credentials.createPasswordCredentials(password)));
             user.setEnabled(true);
             user.setEmailVerified(true);
-            Map<String , List<String>> ClientRoles = new HashMap<>();
-            List<String> roles = new ArrayList<>();
-            roles.add("client_user");
-            ClientRoles.put("Insurance" , roles);
-            user.setClientRoles(ClientRoles);
+
+            Map<String, List<String>> clientRoles = new HashMap<>();
+            clientRoles.put("Insurance", List.of("client_user"));
+            user.setClientRoles(clientRoles);
             user.setRequiredActions(Collections.singletonList("UPDATE_PASSWORD"));
-            UsersResource instance = KeycloakConfig.getInstance().realm(realm).users();
-            Response response = instance.create(user);
+
+            UsersResource usersResource = KeycloakConfig.getInstance().realm(realm).users();
+            Response response = usersResource.create(user);
+
             if (response.getStatus() == 201) {
-                emailSenderService.sendEmail(userRep.getEmail(),
+                // Extract and print the user ID
+                String locationHeader = response.getHeaderString("Location");
+                String userId = locationHeader != null ? locationHeader.substring(locationHeader.lastIndexOf('/') + 1) : null;
+
+                System.out.println("✅ Keycloak user ID: " + userId); // <-- you can log or store it if needed
+
+                // Send email
+                /*emailSenderService.sendEmail(userRep.getEmail(),
                         "Création de votre compte",
                         "Votre compte chez Wiqaya Insurance a été créé avec succès." +
                                 "\n\nVoici vos informations de connexion :" +
                                 "\nAdresse e-mail : " + userRep.getEmail() +
                                 "\nNom d'utilisateur : " + userRep.getUsername() +
-                               "\nMot de passe temporaire : " + password +
-                               "\n\n⚠️ Ce mot de passe est à usage unique et temporaire." +
-                                "\nVeuillez vous connecter dès que possible et le modifier pour sécuriser votre compte."
-                );
-                return response.getStatus();
+                                "\nMot de passe temporaire : " + password +
+                                "\n\n⚠️ Ce mot de passe est à usage unique et temporaire." +
+                                "\nVeuillez vous connecter dès que possible et le modifier pour sécuriser votre compte.");*/
+
+                return userId;
             } else {
                 throw new RuntimeException("Failed to create user: HTTP Status : " + response.getStatus());
             }
@@ -138,6 +146,7 @@ public class AuthService {
             throw new RuntimeException("Unexpected error while registering user", e);
         }
     }
+
 
     private String generateRandomPassword(int length) {
         String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";

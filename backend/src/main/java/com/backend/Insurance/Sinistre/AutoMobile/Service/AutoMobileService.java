@@ -107,7 +107,7 @@ public class AutoMobileService {
         return ResponseEntity.ok(sinistres);
     }
 
-    public ResponseEntity<?> GetUserAutoMobileSinistres(Long userId) {
+    public ResponseEntity<?> GetUserAutoMobileSinistres(String userId) {
         Optional<User> optionalUser = userRepository.findById(userId);
         if (optionalUser.isPresent()){
             List<AutoMobile> autoMobileList = autoMobileRepository.findByUserId(userId);

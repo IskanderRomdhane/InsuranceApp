@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 @Data
 public class SinistreDTO {
     private Long Id;
-    private Long userId;
+    private String userId;
     private String objectSinistre;
     private String descriptionSinistre;
     private String categorie;

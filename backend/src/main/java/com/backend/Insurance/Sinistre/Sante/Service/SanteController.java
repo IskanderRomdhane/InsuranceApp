@@ -35,7 +35,7 @@ public class SanteController {
     }
     @GetMapping("/getusersinistres/{userId}")
     private ResponseEntity<?> RetrieveSanteSinistres(
-            @PathVariable Long userId){
+            @PathVariable String userId){
         return santeService.GetSanteSinistres(userId);
     }
 }

@@ -50,13 +50,9 @@ public class UserService {
                     .build();
 
             try {
-                Integer statusCode = authService.register(user);
-                if (statusCode == 201) {
-                    // if user is added to keycloak then added to DB
-                    userRepository.save(foundUser);
-                } else {
-                    return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Failed to register user in Keycloak");
-                }
+                String userId = authService.register(user);
+                foundUser.setId(userId);
+                userRepository.save(foundUser);
             } catch (RuntimeException e) {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error syncing users: " + e.getMessage());
             }
@@ -70,7 +66,7 @@ public class UserService {
         return ResponseEntity.ok(userDTOS);
     }
 
-    public ResponseEntity<UserDTO> getUserById(Long id) {
+    public ResponseEntity<UserDTO> getUserById(String id) {
         Optional<User> optionalUser = userRepository.findById(id);
         if(optionalUser.isPresent()){
             User user = optionalUser.get();
@@ -79,14 +75,14 @@ public class UserService {
         return ResponseEntity.notFound().build();
     }
 
-    public ResponseEntity<String> deleteUser(Long id) {
+    public ResponseEntity<String> deleteUser(String id) {
         return userRepository.findById(id).map(user -> {
             userRepository.delete(user);
             return ResponseEntity.ok("User deleted successfully");
         }).orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found"));
     }
 
-    public ResponseEntity<User> updateUserStatus(Long id, boolean active) {
+    public ResponseEntity<User> updateUserStatus(String id, boolean active) {
         return (ResponseEntity<User>) userRepository.findById(id).map(user -> {
             try {
                 // First update Keycloak
@@ -103,7 +99,7 @@ public class UserService {
     }
 
 
-    public ResponseEntity<String> uploadProfilePicture(MultipartFile file, Long id) throws IOException {
+    public ResponseEntity<String> uploadProfilePicture(MultipartFile file, String id) throws IOException {
         Optional<User> optionalUser = userRepository.findById(id);
         if (optionalUser.isPresent()) {
             User user = optionalUser.get();
