@@ -30,16 +30,21 @@ export default function SinistresTable() {
         <h1 className="text-3xl font-bold text-gray-800 mb-8">Users Sinistres</h1>
 
         <div className="bg-white rounded-xl shadow-sm mb-8 p-6">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <SinistreFilterDropdown
-              activeFilter={activeFilter}
-              setActiveFilter={(filter) => {
-                setActiveFilter(filter);
-                setCurrentPage(1);
-              }}
-            />
-          </div>
-        </div>
+  <div className="flex flex-col md:flex-row md:items-center md:gap-4">
+    <h2 className="text-lg font-semibold text-gray-800">Type de Sinistre :</h2>
+
+    <div className="w-full md:w-auto">
+      <SinistreFilterDropdown
+        activeFilter={activeFilter}
+        setActiveFilter={(filter) => {
+          setActiveFilter(filter);
+          setCurrentPage(1);
+        }}
+      />
+    </div>
+  </div>
+</div>
+
 
         {loading ? (
           <div className="bg-white rounded-xl shadow-sm p-16 flex justify-center">

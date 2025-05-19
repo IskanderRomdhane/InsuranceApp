@@ -10,9 +10,10 @@ const CreerSinistres = () => {
   const navigate = useNavigate();
   const [step, setStep] = useState(1);
   const totalSteps = 5;
+  const userId = localStorage.getItem("userId");
 
   const [formData, setFormData] = useState({
-    userId: '302',
+    userId: userId,
     type_sinistre: '',
     objectSinistre: '',
     descriptionSinistre: '',
@@ -22,6 +23,7 @@ const CreerSinistres = () => {
     propertyAddress: '',
     damageType: '',
     hospitalName: '',
+    model: '',
     isCashless: false,
     diagnosis: '',
     image: null,
@@ -33,8 +35,8 @@ const CreerSinistres = () => {
     objectSinistreVer: false,
     descriptionSinistreVer: false,
     amountVer: false,
-    MatriculeVer: false,
-    LocationVer: false,
+    matriculeVer: false,
+    locationVer: false,
     propertyAddressVer: false,
     damageTypeVer: false,
     hospitalNameVer: false,
@@ -64,12 +66,16 @@ const CreerSinistres = () => {
         
         // Type-specific validation
         if (formData.type_sinistre === 'automobile') {
-          if (!formData.Matricule) {
-            setVerify(prev => ({ ...prev, MatriculeVer: true }));
+          if (!formData.matricule) {
+            setVerify(prev => ({ ...prev, matriculeVer: true }));
             isValid = false;
           }
-          if (!formData.Location) {
-            setVerify(prev => ({ ...prev, LocationVer: true }));
+          if(!formData.model) {
+            setVerify(prev => ({ ...prev, matriculeVer: true }));
+            isValid = false;
+          }
+          if (!formData.location) {
+            setVerify(prev => ({ ...prev, locationVer: true }));
             isValid = false;
           }
           if (!formData.amount) {
@@ -138,7 +144,7 @@ const CreerSinistres = () => {
   const requiredFields = ['type_sinistre', 'objectSinistre', 'descriptionSinistre'];
 
   if (formData.type_sinistre === 'automobile') {
-    requiredFields.push('Matricule', 'Location', 'amount');
+    requiredFields.push('matricule', 'location', 'amount', 'model');
   } else if (formData.type_sinistre === 'sante') {
     requiredFields.push('hospitalName', 'diagnosis', 'amount');
   } else if (formData.type_sinistre === 'habilitation') {
@@ -168,8 +174,9 @@ const CreerSinistres = () => {
         objectSinistre: formData.objectSinistre,
         descriptionSinistre: formData.descriptionSinistre,
         amount: formData.amount,
-        Matricule: formData.Matricule,
-        Location: formData.Location,
+        matricule: formData.matricule,
+        location: formData.location,
+        model : formData.model
       };
       break;
       
@@ -194,6 +201,7 @@ const CreerSinistres = () => {
         descriptionSinistre: formData.descriptionSinistre,
         propertyAddress: formData.propertyAddress,
         damageType: formData.damageType,
+        amount : formData.amount
       };
       break;
       

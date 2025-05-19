@@ -111,7 +111,7 @@ const ReclamationsTable = () => {
                     {/* Objet */}
                     <div className="col-span-5">
                       <h3 className="text-base font-semibold text-gray-900">
-                        #{reclamation.id} – {reclamation.fullName || 'Utilisateur inconnu'}
+                        {reclamation.description}
                       </h3>
                     </div>
 
