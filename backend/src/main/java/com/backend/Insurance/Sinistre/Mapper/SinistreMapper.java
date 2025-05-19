@@ -1,7 +1,7 @@
 package com.backend.Insurance.Sinistre.Mapper;
 
 import com.backend.Insurance.Sinistre.DTOS.SinistreDTO;
-import com.backend.Insurance.Sinistre.Sinistre;
+import com.backend.Insurance.Sinistre.Entity.Sinistre;
 import org.mapstruct.Mapper;
 
 import java.util.List;

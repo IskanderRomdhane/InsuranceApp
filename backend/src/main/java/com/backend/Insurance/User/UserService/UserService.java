@@ -1,22 +1,20 @@
 package com.backend.Insurance.User.UserService;
 
-import com.backend.Insurance.Authnetification.Keycloak.AuthService;
-import com.backend.Insurance.Authnetification.Keycloak.KeycloakService;
-import com.backend.Insurance.Image.Image;
-import com.backend.Insurance.Image.ImageRepository;
-import com.backend.Insurance.Image.ImageService;
+import com.backend.Insurance.Authnetification.Keycloak.Service.AuthService;
+import com.backend.Insurance.Authnetification.Keycloak.Service.KeycloakService;
+import com.backend.Insurance.Image.Entity.Image;
+import com.backend.Insurance.Image.Repository.ImageRepository;
+import com.backend.Insurance.Image.ImageService.ImageService;
 import com.backend.Insurance.User.DTO.UserDTO;
 import com.backend.Insurance.User.Mapper.UserMapper;
 import com.backend.Insurance.User.User;
-import com.backend.Insurance.User.UserRepository;
+import com.backend.Insurance.User.Repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;

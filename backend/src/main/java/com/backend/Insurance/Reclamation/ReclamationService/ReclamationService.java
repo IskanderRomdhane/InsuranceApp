@@ -1,27 +1,26 @@
 package com.backend.Insurance.Reclamation.ReclamationService;
 
 import com.backend.Insurance.Emails.EmailSenderService;
-import com.backend.Insurance.Image.Image;
-import com.backend.Insurance.Image.ImageRepository;
-import com.backend.Insurance.Image.ImageService;
+import com.backend.Insurance.Image.Entity.Image;
+import com.backend.Insurance.Image.Repository.ImageRepository;
+import com.backend.Insurance.Image.ImageService.ImageService;
 import com.backend.Insurance.Reclamation.DTOS.ReclamationDTO;
 import com.backend.Insurance.Reclamation.DTOS.ReclamationResponseDTO;
 import com.backend.Insurance.Reclamation.ENUMS.Status;
 import com.backend.Insurance.Reclamation.ENUMS.TypeReclamation;
 import com.backend.Insurance.Reclamation.Mapper.ReclamationMapper;
-import com.backend.Insurance.Reclamation.Reclamation;
-import com.backend.Insurance.Reclamation.ReclamationRepository;
+import com.backend.Insurance.Reclamation.Entity.Reclamation;
+import com.backend.Insurance.Reclamation.Repository.ReclamationRepository;
 import com.backend.Insurance.User.User;
-import com.backend.Insurance.User.UserRepository;
-import com.backend.Insurance.notification.Notification;
-import com.backend.Insurance.notification.NotificationRepository;
-import com.backend.Insurance.notification.NotificationService;
-import com.backend.Insurance.notification.NotificationStatus;
+import com.backend.Insurance.User.Repository.UserRepository;
+import com.backend.Insurance.notification.Entity.Notification;
+import com.backend.Insurance.notification.Repository.NotificationRepository;
+import com.backend.Insurance.notification.NotificationService.NotificationService;
+import com.backend.Insurance.notification.Enums.NotificationStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;

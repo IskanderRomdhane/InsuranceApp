@@ -1,6 +1,6 @@
 package com.backend.Insurance.Sinistre.AutoMobile;
 
-import com.backend.Insurance.Sinistre.Sinistre;
+import com.backend.Insurance.Sinistre.Entity.Sinistre;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import lombok.*;

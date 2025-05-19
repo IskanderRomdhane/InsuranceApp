@@ -1,17 +1,14 @@
 package com.backend.Insurance.User;
 
-import com.backend.Insurance.Image.Image;
-import com.backend.Insurance.Reclamation.Reclamation;
-import com.backend.Insurance.Sinistre.Sinistre;
-import com.backend.Insurance.notification.Notification;
+import com.backend.Insurance.Image.Entity.Image;
+import com.backend.Insurance.Reclamation.Entity.Reclamation;
+import com.backend.Insurance.Sinistre.Entity.Sinistre;
+import com.backend.Insurance.notification.Entity.Notification;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity

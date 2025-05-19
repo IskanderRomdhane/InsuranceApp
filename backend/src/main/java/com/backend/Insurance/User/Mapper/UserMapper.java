@@ -1,7 +1,5 @@
 package com.backend.Insurance.User.Mapper;
 
-import com.backend.Insurance.Sinistre.DTOS.SinistreDTO;
-import com.backend.Insurance.Sinistre.Sinistre;
 import com.backend.Insurance.User.DTO.UserDTO;
 import com.backend.Insurance.User.User;
 import org.mapstruct.Mapper;
