@@ -20,3 +20,14 @@ export const markNotificationAsRead = async (id) => {
     throw error;
   }
 };
+
+export const retrievePfp = async () => {
+  try{
+    const userId = localStorage.getItem("userId");
+    const response = await axiosInstance.get(`/api/user/getprofilpictureurl/${userId}`)
+    return response;
+  }catch(error){
+    console.error("Error marking notification as read:", error);
+    throw error;
+  }
+}
