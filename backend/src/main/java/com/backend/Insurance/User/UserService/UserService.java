@@ -127,4 +127,13 @@ public class UserService {
         return userRepository.count();
     }
 
+    public ResponseEntity<String> getProfilePictureUrl(String id) {
+        Optional<User> optionalUser = userRepository.findById(id);
+        if(optionalUser.isPresent()){
+            User user = optionalUser.get();
+            String profilPictureUrl = user.getProfilePicture().getImageUrl();
+            return ResponseEntity.ok(profilPictureUrl);
+        }
+        return ResponseEntity.notFound().build();
+    }
 }
