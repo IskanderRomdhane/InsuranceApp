@@ -1,11 +1,17 @@
 import React from 'react'
+import ReactPdfPrint from '../reactPdfPrint';
 
-const DocumentsSection = ({ documents }) => {
+const DocumentsSection = ({ documents, sinistre }) => {
   if (!documents || documents.length === 0) {
     return (
       <div className="bg-gray-50 p-4 rounded-md">
         <h3 className="text-lg font-semibold mb-3 text-[#476f66]">Documents</h3>
         <p className="text-gray-500">No documents available</p>
+        {sinistre && (
+          <div className="mt-4">
+            <ReactPdfPrint sinistre={sinistre} />
+          </div>
+        )}
       </div>
     );
   }
@@ -32,6 +38,14 @@ const DocumentsSection = ({ documents }) => {
             </a>
           </li>
         ))}
+        
+        {sinistre && (
+          <li className="bg-white p-3 rounded border flex items-center">
+            <div className="w-full">
+              <ReactPdfPrint sinistre={sinistre} />
+            </div>
+          </li>
+        )}
       </ul>
     </div>
   );
