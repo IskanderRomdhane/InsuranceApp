@@ -11,19 +11,13 @@ const PaginationComponent = ({
   premierIndex,
   dernierIndex
 }) => {
-  if (totalPages <= 1) return null;
-
   const handlePageChange = (event, pageNumber) => {
     setPageCourante(pageNumber);
-    setExpandedId(null);
+    if (setExpandedId) setExpandedId(null);
   };
 
   return (
     <div className="flex flex-col items-center justify-center mt-4">
-      <div className="text-sm text-gray-500 text-center mb-2">
-        {premierIndex + 1}-{Math.min(dernierIndex, sinistres.length)} de{" "}
-        {sinistres.length} Sinistres
-      </div>
       <div className="flex items-center justify-center border-t border-gray-200 px-6 py-4 sm:px-8">
         <Stack spacing={2}>
           <Pagination
@@ -31,6 +25,7 @@ const PaginationComponent = ({
             page={pageCourante}
             onChange={handlePageChange}
             color="primary"
+            disabled={totalPages <= 1}  // Disable instead of hiding
             sx={{
               '& .MuiPaginationItem-root': {
                 color: '#476f66',
@@ -45,6 +40,9 @@ const PaginationComponent = ({
                     backgroundColor: '#3a5c54',
                   },
                 },
+                '&.Mui-disabled': {
+                  opacity: 0.5
+                }
               },
             }}
           />
