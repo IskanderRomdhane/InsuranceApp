@@ -40,7 +40,7 @@ export const MyDashboard = () => {
   }, []);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 mt-6 mx-4 mb-6">
       {/* Cartes de Statistiques */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         <StatCard
