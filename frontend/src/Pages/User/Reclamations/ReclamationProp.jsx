@@ -8,7 +8,35 @@ export const formatDate = (dateString) => {
       day: 'numeric'
     });
   };
-  
+  export const StatusIndicator = ({ status }) => {
+    const statusConfig = {
+      "FINISHED": {
+        color: "bg-green-500",
+        label: "Terminé"
+      },
+      "PENDING": {
+        color: "bg-yellow-500",
+        label: "En cours"
+      },
+      "CANCELLED": {
+        color: "bg-red-500",
+        label: "Rejeté"
+      },
+      "UNDER_REVIEW": {
+        color: "bg-blue-500",
+        label: "En Examen"
+      }
+    }
+    const config = statusConfig[status] || { color: "bg-gray-500", label: status?.replace("_", " ") || "Unknown" };
+    
+    return (
+      <div className="flex items-center">
+        <div className={`w-3 h-3 rounded-full ${config.color} mr-2`}></div>
+        <span className="text-sm font-medium">{config.label}</span>
+      </div>
+    );
+    };
+
  export const getStatusColor = (status) => {
     switch(status) {
       case 'PENDING': return 'bg-yellow-100 text-yellow-800';

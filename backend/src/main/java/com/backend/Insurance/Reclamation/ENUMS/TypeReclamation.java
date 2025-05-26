@@ -1,9 +1,13 @@
 package com.backend.Insurance.Reclamation.ENUMS;
 
 public enum TypeReclamation {
-    SERVICE_DELAY,
-    ACCOUNT_ACCESS,
-    UNRESOLVED_ISSUE,
-    POOR_SUPPORT
+    RETARD_SERVICE,
+    ACCES_COMPTE,
+    PROBLEME_NON_RESOLU,
+    SUPPORT_INADEQUAT,
+    REJET_CONTESTE,
+    DEMANDE_REEVALUATION,
+    DOCUMENTS_MANQUANTS,
 }
+
 
