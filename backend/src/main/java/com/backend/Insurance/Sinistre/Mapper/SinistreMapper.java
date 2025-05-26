@@ -10,6 +10,8 @@ import org.mapstruct.*;
 public interface SinistreMapper {
     @Mapping(target = "id" , source = "id")
     @Mapping(target = "userId", expression = "java(sinistre.getUser().getId())")
+    @Mapping(target = "firstname", expression = "java(sinistre.getUser().getFirstname())")
+    @Mapping(target = "lastname", expression = "java(sinistre.getUser().getLastname())")
     @Mapping(target = "etat" , source = "etat")
     @Mapping(target = "objectSinistre", source = "object")
     @Mapping(target = "descriptionSinistre", source = "description")

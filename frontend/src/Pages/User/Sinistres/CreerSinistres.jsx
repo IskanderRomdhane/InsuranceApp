@@ -150,6 +150,7 @@ const CreerSinistres = () => {
   } else if (formData.type_sinistre === 'habilitation') {
     requiredFields.push('propertyAddress', 'damageType');
   }
+  
   for (const field of requiredFields) {
     if (!formData[field]) {
       const verifyField = field === 'type_sinistre' ? field : `${field}Ver`;
@@ -176,7 +177,7 @@ const CreerSinistres = () => {
         amount: formData.amount,
         matricule: formData.matricule,
         location: formData.location,
-        model : formData.model
+        model: formData.model
       };
       break;
       
@@ -201,7 +202,7 @@ const CreerSinistres = () => {
         descriptionSinistre: formData.descriptionSinistre,
         propertyAddress: formData.propertyAddress,
         damageType: formData.damageType,
-        amount : formData.amount
+        amount: formData.amount
       };
       break;
       
@@ -215,13 +216,15 @@ const CreerSinistres = () => {
   try {
     const response = await CreerSinistre(reqData, formData.type_sinistre);
     if (response.status >= 200 && response.status < 300) {
-      console.log("Succès :", response.data);
-      setStep(5);
+      // Redirection vers la page des sinistres avec paramètre de succès
+      navigate('/sinistres/consulter?success=true');
     } else {
       console.error("Erreur lors de l'envoi :", response.status);
+      // Vous pouvez ajouter ici un message d'erreur à l'utilisateur
     }
   } catch (error) {
     console.error("Erreur réseau :", error);
+    // Vous pouvez ajouter ici un message d'erreur à l'utilisateur
   }
 };
 

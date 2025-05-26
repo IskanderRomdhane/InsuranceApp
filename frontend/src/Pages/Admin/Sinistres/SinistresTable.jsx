@@ -24,7 +24,7 @@ export default function SinistresTable() {
   const firstIndex = (currentPage - 1) * claimsPerPage;
   const lastIndex = currentPage * claimsPerPage;
   const currentClaims = claims.slice(firstIndex, lastIndex);
-  const totalPages = Math.ceil(claims.length / claimsPerPage);
+  const totalPages = Math.max(1, Math.ceil(claims.length / claimsPerPage));
 
   return (
     <div className="bg-gray-100 min-h-screen p-8">
@@ -33,7 +33,7 @@ export default function SinistresTable() {
 
         <div className="bg-white rounded-xl shadow-sm mb-8 p-6">
           <div className="flex flex-col md:flex-row md:items-center md:gap-4">
-            <h3 className="text-lg font-semibold text-gray-800">Type de Sinistre : </h3>
+            <h3 className="text-lg font-semibold text-gray-800">Type : </h3>
             <div className="w-full md:w-auto">
               <SinistreFilterDropdown
                 activeFilter={typeFilter}
@@ -45,7 +45,7 @@ export default function SinistresTable() {
               />
             </div>
 
-            <h3 className="text-lg font-semibold text-gray-800">Statut de Sinistre : </h3>
+            <h3 className="text-lg font-semibold text-gray-800">Statut : </h3>
             <div className="w-full md:w-auto">
               <SinistreFilterDropdown
                 activeFilter={statusFilter}
@@ -53,7 +53,7 @@ export default function SinistresTable() {
                   setStatusFilter(filter);
                   setCurrentPage(1);
                 }}
-                filterOptions={['Tous', 'En cours', 'Traité', 'Rejeté', 'Accepté']}
+                filterOptions={['Tous', 'Soumis', 'En Examen', 'Rejeté', 'Approuvé' , 'Infos Complementaires Requises' , 'Payé']}
               />
             </div>
           </div>  

@@ -12,6 +12,8 @@ public interface SinistreRepository extends JpaRepository<Sinistre, Long> {
     @Query("SELECT s FROM Sinistre s WHERE TYPE(s) = :type")
     List<Sinistre> findBySubclass(@Param("type") Class<? extends Sinistre> type);
 
+    List<Sinistre> findByUserId(String userId);
+
     List<Sinistre> findByEtat(Etat etat);
 
     @Query(value = "SELECT EXTRACT(YEAR FROM s.date) AS year, EXTRACT(MONTH FROM s.date) AS month, COUNT(*) AS count " +

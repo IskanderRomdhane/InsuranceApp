@@ -9,6 +9,8 @@ import java.time.LocalDateTime;
 public class SinistreDTO {
     private Long Id;
     private String userId;
+    private String firstname;
+    private String lastname;
     private String objectSinistre;
     private String descriptionSinistre;
     private String categorie;

@@ -50,7 +50,7 @@ public class AutoMobileService {
                     .document(documentList)
                     .description(autoMobileDTO.getDescriptionSinistre())
                     .object(autoMobileDTO.getObjectSinistre())
-                    .etat(Etat.PENDING)
+                    .etat(Etat.SOUMIS)
                     .user(foundUser)
                     .date(LocalDateTime.now())
                     .amount(autoMobileDTO.getAmount())

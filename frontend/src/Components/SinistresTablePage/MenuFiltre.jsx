@@ -23,7 +23,7 @@ const MenuFiltre = ({
       <div className="relative">
         <button
           onClick={handleClick}
-          className="flex items-center justify-between w-40 px-3 py-2 text-sm font-medium bg-white border border-gray-200 rounded-md shadow-sm hover:bg-gray-50"
+          className="flex items-center justify-between w-70 px-3 py-2 text-sm font-medium bg-white border border-gray-200 rounded-md shadow-sm hover:bg-gray-50"
         >
           <span>
             {label}: {optionActive}

@@ -12,23 +12,31 @@ export const useSinistres = (typeFilter, statusFilter) => {
        let endpoint = '/api/sinistre/sinistres';
       if (statusFilter !== 'Tous' && typeFilter !== 'Tous') {
         const { data } = await axiosInstance.get(endpoint);
+        
         const filtered = data.filter(r => r.status === statusFilter && r.type === typeFilter);
+        
         setClaims(filtered);
       } 
       else if (statusFilter !== 'Tous') {
         let status = "";
         switch(statusFilter) {
-          case 'En cours':
-            status = "PENDING";
+          case 'Soumis':
+            status = "SOUMIS";
             break;
-          case 'Traité':
-            status = "UNDER_REVIEW";
+          case 'En Examen':
+            status = "EN_EXAMEN";
             break;
           case 'Rejeté':
-            status = "REJECTED";
+            status = "INFOS_COMPLEMENTAIRES_REQUISES";
             break;
-          case 'Accepté':
-            status = "ACCEPTED";
+          case 'Approuvé':
+            status = "APPROUVE";
+            break;
+          case 'Infos Complementaires Requises':
+            status = "REJETE";
+            break;
+          case 'Payé':
+            status = "PAYE";
             break;
           default:
             status = "";

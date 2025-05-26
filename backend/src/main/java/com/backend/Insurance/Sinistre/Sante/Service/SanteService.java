@@ -49,7 +49,7 @@ public class SanteService {
                     .document(documentList)
                     .description(santeDTO.getDescriptionSinistre())
                     .object(santeDTO.getObjectSinistre())
-                    .etat(Etat.PENDING)
+                    .etat(Etat.SOUMIS)
                     .user(foundUser)
                     .date(LocalDateTime.now())
                     .amount(santeDTO.getAmount())

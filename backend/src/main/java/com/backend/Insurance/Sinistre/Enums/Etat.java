@@ -1,8 +1,10 @@
 package com.backend.Insurance.Sinistre.Enums;
 
 public enum Etat {
-    PENDING ,
-    UNDER_REVIEW,
-    ACCEPTED,
-    REJECTED
+    SOUMIS,
+    EN_EXAMEN,
+    INFOS_COMPLEMENTAIRES_REQUISES,
+    APPROUVE,
+    REJETE,
+    PAYE
 }

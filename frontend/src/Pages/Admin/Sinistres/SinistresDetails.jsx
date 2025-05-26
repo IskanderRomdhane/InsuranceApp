@@ -7,15 +7,19 @@ import {
   AlertTriangle, 
   DollarSign, 
   Calendar, 
-  Hash, 
+  Hash,
+  Brain, 
   Car, 
   MapPin, 
-  Cpu 
+  Cpu ,
+  
 } from 'lucide-react';
 import ReportModal from './ReportModal';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useSinistresDetails } from './useSinistreDetails';
+import {getStatusBadgeColor , getFileIcon} from './SinistreUtils'
 const SinistresDetails = () => {
+  const[status , changementStatus] = useState("");
   const{
     claim, loading, error , activeImage, showModal , aiReport , aiLoading ,setShowModal, fetchClaimDetails , handleStatusChange , generateAIDecision
   } = useSinistresDetails() ;
@@ -24,36 +28,6 @@ const SinistresDetails = () => {
     console.log(claim)
   },[])
   const navigate = useNavigate();
-
-  const getStatusBadgeColor = (status) => {
-    switch (status) {
-      case 'ACCEPTED': return 'bg-green-100 text-green-700 border-green-200';
-      case 'REJECTED': return 'bg-red-100 text-red-700 border-red-200';
-      case 'PENDING': return 'bg-yellow-100 text-yellow-700 border-yellow-200';
-      case 'UNDER_REVIEW': return 'bg-blue-100 text-blue-700 border-blue-200';
-      default: return 'bg-gray-100 text-gray-700 border-gray-200';
-    }
-  };
-
-  const getStatusInFrench = (status) => {
-    switch (status) {
-      case 'ACCEPTED': return 'ACCEPTÉ';
-      case 'REJECTED': return 'REJETÉ';
-      case 'PENDING': return 'EN ATTENTE';
-      case 'UNDER_REVIEW': return 'EN COURS D\'EXAMEN';
-      default: return status;
-    }
-  };
-
-  const getFileIcon = (fileName) => {
-    const extension = fileName.split('.').pop().toLowerCase();
-    switch (extension) {
-      case 'pdf': return <FileText className="h-5 w-5 text-red-500" />;
-      case 'jpg': case 'jpeg': case 'png': case 'gif': return <ImageIcon className="h-5 w-5 text-blue-500" />;
-      case 'doc': case 'docx': return <FileText className="h-5 w-5 text-blue-600" />;
-      default: return <FileText className="h-5 w-5 text-gray-500" />;
-    }
-  };
 
   if (loading) return <div className="flex justify-center items-center min-h-screen bg-gray-50"><div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600"></div></div>;
   if (error) return (
@@ -103,7 +77,7 @@ const SinistresDetails = () => {
               </div>
             </div>
             <span className={`px-4 py-1.5 rounded-full text-sm font-medium border ${getStatusBadgeColor(claim.etat)}`}>
-              {getStatusInFrench(claim.etat)}
+              {claim.etat}
             </span>
           </div>
         </div>
@@ -182,7 +156,7 @@ const SinistresDetails = () => {
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 sticky top-6">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Actions</h3>
               <button 
-                className="w-full py-3 px-4 rounded-lg text-white bg-blue-600 hover:bg-blue-700 transition-colors flex justify-center items-center disabled:bg-blue-400"
+                className="w-full py-3 px-4 rounded-lg text-white bg-[#dda15e]  hover:bg-[#bc6c25] transition-colors flex justify-center items-center disabled:bg-blue-400"
                 onClick={generateAIDecision}
                 disabled={aiLoading}
               >
@@ -193,8 +167,8 @@ const SinistresDetails = () => {
                   </>
                 ) : (
                   <>
-                    <Cpu className="h-5 w-5 mr-2" />
-                    Prendre décision
+                    <Brain className="h-5 w-5 mr-2" />
+                    Générer Rapport
                   </>
                 )}
               </button>
@@ -212,7 +186,7 @@ const SinistresDetails = () => {
                         {getFileIcon(doc.documentName)}
                         <span className="ml-3 font-medium text-gray-900">Documents</span>
                       </div>
-                      <a href={doc.documentUrl} target="_blank" rel="noopener noreferrer" className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                      <a href={doc.documentUrl} target="_blank" rel="noopener noreferrer" className="flex items-center px-4 py-2 bg-[#dda15e]  hover:bg-[#bc6c25] text-white rounded-lg  transition-colors">
                         <Download className="h-4 w-4 mr-2" /> Voir
                       </a>
                     </div>
@@ -220,7 +194,50 @@ const SinistresDetails = () => {
                 </div>
               </div>
             )}
+
+            {/* Status Update Section */}
+            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Mettre à jour le statut</h3>
+              <div className="space-y-4">
+                <div className="flex flex-col space-y-2">
+                  <label className="text-sm font-medium text-gray-700">Nouveau statut</label>
+                  <select
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    onChange={(e) => changementStatus(e.target.value)}
+                  >
+                    <option value="SOUMIS">Soumis</option>
+                    <option value="EN_EXAMEN">En examen</option>
+                    <option value="INFOS_COMPLEMENTAIRES_REQUISES">Infos complémentaires requises</option>
+                    <option value="APPROUVE">Approuvé</option>
+                    <option value="REJETE">Rejeté</option>
+                    <option value="PAYE">Payé</option>
+                  </select>
+                </div>
+                
+                {status === 'REJETE' && (
+                  <div className="flex flex-col space-y-2">
+                    <label className="text-sm font-medium text-gray-700">Raison du rejet</label>
+                    <textarea
+                      className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      rows="3"
+                      placeholder="Ajouter une raison pour le rejet..."
+                    />
+                  </div>
+                )}
+                
+                <button 
+                  className="w-full py-3 px-4 rounded-lg text-white bg-[#dda15e]  hover:bg-[#bc6c25] transition-colors"
+                  onClick={() => handleStatusChange(status)}
+                >
+                  Mettre à jour
+                </button>
+              </div>
+            </div>
+
+
           </div>
+
+          
         </div>
       </div>
     </div>
