@@ -11,4 +11,5 @@ public class ReclamationDTO {
     private String typeReclamation;
     private String description;
     private String status;
+    private Long SinistreId;
 }

@@ -1,28 +1,39 @@
 import React, { useState, useEffect } from 'react';
 import { jwtDecode } from 'jwt-decode';
-import {submitReclamation} from './ReclamationFunction.js'
+import { submitReclamation } from './ReclamationFunction.js';
+import DeposerReclamationInfo from '../../../Components/DeposerReclamationInfo.jsx';
+import { useNavigate } from 'react-router-dom';
+import axiosInstance from '../../../Hooks/TokenInterceptor';
+
 const DeposerReclamations = () => {
   const [email, setEmail] = useState("");
+  const [userId, setUserId] = useState("");
   const [formData, setFormData] = useState({
     userEmail: "",
     typeReclamation: "",
     description: "",
-    file: null
+    file: null,
+    sinistreId: "" // New field for selected sinistre
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState(null);
   const [filePreview, setFilePreview] = useState(null);
+  const [rejectedSinistres, setRejectedSinistres] = useState([]);
+  const [showSinistreSelector, setShowSinistreSelector] = useState(false);
+  const [isLoadingSinistres, setIsLoadingSinistres] = useState(false);
+  const navigate = useNavigate();
 
   // Fetch email from JWT token on component mount
   useEffect(() => {
     try {
       const token = localStorage.getItem("access_token");
-      const userId = localStorage.getItem("userId");
-      console.log(userId)
-      if (token) {
+      const storedUserId = localStorage.getItem("userId");
+      
+      if (token && storedUserId) {
         try {
           const decoded = jwtDecode(token);
           setEmail(decoded.email);
+          setUserId(storedUserId);
           setFormData(prevState => ({
             ...prevState,
             userEmail: decoded.email
@@ -45,12 +56,61 @@ const DeposerReclamations = () => {
     }
   }, []);
 
+  // Fetch sinistres when needed
+  useEffect(() => {
+    if (showSinistreSelector && userId && formData.typeReclamation) {
+      fetchSinistres(userId);
+    }
+  }, [showSinistreSelector, userId, formData.typeReclamation]);
+
+  // Function to fetch sinistres based on reclamation type
+  const fetchSinistres = async (userId) => {
+    setIsLoadingSinistres(true);
+    try {
+      // Choose the correct endpoint based on the reclamation type
+      let endpoint;
+      if (formData.typeReclamation === "DOCUMENTS_MANQUANTS") {
+        endpoint = `/api/sinistre/getuserdocumentmanquantssinistres/${userId}`;
+      } else {
+        endpoint = `/api/sinistre/getuserrejectedsinistres/${userId}`;
+      }
+      
+      console.log("Fetching sinistres from endpoint:", endpoint);
+      const response = await axiosInstance.get(endpoint);
+      setRejectedSinistres(response.data);
+    } catch (error) {
+      console.error('Error fetching sinistres:', error);
+      setSubmitStatus({
+        type: 'error',
+        message: 'Erreur lors de la récupération des sinistres.'
+      });
+    } finally {
+      setIsLoadingSinistres(false);
+    }
+  };
+
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prevState => ({
-      ...prevState,
-      [name]: value
-    }));
+    
+    if (name === "typeReclamation") {
+      // Check if the selected type requires sinistre selection
+      const requiresSinistre = ["REJET_CONTESTE", "DEMANDE_REEVALUATION", "DOCUMENTS_MANQUANTS"].includes(value);
+      setShowSinistreSelector(requiresSinistre);
+      
+      // Reset sinistre selection and fetch appropriate sinistres if needed
+      setFormData(prevState => ({
+        ...prevState,
+        sinistreId: "", // Always reset when changing type
+        [name]: value
+      }));
+      
+      // The useEffect will handle fetching if requiresSinistre is true
+    } else {
+      setFormData(prevState => ({
+        ...prevState,
+        [name]: value
+      }));
+    }
   };
 
   const handleFileChange = (e) => {
@@ -97,20 +157,18 @@ const DeposerReclamations = () => {
     setSubmitStatus(null);
 
     try {
-      // Use the imported function
       const result = await submitReclamation(formData, email);
       
-      setSubmitStatus({ 
-        type: 'success', 
-        message: 'Réclamation soumise avec succès!' 
-      });
+      // Redirection vers la page de consultation avec un paramètre de succès
+      navigate('/reclamations/consulter?success=true');
 
-      // Reset form
+      // Reset form (optionnel car nous redirigeons)
       setFormData({
         userEmail: email,
         typeReclamation: "",
         description: "",
-        file: null
+        file: null,
+        sinistreId: ""
       });
       setFilePreview(null);
 
@@ -125,6 +183,9 @@ const DeposerReclamations = () => {
       setIsSubmitting(false);
     }
   };
+
+  // Check if file is required (only for DOCUMENTS_MANQUANTS type)
+  const isFileRequired = formData.typeReclamation === "DOCUMENTS_MANQUANTS";
 
   return (
       <div className="min-h-screen bg-white py-12 px-4 sm:px-6 lg:px-8">
@@ -141,12 +202,12 @@ const DeposerReclamations = () => {
             <div className="w-full lg:w-3/5">
               <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
                 <div className="px-8 pt-8 pb-10">
-                  <h2 className="text-2xl font-bold text-blakc mb-6  pb-3">
+                  <h2 className="text-2xl font-bold text-black mb-6 pb-3">
                     Détails de votre réclamation
                   </h2>
 
                   <form onSubmit={handleSubmit} className="space-y-8">
-                    {/* Type of Complaint input remains the same */}
+                    {/* Type of Complaint input with updated options */}
                     <div>
                       <label className="block text-lg font-medium mb-3 text-gray-700">Type de Réclamation</label>
                       <div className="relative">
@@ -158,10 +219,13 @@ const DeposerReclamations = () => {
                             required
                         >
                           <option value="">Sélectionnez un type</option>
-                          <option value="SERVICE_DELAY">Retard de Service</option>
-                          <option value="ACCOUNT_ACCESS">Accès au Compte</option>
-                          <option value="UNRESOLVED_ISSUE">Problème Non Résolu</option>
-                          <option value="POOR_SUPPORT">Support Insuffisant</option>
+                          <option value="RETARD_SERVICE">Retard de Service</option>
+                          <option value="ACCES_COMPTE">Accès au Compte</option>
+                          <option value="PROBLEME_NON_RESOLU">Problème Non Résolu</option>
+                          <option value="SUPPORT_INADEQUAT">Support Inadéquat</option>
+                          <option value="REJET_CONTESTE">Contestation de Rejet</option>
+                          <option value="DEMANDE_REEVALUATION">Demande de Réévaluation</option>
+                          <option value="DOCUMENTS_MANQUANTS">Documents Manquants</option>
                         </select>
                         <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-green-500">
                           <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
@@ -171,7 +235,60 @@ const DeposerReclamations = () => {
                       </div>
                     </div>
 
-                    {/* Description input remains the same */}
+                    {/* Sinistre selector - only shown for specific reclamation types */}
+                    {showSinistreSelector && (
+                      <div>
+                        <label className="block text-lg font-medium mb-3 text-gray-700">
+                          {formData.typeReclamation === "DOCUMENTS_MANQUANTS" 
+                            ? "Sinistre Nécessitant des Documents" 
+                            : "Sinistre Concerné"}
+                        </label>
+                        <div className="relative">
+                          {isLoadingSinistres ? (
+                            <div className="flex items-center justify-center p-4 bg-gray-50 rounded-lg">
+                              <svg className="animate-spin h-6 w-6 text-green-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                              </svg>
+                              <span className="ml-2 text-gray-600">Chargement des sinistres...</span>
+                            </div>
+                          ) : rejectedSinistres.length > 0 ? (
+                            <select
+                              name="sinistreId"
+                              value={formData.sinistreId}
+                              onChange={handleChange}
+                              className="w-full p-4 pr-10 bg-gray-50 border-none rounded-lg shadow-sm focus:ring-2 focus:ring-green-500 appearance-none text-gray-700"
+                              required
+                            >
+                              <option value="">Sélectionnez un sinistre</option>
+                              {rejectedSinistres.map((sinistre) => (
+                                <option key={sinistre.id} value={sinistre.id}>
+                                  Sinistre #{sinistre.id} - {sinistre.objectSinistre} - {sinistre.categorie} - {sinistre.amount} €
+                                </option>
+                              ))}
+                            </select>
+                          ) : (
+                            <div className="p-4 bg-yellow-50 rounded-lg border border-yellow-200 text-yellow-800">
+                              <p>
+                                {formData.typeReclamation === "DOCUMENTS_MANQUANTS"
+                                  ? "Aucun sinistre nécessitant des documents trouvé."
+                                  : "Aucun sinistre rejeté trouvé."} 
+                                Si vous pensez qu'il s'agit d'une erreur, veuillez contacter le support.
+                              </p>
+                            </div>
+                          )}
+                          {rejectedSinistres.length > 0 && (
+                            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-green-500">
+                              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+                              </svg>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Description input */}
                     <div>
                       <label className="block text-lg font-medium mb-3 text-gray-700">Description</label>
                       <div className="relative">
@@ -190,9 +307,11 @@ const DeposerReclamations = () => {
                       </div>
                     </div>
 
-                    {/* New File Upload Section */}
+                    {/* File Upload Section - required for DOCUMENTS_MANQUANTS */}
                     <div>
-                      <label className="block text-lg font-medium  text-gray-700">Pièce Jointe (Optionnel)</label>
+                      <label className="block text-lg font-medium text-gray-700">
+                        Pièce Jointe {isFileRequired ? "(Obligatoire)" : "(Optionnel)"}
+                      </label>
                       <div className="relative">
                         <input
                             type="file"
@@ -200,6 +319,7 @@ const DeposerReclamations = () => {
                             onChange={handleFileChange}
                             accept=".jpg,.jpeg,.png,.gif,.pdf"
                             className="w-full p-4 bg-gray-50 rounded-lg shadow-sm focus:ring-2 focus:ring-green-500 border-none file:mr-4 file:rounded-lg file:border-0 file:bg-white file:px-4 file:py-2 file:text-gray-700 hover:file:bg-gray-50"
+                            required={isFileRequired}
                         />
                         <p className="mt-2 text-sm text-gray-500">
                           Formats acceptés: JPG, PNG, GIF, PDF (max 5 Mo)
@@ -228,11 +348,11 @@ const DeposerReclamations = () => {
                       )}
                     </div>
 
-                    {/* Submit button remains the same */}
+                    {/* Submit button */}
                     <div className="pt-4">
                       <button
                           type="submit"
-                          disabled={isSubmitting || !email}
+                          disabled={isSubmitting || !email || (showSinistreSelector && !formData.sinistreId) || (isFileRequired && !formData.file)}
                           className="w-full py-4 px-6 bg-gradient-to-r from-green-600 to-green-700 text-white rounded-lg hover:from-green-700 hover:to-green-800 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:opacity-50 transition duration-300 text-lg font-medium shadow-md"
                       >
                         {isSubmitting ? (
@@ -248,7 +368,7 @@ const DeposerReclamations = () => {
                     </div>
                   </form>
 
-                  {/* Status message remains the same */}
+                  {/* Status message */}
                   {submitStatus && (
                       <div className={`mt-6 p-5 rounded-lg flex items-start ${submitStatus.type === 'success' ? 'bg-green-50 text-green-800 border-l-4 border-green-500' : 'bg-red-50 text-red-800 border-l-4 border-red-500'}`}>
                         <div className="flex-shrink-0 mt-0.5">
@@ -271,77 +391,7 @@ const DeposerReclamations = () => {
               </div>
             </div>
 
-            {/* Right side content remains the same */}
-            <div className="w-full lg:w-2/5 lg:ml-auto">
-              <div className="bg-gradient-to-br from-green-700 to-green-900 text-white rounded-2xl shadow-xl overflow-hidden">
-                <div className="relative h-52 overflow-hidden">
-                  <div className="absolute inset-0 bg-green-900 opacity-40"></div>
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <h2 className="text-3xl font-bold text-center px-6 drop-shadow-md">Protection & Sérénité</h2>
-                  </div>
-                </div>
-
-                <div className="p-8">
-                  <div className="mb-8">
-                    <h3 className="text-xl font-bold mb-4">Notre engagement</h3>
-                    <p className="text-green-100 mb-4">
-                      Nous vous offrons une assurance qui s'adapte à vos besoins avec un traitement rapide de vos réclamations. Votre tranquillité d'esprit est notre priorité.
-                    </p>
-                  </div>
-
-                  <div className="space-y-4">
-                    <div className="flex items-center gap-4 p-4 bg-green-800 bg-opacity-30 rounded-lg">
-                      <div className="bg-green-600 p-3 rounded-full">
-                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                      </div>
-                      <div>
-                        <h4 className="font-semibold">Réponse sous 24 heures</h4>
-                        <p className="text-green-200 text-sm">Nous valorisons votre temps</p>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center gap-4 p-4 bg-green-800 bg-opacity-30 rounded-lg">
-                      <div className="bg-green-600 p-3 rounded-full">
-                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-                        </svg>
-                      </div>
-                      <div>
-                        <h4 className="font-semibold">Suivi personnalisé</h4>
-                        <p className="text-green-200 text-sm">Un conseiller dédié à votre dossier</p>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center gap-4 p-4 bg-green-800 bg-opacity-30 rounded-lg">
-                      <div className="bg-green-600 p-3 rounded-full">
-                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                        </svg>
-                      </div>
-                      <div>
-                        <h4 className="font-semibold">Protection complète</h4>
-                        <p className="text-green-200 text-sm">Des solutions adaptées à chaque situation</p>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="mt-8 pt-6 border-t border-green-600">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="font-medium">Assistance immédiate</p>
-                        <p className="text-green-200 text-sm">Disponible 24/7 pour vous</p>
-                      </div>
-                      <button className="bg-white text-green-700 py-2 px-6 rounded-full font-medium hover:bg-green-50 transition duration-300 shadow-lg">
-                        Contacter
-                      </button>
-                    </div>
-                  </div>
-                </div>
-
-              </div>
-            </div>
+            <DeposerReclamationInfo />
           </div>
         </div>
       </div>

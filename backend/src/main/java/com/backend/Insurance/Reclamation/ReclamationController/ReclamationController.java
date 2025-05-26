@@ -6,6 +6,7 @@ import com.backend.Insurance.Reclamation.Entity.Reclamation;
 import com.backend.Insurance.Reclamation.ReclamationService.ReclamationService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -23,14 +24,15 @@ public class ReclamationController {
     @PostMapping("/CreerReclamation")
     public ResponseEntity<String> uploadReclamation(
             @RequestParam("file") MultipartFile file,
-            @RequestParam("claim") String reclamationJson) {
+            @RequestParam("reclamation") String reclamationJson) {
         try {
             ReclamationDTO reclamationDTO = objectMapper.readValue(reclamationJson, ReclamationDTO.class);
-            return reclamationService.CreerReclamation(reclamationDTO,file);
-        }catch (Exception e){
-            throw new RuntimeException(e.getMessage());
+            return reclamationService.CreerReclamation(reclamationDTO, file);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid input: " + e.getMessage());
         }
     }
+
 
     @PutMapping("/changerstatus/{ReclamationID}")
     //@PreAuthorize("hasRole('ADMIN')")

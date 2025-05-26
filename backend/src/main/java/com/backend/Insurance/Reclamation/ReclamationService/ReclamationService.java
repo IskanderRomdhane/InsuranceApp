@@ -11,12 +11,15 @@ import com.backend.Insurance.Reclamation.ENUMS.TypeReclamation;
 import com.backend.Insurance.Reclamation.Mapper.ReclamationMapper;
 import com.backend.Insurance.Reclamation.Entity.Reclamation;
 import com.backend.Insurance.Reclamation.Repository.ReclamationRepository;
+import com.backend.Insurance.Sinistre.Entity.Sinistre;
+import com.backend.Insurance.Sinistre.Repositroy.SinistreRepository;
 import com.backend.Insurance.User.User;
 import com.backend.Insurance.User.Repository.UserRepository;
 import com.backend.Insurance.notification.Entity.Notification;
 import com.backend.Insurance.notification.Repository.NotificationRepository;
 import com.backend.Insurance.notification.NotificationService.NotificationService;
 import com.backend.Insurance.notification.Enums.NotificationStatus;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,6 +28,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -40,58 +44,82 @@ public class ReclamationService {
     private final NotificationService notificationService;
     private final NotificationRepository notificationRepository;
     private final ReclamationMapper reclamationMapper;
-    public ResponseEntity<String> CreerReclamation(ReclamationDTO reclamationDTO , MultipartFile image) {
+    private final SinistreRepository sinistreRepository;
+    public ResponseEntity<String> CreerReclamation(ReclamationDTO reclamationDTO, MultipartFile image) {
         Optional<User> userOptional = userRepository.findByEmail(reclamationDTO.getUserEmail());
-        if (userOptional.isPresent()) {
-            User foundUser = userOptional.get();
 
-            Reclamation reclamation = Reclamation.builder()
-                    .date(LocalDateTime.now())
-                    .typeReclamation(TypeReclamation.valueOf(reclamationDTO.getTypeReclamation().toUpperCase()))
-                    .status(Status.PENDING)
-                    .description(reclamationDTO.getDescription())
-                    .build();
-            reclamation.setUser(foundUser);
+        if (!userOptional.isPresent()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User Not Found");
+        }
 
-            List<Reclamation> userReclamations = foundUser.getReclamation();
-            if (userReclamations == null){
-                userReclamations = new ArrayList<>();
+        User foundUser = userOptional.get();
+
+        TypeReclamation typeReclamation;
+        try {
+            typeReclamation = TypeReclamation.valueOf(reclamationDTO.getTypeReclamation().toUpperCase());
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid typeReclamation value");
+        }
+
+        Reclamation reclamation = Reclamation.builder()
+                .date(LocalDateTime.now())
+                .typeReclamation(typeReclamation)
+                .status(Status.PENDING)
+                .description(reclamationDTO.getDescription())
+                .user(foundUser)
+                .build();
+
+        // Link sinistre if required by type
+        if (EnumSet.of(
+                TypeReclamation.DOCUMENTS_MANQUANTS,
+                TypeReclamation.REJET_CONTESTE,
+                TypeReclamation.DEMANDE_REEVALUATION
+        ).contains(typeReclamation)) {
+            try {
+                Sinistre sinistre = sinistreRepository.getById(reclamationDTO.getSinistreId());
+                reclamation.setSinistre(sinistre);
+            } catch (EntityNotFoundException e) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Sinistre not found");
             }
-            userReclamations.add(reclamation);
-            foundUser.setReclamation(userReclamations);
+        }
 
+        // Add reclamation to user
+        if (foundUser.getReclamation() == null) {
+            foundUser.setReclamation(new ArrayList<>());
+        }
+        foundUser.getReclamation().add(reclamation);
 
-            reclamationRepository.save(reclamation);
-            userRepository.save(foundUser);
+        // Save reclamation and user
+        reclamationRepository.save(reclamation);
+        userRepository.save(foundUser);
 
+        // Handle image upload
+        if (image != null && !image.isEmpty()) {
             try {
                 String imageUrl = imageService.uploadImage(image);
                 Image imageSaved = Image.builder()
                         .imageUrl(imageUrl)
-                        .name("user : "+foundUser.getId()+" Reclamation Image")
+                        .name("user: " + foundUser.getId() + " Reclamation Image")
                         .reclamation(reclamation)
                         .build();
+
                 imageRepository.save(imageSaved);
-                List<Image> images = reclamation.getImages();
-                if (images == null){
-                    images = new ArrayList<>();
+
+                if (reclamation.getImages() == null) {
+                    reclamation.setImages(new ArrayList<>());
                 }
-                images.add(imageSaved);
-                reclamation.setImages(images);
+                reclamation.getImages().add(imageSaved);
                 reclamationRepository.save(reclamation);
-            }catch (Exception e){
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+            } catch (Exception e) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Image upload failed: " + e.getMessage());
             }
-
-
-//            emailSenderService.sendEmail(foundUser.getEmail() , "Reclamation", "Reclamation with ID :"+ reclamation.getId() +
-//                    " created at the date :" + LocalDateTime.now() +
-//                    " with reclamation status  :" + reclamation.getStatus());
-            return ResponseEntity.ok("User Reclamation saved Successfully");
-        }else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User Not Found");
         }
+
+
+
+        return ResponseEntity.ok("User Reclamation saved successfully");
     }
+
 
     public ResponseEntity<String> ChangerStatus(Long reclamationID, ReclamationDTO reclamationDTO) {
         Optional<Reclamation> reclamationOptional = reclamationRepository.findById(reclamationID);

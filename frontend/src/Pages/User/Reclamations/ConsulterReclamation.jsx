@@ -2,9 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { Search, RefreshCw, ChevronLeft, ChevronRight, Calendar, Eye } from 'lucide-react';
 import ClaimDetailsModal from './ClaimDetailsModal';
 import { fetchClaimsByEmail } from './ReclamationFunction.js';
-import { formatDate, StatusIndicator } from '../../Admin/Sinistres/SinistreTableProp.jsx';
+import { formatDate, StatusIndicator } from './ReclamationProp.jsx';
 import PaginationComponent from "../../../Components/PaginationComponent";
 import {getStatusColor, getModalBg, getTypeIcon } from './ReclamationProp';
+import { useNavigate , useLocation } from 'react-router-dom';
+
+
 const ClaimsDashboard = () => {
   const [claims, setClaims] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -17,6 +20,9 @@ const ClaimsDashboard = () => {
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const [claimsPerPage] = useState(10);
+
+  const location = useLocation();
+  const [showSuccess, setShowSuccess] = useState(false);
 
   const fetchData = async (currentFilter = filter) => {
     try {
@@ -36,6 +42,23 @@ const ClaimsDashboard = () => {
   useEffect(() => {
     fetchData();
   }, [filter]);
+
+  useEffect(() => {
+    if (location.search.includes('success=true')) {
+      setShowSuccess(true);
+      
+      // Supprimer le paramètre de l'URL
+      const cleanUrl = window.location.pathname;
+      window.history.replaceState({}, document.title, cleanUrl);
+
+      // Masquer le message après 5 secondes
+      const timer = setTimeout(() => {
+        setShowSuccess(false);
+      }, 5000 * 6);
+
+      return () => clearTimeout(timer);
+    }
+  }, [location]);
 
   // Get current claims
   const indexOfLastClaim = currentPage * claimsPerPage;
@@ -67,6 +90,35 @@ const ClaimsDashboard = () => {
   return (
     <div className="bg-gray-100 min-h-screen p-8">
       <div className="max-w-7xl mx-auto">
+        {showSuccess && (
+          <div className="mb-8 transition-all duration-500 ease-in-out transform">
+            <div className="bg-green-50 border-l-4 border-green-500 p-4 rounded-lg shadow-lg">
+              <div className="flex items-center">
+                <div className="flex-shrink-0">
+                  <svg className="h-6 w-6 text-green-500 animate-bounce" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                  </svg>
+                </div>
+                <div className="ml-3">
+                  <h3 className="text-sm font-medium text-green-800">Succès!</h3>
+                  <div className="mt-1 text-sm text-green-700">
+                    <p>Votre réclamation a été enregistrée. Numéro de suivi: #{new Date().getTime().toString().slice(-6)}</p>
+                  </div>
+                </div>
+                <div className="ml-auto pl-3">
+                  <button 
+                    onClick={() => setShowSuccess(false)}
+                    className="text-green-500 hover:text-green-700"
+                  >
+                    <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
         <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8">
           <h1 className="text-3xl font-bold text-gray-800">Consulting Claims Dashboard</h1>
           <a 
@@ -161,7 +213,7 @@ const ClaimsDashboard = () => {
                   {/* Type */}
                   <div className="col-span-2">
                     <span className="bg-gray-100 px-3 py-1 rounded-full text-sm">
-                      {claim.typeReclamation}
+                      {claim.typeReclamation?.replace(/_/g, ' ')}
                     </span>
                   </div>
 

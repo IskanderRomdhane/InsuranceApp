@@ -3,6 +3,7 @@ package com.backend.Insurance.Reclamation.Entity;
 import com.backend.Insurance.Image.Entity.Image;
 import com.backend.Insurance.Reclamation.ENUMS.Status;
 import com.backend.Insurance.Reclamation.ENUMS.TypeReclamation;
+import com.backend.Insurance.Sinistre.Entity.Sinistre;
 import com.backend.Insurance.User.User;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
@@ -34,6 +35,9 @@ public class Reclamation {
     @JsonManagedReference("reclamation-images")
     private List<Image> images;
 
+    @ManyToOne
+    @JsonManagedReference("sinistre-reclamations")
+    private Sinistre sinistre;
 
     @ManyToOne
     @JsonBackReference("user-reclamations")
