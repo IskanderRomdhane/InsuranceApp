@@ -49,7 +49,7 @@ public class HabilitationService {
                     .document(documentList)
                     .description(habilitationDTO.getDescriptionSinistre())
                     .object(habilitationDTO.getObjectSinistre())
-                    .etat(Etat.PENDING)
+                    .etat(Etat.SOUMIS)
                     .user(foundUser)
                     .date(LocalDateTime.now())
                     .amount(habilitationDTO.getAmount())

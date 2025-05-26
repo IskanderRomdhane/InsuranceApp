@@ -2,6 +2,7 @@ package com.backend.Insurance.Sinistre.Entity;
 
 import com.backend.Insurance.Document.Entity.Document;
 import com.backend.Insurance.Image.Entity.Image;
+import com.backend.Insurance.Reclamation.Entity.Reclamation;
 import com.backend.Insurance.Sinistre.Enums.Etat;
 import com.backend.Insurance.User.User;
 import com.fasterxml.jackson.annotation.JsonBackReference;
@@ -42,5 +43,9 @@ public class Sinistre {
     @OneToMany
     @JsonManagedReference("sinistre-documents")
     private List<Document> document;
+
+    @OneToMany
+    @JsonManagedReference("sinistre-reclamations")
+    private List<Reclamation> reclamations;
 
 }

@@ -59,7 +59,7 @@ const SinistrePage = () => {
       <h1 className="text-3xl font-bold mb-6 text-gray-800">Detaille du Sinistre</h1>
       
       <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-        <div className="bg-[#476f66] p-4 text-white">
+        <div className="bg-[#bc6c25] p-4 text-white">
           <h2 className="text-xl font-semibold">
             Sinistre - {sinistre.object}
           </h2>
@@ -71,7 +71,9 @@ const SinistrePage = () => {
           
           <div className="mt-8 grid md:grid-cols-2 gap-6">
             <ImagesSection images={sinistre.images} />
-            <DocumentsSection documents={sinistre.document} />
+            <DocumentsSection 
+            documents={sinistre.document}
+            sinistre={sinistre} />
           </div>
           
           <StatusTracker state={sinistre.etat} />

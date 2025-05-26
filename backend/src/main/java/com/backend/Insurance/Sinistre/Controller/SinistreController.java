@@ -73,6 +73,21 @@ public class SinistreController {
         return sinistreService.getSinistresByStatus(sinistre_statut);
     }
 
+    @GetMapping("/getuserrejectedsinistres/{userId}")
+    //@PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<SinistreDTO>> GetUserRejectedSinistre (
+            @PathVariable String userId
+    ){
+        return sinistreService.GetUserRejectedSinistre(userId);
+    }
+    @GetMapping("/getuserdocumentmanquantssinistres/{userId}")
+    //@PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<SinistreDTO>> GetUserDocumentManquantsSinistre (
+            @PathVariable String userId
+    ){
+        return sinistreService.GetUserDocumentManquantsSinistre(userId);
+    }
+
     @GetMapping("/sinistres/per-month")
     public ResponseEntity<List<SinistreMonthlyCountDTO>> getSinistresPerMonth() {
         return ResponseEntity.ok(sinistreService.getSinistreCountPerMonth());
@@ -80,16 +95,16 @@ public class SinistreController {
 
     @GetMapping("/count/accepted")
     public ResponseEntity<Long> getAcceptedSinistreCount() {
-        return ResponseEntity.ok(sinistreService.countSinistresByEtat(Etat.ACCEPTED));
+        return ResponseEntity.ok(sinistreService.countSinistresByEtat(Etat.APPROUVE));
     }
 
     @GetMapping("/count/pending")
     public ResponseEntity<Long> getPendingSinistreCount() {
-        return ResponseEntity.ok(sinistreService.countSinistresByEtat(Etat.PENDING));
+        return ResponseEntity.ok(sinistreService.countSinistresByEtat(Etat.SOUMIS));
     }
 
     @GetMapping("/sinistres/accepted")
     public ResponseEntity<List<SinistreDTO>> getAcceptedSinistres() {
-        return sinistreService.getSinistresByEtat(Etat.ACCEPTED);
+        return sinistreService.getSinistresByEtat(Etat.APPROUVE);
     }
 }

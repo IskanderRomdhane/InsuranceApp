@@ -55,7 +55,7 @@ public class SinistreService {
                     .document(documentList)
                     .description(sinistreDTO.getDescriptionSinistre())
                     .object(sinistreDTO.getObjectSinistre())
-                    .etat(Etat.PENDING)
+                    .etat(Etat.SOUMIS)
                     .user(foundUser)
                     .date(LocalDateTime.now())
                     .amount(sinistreDTO.getAmount())
@@ -155,10 +155,13 @@ public class SinistreService {
 
     public ResponseEntity<List<?>> getSinistresByStatus(String statut) {
         switch (statut.toUpperCase()){
-            case "PENDING": return ResponseEntity.ok(sinistreMapper.toDtoList(sinistreRepository.findByEtat(Etat.PENDING)));
-            case "UNDER_REVIEW": return ResponseEntity.ok(sinistreMapper.toDtoList(sinistreRepository.findByEtat(Etat.UNDER_REVIEW)));
-            case "ACCEPTED": return ResponseEntity.ok(sinistreMapper.toDtoList(sinistreRepository.findByEtat(Etat.ACCEPTED)));
-            case "REJECTED": return ResponseEntity.ok(sinistreMapper.toDtoList(sinistreRepository.findByEtat(Etat.REJECTED)));
+            case "SOUMIS": return ResponseEntity.ok(sinistreMapper.toDtoList(sinistreRepository.findByEtat(Etat.SOUMIS)));
+            case "EN_EXAMEN": return ResponseEntity.ok(sinistreMapper.toDtoList(sinistreRepository.findByEtat(Etat.EN_EXAMEN)));
+            case "INFOS_COMPLEMENTAIRES_REQUISES": return ResponseEntity.ok(sinistreMapper.toDtoList(sinistreRepository.findByEtat(Etat.INFOS_COMPLEMENTAIRES_REQUISES)));
+            case "APPROUVE": return ResponseEntity.ok(sinistreMapper.toDtoList(sinistreRepository.findByEtat(Etat.APPROUVE)));
+            case "REJETE": return ResponseEntity.ok(sinistreMapper.toDtoList(sinistreRepository.findByEtat(Etat.REJETE)));
+            case "PAYE": return ResponseEntity.ok(sinistreMapper.toDtoList(sinistreRepository.findByEtat(Etat.PAYE)));
+
             default: return ResponseEntity.notFound().build();
         }
     }
@@ -189,4 +192,35 @@ public class SinistreService {
     }
 
 
+    public ResponseEntity<List<SinistreDTO>> GetUserRejectedSinistre(String userId) {
+        Optional<User> optionalUser = userRepository.findById(userId);
+        if(optionalUser.isPresent()){
+            List<Sinistre> sinistres = sinistreRepository.findByUserId(userId);
+            List<Sinistre> rejectedSinistres = new ArrayList<>();
+            for (Sinistre s : sinistres){
+                if (s.getEtat().equals(Etat.REJETE)){
+                    rejectedSinistres.add(s);
+                }
+            }
+            List<SinistreDTO> dtos = sinistreMapper.toDtoList(rejectedSinistres);
+            return ResponseEntity.ok(dtos);
+        }
+        return ResponseEntity.notFound().build();
+    }
+
+    public ResponseEntity<List<SinistreDTO>> GetUserDocumentManquantsSinistre(String userId) {
+        Optional<User> optionalUser = userRepository.findById(userId);
+        if(optionalUser.isPresent()){
+            List<Sinistre> sinistres = sinistreRepository.findByUserId(userId);
+            List<Sinistre> rejectedSinistres = new ArrayList<>();
+            for (Sinistre s : sinistres){
+                if (s.getEtat().equals(Etat.INFOS_COMPLEMENTAIRES_REQUISES)){
+                    rejectedSinistres.add(s);
+                }
+            }
+            List<SinistreDTO> dtos = sinistreMapper.toDtoList(rejectedSinistres);
+            return ResponseEntity.ok(dtos);
+        }
+        return ResponseEntity.notFound().build();
+    }
 }

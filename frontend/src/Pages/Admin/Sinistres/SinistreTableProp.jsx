@@ -11,25 +11,29 @@ export const formatDate = (dateString) => {
 
 export const StatusIndicator = ({ status }) => {
     const statusConfig = {
-      "ACCEPTED": {
+      "APPROUVE": {
         color: "bg-green-500",
-        label: "Accepted"
+        label: "Approuvé"
       },
-      "PENDING": {
+      "SOUMIS": {
         color: "bg-yellow-500",
-        label: "Pending"
+        label: "Soumis"
       },
-      "REJECTED": {
+      "REJETE": {
         color: "bg-red-500",
-        label: "Rejected"
+        label: "Rejeté"
       },
-      "UNDER_REVIEW": {
+      "EN_EXAMEN": {
         color: "bg-blue-500",
-        label: "Under Review"
+        label: "En Examen"
       },
-      "FINISHED":{
+      "PAYE":{
         color: "bg-blue-500",
-        label: "FINISHED"
+        label: "Payé"
+      },
+      "INFOS_COMPLEMENTAIRES_REQUISES":{
+        color: "bg-red-500",
+        label: "Infos Complementaires Requises"
       }
     };
     
